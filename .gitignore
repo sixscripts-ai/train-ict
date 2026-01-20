@@ -49,3 +49,6 @@ vex_archive/
 
 # Spell check
 cspell.json
+docs/*.json
+docs/*_readable.md
+docs/convert_chat_to_markdown.py
