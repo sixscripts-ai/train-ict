@@ -1,0 +1,122 @@
+Unknown Speaker  00:13
+Okay, folks, welcome back.
+
+Unknown Speaker  00:16
+This is the ICT mentorship Price Action Model Number 12. It's a scalping model, and its focus is 20 pips per trade. Okay, see ICT Price Action Model number 12, a scalping model, 20 pips per trade. The stage used for this model is a daily range expansion, order blocks and fair value gap is the setup. Internal range to 20 PIP price runs. Is the pattern. All right, so the daily range expansion. What we're going to be focusing on is the identification of the likely or most probable direction of the current daily bar or candle. We're going to be focusing on order blocks coupled with a fair value gap. Now right away, you're
+
+Unknown Speaker  01:05
+already thinking, Oh, I've
+
+Unknown Speaker  01:06
+heard this before. Michael, no, we're
+
+Unknown Speaker  01:09
+gonna be waiting for an order block to form then an expansion swing to unfold. So what we're doing is we're waiting for that order block to facilitate a expansion, swing. So while we qualify valid order blocks or high probability order blocks with fair value gaps, sometimes an order block will form a down closed candle near a an important key level, from a higher Time Frame level, and that down closed candle may not necessarily have a fair value gap, so we're filtering that with any down closed candle that was at the beginning of a initial expansion price swing. Then it has to be retested. Okay? That order block gets traded down into then after that takes place the expansion swing that unfolds after the retest of the order block.
+
+Unknown Speaker  02:06
+We are then looking for the fair value gap,
+
+Unknown Speaker  02:09
+and again, internal range liquidity. We're going to be utilizing that in the form of internal range liquidity pools to facilitate an entry in the direction of a simple 20 PIP price run
+
+Unknown Speaker  02:24
+now, right away,
+
+Unknown Speaker  02:25
+your mind's probably thinking, okay,
+
+Unknown Speaker  02:26
+all you're doing is talking about the same thing you've already talked about in recent months. Before I get into it, I want you to understand certain things here. I've taught you how to qualify in my definition, a high probability order block, they are coupled with a fair value gap linked directly to the candle. This model is not suggesting that at all. What we're doing is showing you how to find fair value gaps in the middle of price runs that are not directly related to or close to necessarily a order block. The question is, is,
+
+Unknown Speaker  03:04
+what gap do I use? I'm
+
+Unknown Speaker  03:06
+getting that question all the time, and I promised everybody this would come to you if you just waited. Okay, there's a lot of other things we want to build on, but just as one simple measure now it right away. Your mind should be turning this isn't limited to a scalping model. While I am presenting it in a scalpers presentation, it's not limited to that. It's not, certainly at all, limited to 20 pips. If you scale this up to larger time frames, the model will deliver larger PIP calls, okay, or the profit margins will increase in terms of pips relative to the time frame you're looking at it. Okay? So our first example here in this very, very brief model, because there's really not a lot of talk about because everything I'm going to say here you've already learned in the core content. So this is the Euro dollar, okay, and the model is built on for scalping five minute charts. Okay, so we're looking for a directional bias. I've already taught you how to do that when the bias is bullish. In this case for the Euro dollar,
+
+Unknown Speaker  04:14
+we could see a bullish order block
+
+Unknown Speaker  04:18
+here. Now notice this down closed candle right before this big move here, there's really an absence of any fair value gap. Now, does that make that a low probability order block? Well, in terms of my definition, yes. Now, will I be wrong? Yes, and that's okay. Why am I okay with being wrong? Because I know this model will give me the entry patterns that I'm looking for that won't give me the fair value gap. In an ideal world, we want to see this down closed candle create some kind of a gap here. There isn't one, because this comes down closes, any likelihood of a gap. So this one here won't necessarily have my attention right away. What would I be? Waiting for this model. Watch what happens. The price comes back down, slams into the order block this down, closed candle, the last upper portion, okay, in other words, the highest portion of the candle, or the high to the midpoint or mean threshold, is what I'm highlighting here. Now in full order block theory, we would use the entire candle, but I like to use the upper portion, because that's where the most sensitivity is going to be. So price trades down into it, even at this moment here, I don't have to be a buyer. In fact, I don't want to be a buyer there with this model. What am I waiting for? I'm waiting for the order block to prove there is expansion. Okay, so there's an expansion swing here, taking price higher. Inside this price swing, there's a fair value gap right here, one single pass through, one candle, previous candles high, next candle is low.
+
+Unknown Speaker  06:01
+There's your fair value gap.
+
+Unknown Speaker  06:02
+This candle is low, is what we frame the fair value gaps high. So all it needs to do is trade to this price or lower, and we could add the spread, and we can be a buyer there. This is what happens here. This is the order block fair value gap coupled for this model, notice the distinction here. This down closed candle can't be referred to an order block in the sense that what I taught as a high probability down closed candle with a fair value gap above it. Okay, that would be the ideal high probability order block. This order block or down closed candle, has the gap inside of the candle. See difference, okay, so the distinction is, we want to see price, show a willingness to want to rally. Why is this pattern powerful? Why is it even being mentioned? Why does it have its own model? The reason is this smart money bought down here. I may have missed that. You're going to miss it. Okay, price comes back down into it. I may not still see it here, but if I see price react and it creates a expansion move here, I can see that the narrative is okay. They bought here off the order block. They did a huge accumulation of orders here. This one, I may have missed this one. I won't miss the expansion move. I go inside of this range here and find where's the fair value gap. Well, there it is. Which gap do I buy that one using model number 12? This is what you're looking for. Price drops down into the fair value gap here. We know that there's a displacement here and there's a displacement here. They have kept price in a relatively small range. Small ranges bring what large ranges as a scalper, intraday, you want volatility. You want directional impulse. This is what you're looking for, coupling both order block expansion, swing, then fair value gap formation by the top of the gap, or in this case, the low of this candle here, you have a little bit of drawdown, not much at all. I mean, very, very, very modest, very modest drawdown. We're talking like one or two pips. Okay, if you're, if you're adding that, minus the spread money, obviously, price runs. The shaded area is 20 pips. Now this price, when, if you look at it, it actually went higher in a day. The only thing I'm showing is a 20 pit run for illustrative purposes. Let's look at another example here. After buying that low, you can see very, very nice, handsome price action. Another Euro, dollar. You see price comes down that last down, closed candle, no fair value gap to speak of in here. Price creates a impulse swing. I may miss it. Let me second guess this. I don't know what's going on. It's got double bottom formation here. We know there's a likelihood of what a potential stop run. So I'm not having this really on my radar yet. But watch what happens. Price drops down into the order block, and then we have expansion. Okay, so we have the expansion swing in here. My eye goes inside this range, and I want to see where's the fair value gap. There's the fair value gap. And yes, in this sense, we do have the high probability order block with down, closed candle with a fair value gap. So right away, you know, this is the likelihood of a potential bullish order block, but if you would use that theory, would you have gotten filled on this? It never got down there. But model 12 gives you the entry pattern
+
+Unknown Speaker  09:58
+fair value gap. You. Here,
+
+Unknown Speaker  10:01
+there's your entry
+
+Unknown Speaker  10:03
+at this candle is low or just below it, plus spread, beautiful, 20 PIP expansion and well beyond. And I left this over here, just for context, relative equal highs. And you can, you can incorporate other models tight profits that you need to use for additional PIP objectives, don't limit it to 20 pips. So obviously, if you can get 20 pips, bank that take 80% off and then look for other models to overlap with target theory. So wherever price may lead to relative to what you've learned in other models in the core content, look for those as additional runs for liquidity. But this model specifically is dealing with 20 PIP runs. You're not trying to get to absolute low. You're not trying to get to absolute high. All you want is bread and butter. Give me 20 pips. Thank you very much. Next example here is the Guppy, which is pound yen,
+
+Unknown Speaker  11:06
+up close candles here, all
+
+Unknown Speaker  11:08
+one order block. Price trades down, comes right back up into the order block. And then we have the proof in the price swing. We have an expansion price swing lower. So my eye looks inside this range here. Where's the fair value gap? This one down here is too low. It's not enough for me to want to chase that because we're too far extended. Last two up close candles in here, they may want to make a run up into these up close candles in the form of bearish order block. So I would never want to look for like this here as a fair value gap, I would want to look for this price high down to the low. Think in terms of your PD array matrix. The high to this low split it in half. It has to go above or at the 50% level to get to a equilibrium or premium level that would be filtered for this right here.
+
+Unknown Speaker  12:04
+The fair value gap is here.
+
+Unknown Speaker  12:07
+So fair value gap and this candles high,
+
+Unknown Speaker  12:12
+or just above it would be your fill right in here. And the shaded area constitutes a 20 PIP run, factoring spread and slippage, or whatever the point is, is, all you're looking for is that 20 PIP bread and butter setup,
+
+Unknown Speaker  12:29
+bear shorter block
+
+Unknown Speaker  12:31
+hits it expansion, price swing. We're looking for the fair value gap. Then that's the protocol. So we're not forcing a perception of, okay, I want to look for every potential fair value gap, and I'm going to trade it. No, you do not want to do that. And if you've tried doing it recently, since you've learned about fair value gaps, you've probably encountered that conundrum. So some of the algorithmic theory that we'll cover in 2020. Are things like this, where certain things have to happen in a series of or a specific order, then an outcome should be reasonably expected. Okay, so it helps you have more prognostication. It gives you perception. It gives you depth of understanding about what you're seeing in terms of price action at the moment, and not just guessing, because there is a logical theory behind why and where price reacts and trades from. This actually has another example here that I didn't have, but as I'm talking to you, I'm looking at it right now. I went right to it. We have the last two up close candles here. Price trades down away and comes right back up into the bearish order block. Then we have what? Then we have a an expansion swing. Fair Value. Got
+
+Unknown Speaker  13:52
+right there. There's your fill.
+
+Unknown Speaker  13:56
+Think above this range here the shaded area, 20 pips from here to here. There's
+
+Unknown Speaker  14:01
+20 pips. Okay,
+
+Unknown Speaker  14:03
+it's right there. I didn't include it because I wasn't looking for that one in the same day. But same day, it gives it to you again. Same pattern, same concept. You look at an order block, or you can wait and catch it after. In other words, you're not always going to need to anticipate these setups. Many times you're going to catch it after it does this, where it starts to run. This is the reason why I say we don't chase price. We do not do it because there's going to be a procedure that will allow you to get into the marketplace at a fair value hence, fair value gap, and that's what's happening here. Now
+
+Unknown Speaker  14:43
+how far into the fair value gap
+
+Unknown Speaker  14:45
+it goes is going to be dependent on your broker, and that's the reason why this pattern is set to trading at the low of the fair value gap for shorts and at the high for longs. So. Okay, because every spread is going to be different. Every broker is going to be slightly different. Some brokers may come all the way up and fill in this gap. Some of them may go up to consequent encroachment. Some may just tap where the gap is. Well, in this case, a fair value gap that's bearish. It would be the low the gap is what you're looking for, for your entry. That may be all it does, and it never fills that gap. So that's the reason why I created these models in the way I have, because it's meant for you to get a fill with your demo, so that way you can build experience and not miss a lot of the price swings whenever we're trading fair value gaps we allocate the underlying risk that would be associated with the gap filling. Okay? So our, our, our stop would be above here, but we are allowing, with money management to endure, if you will, any closure of that gap. So that's going to be factored in. Granted, that's a default when you're using the stop up here, but it's not the same thing. From mentally seeing it happen when you're in the trade. You get short here, but it comes up and fills the gap. You're going to be afraid. You're going to feel fearful. That is going to keep on running. You just got to stick to the protocol and trust that the stops going to do its job. And the gap may just close and that's all there is, or it may go to console encroachment, and that's all there
+
+Unknown Speaker  16:32
+is. Okay, our last example. This is Cable.
+
+Unknown Speaker  16:36
+We have the last up close candle, bearish order block. We have price create an impulse price swing. Price comes back trades into the order block here. Now we want to see what we want to see the expansion price swing here. The impulse price swing is the initial displacement, the retracement is the retest of the order block, then the expansion move where price really starts to get accelerated. This is where we do not chase it. We just simply wait for the fair value got the form.
+
+Unknown Speaker  17:10
+We have a fair value gap right here,
+
+Unknown Speaker  17:13
+right here, okay? And with that fair value gap, we wait for price to come back up into this candles high, which is the fair value gaps. Low your short entry is there, and 20 pips is just the shaded area, and it does a whole lot more obviously here. When we look at this model, it's one thing to say, Okay, there's a fair value gap. Here's an order block. Okay, I want you to go back and look at examples of every potential pair that you are considering in your career right now, you may have just a few, because I've told you so, but eventually, some of you are going to get really comfortable with looking through a larger portfolio and other asset classes, and you'll start to see this Pattern form on higher time frames. And this could be your bread and butter setup for like, a 15 minute time frame and doing intraday swings. It's not limited to a five minute chart. Remember, price is fractal. It allows you to do it in every time frame. This pattern still works on daily charts too. So if you're a position trader or a long term swing trader, it exists there as well. Okay, so don't think that I'm just giving you a another day trader or another scalping technique, and I can't ever use that. Michael, why you wasting my time at this every one of these models are scalable. You can expand them or reduce them to lower time frames down to a one minute chart. It's completely up to you. But the theory behind it and the narrative that's used is the same, okay. Now, in closing, some of the things that make these setups better or higher probability is obviously within a kill zone, within institutional order flow that's directionally derived. In other words, what is the directional bias in institutional order, phone a daily chart if you're trading with that direction and inside of a kill zone, and this pattern forms. Man, is it a loaded deal. It's just one of those easy, low hanging fruit setups. It's a very, very easy model to find a setup with. And it's one of those models that are very forgiving, because some of you are complaining that, and I'm not saying it's a bad thing. It's normal for you to say, I can't see this real time. Well, this is one of those very forgiving models where it kind of like acts like a crutch, okay? Or training wheels. There is an order block there. You may have missed it, and it retrades Back to the order block, and it starts to move away from the order block, and
+
+Unknown Speaker  19:41
+you feel like, oh, man, I
+
+Unknown Speaker  19:42
+want to chase it. Don't wait for the fair value gap. When the fair value gap gets filled or trades to there's your signal, that's your entry technique, your pattern, and then trade it. Take 20 pips out. Now, how would you use this with a larger uh. Price action model or a larger time frame model, you just don't look for that 20 pips. You just look for simple opposing PD arrays. That means, if you're bearish, you're gonna be looking for the very next discount array that will allow you or facilitate a healthy profit margin. What is that? Well, I don't know what your stops going to be. They're all going to be different. Obviously, you can see every one of these setups here has a different scale in terms of PIP per stop loss. So if your model is going to force you to be a five to one setup trader, then obviously, you know you want to consider that and where your scalings are going to be. That's going to obviously skew the five to one modeling or gearing that you're you're trying to employ, but you always want to find some way to create some first level of scaling. This model is a one shot entry. Give me 20 pips and leave a very, very small portion on. That's how I'm presenting it here. So if you were scaling, say, say, You did one standard lot in the form of 10 minis, you could take eight of those minis off at 20 pips. Whenever you get first profit in the scalping model, leave two minis on to see if you can get anything else additional price movement for the next PD array, whether it be, you know, premium array when you're going long or discount array when you're going short. Don't try to make more of this model than I just told you. It's very, very simple. It's very easy, and like I said, it's very forgiving, because it allows you to you miss the boat, okay, on the ideal entry, because the ideal entry will be selling up here, okay? Or selling up here on the first fair value gap, right in here. So that fair value got gets closed, you can sell short, but then you have to encounter all this consolidation. Take it to the bare shorter block retest. There's a short, optimal trade entry, price expansion, beautiful, symmetrical price swing, then another retrace back into now the fair value gap. Price runs again, standard blow. How many pips below that? Do all your projections? 1015, you know, you know the model. And you can get the low here. So you can take 20 off, 20 pips off here, with eight of the 10 minis on a one standard lot gearing, but two minis would be on board to capture all the remaining portion here. So you can, you can expand this model also to use as entering a larger term price move. You can actually use this to use additional entries technique. In other words, if you have a larger price point, say, say, for whatever reason, maybe you were lucky enough to get short up here, you can use this model to add to an existing position. Okay, so don't think that it's limited to a scalping model. It's your there's so many ways you can use these models, and they'll dovetail once you get to know what, what all of them can do over time, and when you can plug and play certain ones. Obviously this pattern here is very, very specific. It requires you to do certain things in terms of waiting, and the price has to prove itself to you. And a lot of you may really resonate with this one, because it's a very easy model, very, very easy. It's highly visual, and it's principle based, and even in its core, bare bones, you know, just the skeleton with no more flesh added to it, like we'll do in 2020 we start going back through these again and creating more of a trading plan type thing,
+
+Unknown Speaker  23:50
+whereas, right now, I'm
+
+Unknown Speaker  23:51
+just giving you an idea. Okay, it's a model to discern where you are in one of these models, and you can build on it, flush it out by itself. I've given you enough to be a trading plan. Everything I just explained to you in concert with what I've taught you about money management and take profits and how to work within the pdra matrix, it's you have. You have the entire trading plan right there. The only thing I haven't done is go by step by step using the criteria that creates a trading plan. I'm just having a conversation with you like I'm assuming, because you have experience with me now, and you have experience in the market, I can say what I've said to you, and you can take that information, and it's okay. I know exactly what he means by all that, and I'm going to formulate a trading plan. Don't be discouraged if you don't feel that way, that's okay, because that's what the next round of going through these price action models is going to do. We're actually going to sit down and put detail behind everything. What is it we're supposed to be doing with all these individual models? Once that's done and you go back through them all, collect. Actively. At the end of next year, you'll feel much more confident about your understanding about price action as a whole, and this is just going to be one small little facet in the greater whole of your understanding as it comes to price action. So hopefully you found this insightful until I'll talk to you next time. Wish you good luck and good trading. You.
+
+
+Transcribed by https://otter.ai

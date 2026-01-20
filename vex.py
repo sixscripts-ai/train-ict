@@ -749,6 +749,213 @@ def cmd_db(args):
         traceback.print_exc()
 
 
+def cmd_kb(args):
+    """Knowledge base search and retrieval."""
+    try:
+        from ict_agent.knowledge import KnowledgeBaseSearch
+        
+        kb = KnowledgeBaseSearch()
+        
+        if args.action == 'search':
+            if not args.query:
+                print("\n  ❌ Please provide a search query")
+                print("  Usage: vex.py kb search <query>")
+                return
+            
+            results = kb.search(args.query, max_results=8)
+            print(kb.format_search_results(results))
+            
+        elif args.action == 'model':
+            if not args.query:
+                # List all models
+                models = kb.list_models()
+                print(f"\n{'═' * 60}")
+                print(f"  ICT MODELS ({len(models)})")
+                print(f"{'═' * 60}")
+                for m in models:
+                    print(f"  📊 {m['name']}")
+                    print(f"     File: {m['file']}")
+                print()
+            else:
+                model = kb.get_model(args.query)
+                if model:
+                    print(f"\n{'═' * 60}")
+                    print(f"  MODEL: {model['name']}")
+                    print(f"{'═' * 60}")
+                    print(model['content'][:2000])
+                    if len(model['content']) > 2000:
+                        print(f"\n  ... ({len(model['content'])} chars total)")
+                        print(f"  Full file: {model['path']}")
+                else:
+                    print(f"\n  ❌ Model '{args.query}' not found")
+                    print("  Run: vex.py kb model  (to list all)")
+            
+        elif args.action == 'concept':
+            if not args.query:
+                # List all concepts
+                concepts = kb.list_concepts()
+                print(f"\n{'═' * 60}")
+                print(f"  ICT CONCEPTS ({len(concepts)})")
+                print(f"{'═' * 60}")
+                for c in concepts:
+                    print(f"  💡 {c['name']}")
+                    print(f"     File: {c['file']}")
+                print()
+            else:
+                concept = kb.get_concept(args.query)
+                if concept:
+                    print(f"\n{'═' * 60}")
+                    print(f"  CONCEPT: {concept['name']}")
+                    print(f"{'═' * 60}")
+                    print(concept['content'][:2000])
+                    if len(concept['content']) > 2000:
+                        print(f"\n  ... ({len(concept['content'])} chars total)")
+                        print(f"  Full file: {concept['path']}")
+                else:
+                    print(f"\n  ❌ Concept '{args.query}' not found")
+                    print("  Run: vex.py kb concept  (to list all)")
+            
+        elif args.action == 'term':
+            if not args.query:
+                print("\n  ❌ Please provide a term to look up")
+                print("  Usage: vex.py kb term <term>")
+                return
+            
+            definition = kb.lookup_term(args.query)
+            if definition:
+                print(f"\n  📖 {args.query.upper()}")
+                print(f"  {definition}")
+            else:
+                # Try searching for it
+                results = kb.search(args.query, max_results=3)
+                if results:
+                    print(f"\n  Term not found in glossary, but related content:")
+                    print(kb.format_search_results(results))
+                else:
+                    print(f"\n  ❌ Term '{args.query}' not found")
+            
+        elif args.action == 'stats':
+            stats = kb.get_stats()
+            print(f"\n{'═' * 60}")
+            print(f"  KNOWLEDGE BASE STATS")
+            print(f"{'═' * 60}")
+            print(f"\n  📁 Total Files: {stats['total_files']}")
+            print(f"  📖 Terms Defined: {stats['total_terms']}")
+            print(f"  💾 Size: {stats['total_size_kb']} KB")
+            print(f"\n  By Category:")
+            for cat, count in stats['by_category'].items():
+                print(f"    • {cat}: {count} files")
+            print()
+        
+        else:
+            # Default: show help
+            print(f"\n{'═' * 60}")
+            print(f"  VEX KNOWLEDGE BASE")
+            print(f"{'═' * 60}")
+            print("\n  Commands:")
+            print("    vex.py kb search <query>   Search knowledge base")
+            print("    vex.py kb model [name]     Get/list ICT models")
+            print("    vex.py kb concept [name]   Get/list ICT concepts")
+            print("    vex.py kb term <term>      Look up terminology")
+            print("    vex.py kb stats            Show KB statistics")
+            print()
+            
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+
+
+def cmd_osok(args):
+    """One Shot One Kill weekly analysis."""
+    try:
+        from ict_agent.models.model_9_osok import Model9Detector, WeeklyBias
+        from ict_agent.data.oanda_fetcher import OANDAFetcher
+        
+        pair = args.pair.upper().replace('/', '_')
+        if '_' not in pair:
+            pair = f"{pair[:3]}_{pair[3:]}"
+        
+        fetcher = OANDAFetcher()
+        detector = Model9Detector()
+        
+        print(f"\n  📊 Fetching data for {pair}...")
+        
+        # Fetch weekly and daily data
+        weekly_df = fetcher.fetch_latest(pair, 'W', 10)
+        daily_df = fetcher.fetch_latest(pair, 'D', 30)
+        
+        # Convert to dict format
+        weekly_data = weekly_df.reset_index().to_dict('records')
+        daily_data = daily_df.reset_index().to_dict('records')
+        
+        # Analyze weekly bias
+        bias = detector.analyze_weekly_bias([], weekly_data, daily_data)
+        
+        # Create setup
+        from datetime import datetime
+        week_start = datetime.now().strftime('%Y-%m-%d')
+        setup = detector.create_weekly_setup(week_start, bias, daily_data, weekly_data)
+        
+        # Print analysis
+        print(detector.format_weekly_analysis(setup))
+        
+        # If current price available, show trade parameters
+        current_price = daily_df['close'].iloc[-1]
+        if current_price:
+            print(f"\n  📍 Current Price: {current_price:.5f}")
+            
+            params = detector.calculate_trade_parameters(current_price, setup)
+            if params:
+                print(f"\n  📋 TRADE PARAMETERS (if entering now):")
+                print(f"     Direction: {params['direction']}")
+                print(f"     Entry: {params['entry']:.5f}")
+                print(f"     Stop: {params['stop']:.5f}")
+                print(f"     Target: {params['target']:.5f}")
+                print(f"     Risk: {params['risk_pips']} pips")
+                print(f"     Reward: {params['reward_pips']} pips")
+                print(f"     R:R: {params['rr_ratio']}:1")
+        print()
+        
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+
+
+def cmd_score(args):
+    """ICT 10-point setup scoring."""
+    try:
+        from ict_agent.grader import SetupGrader
+        
+        grader = SetupGrader()
+        pair = args.pair.upper()
+        direction = args.direction.upper()
+        
+        if args.interactive:
+            # Interactive mode
+            result = grader.interactive_ict_10point(pair, direction)
+        else:
+            # Quick mode with args
+            result = grader.grade_ict_10point(
+                pair=pair,
+                direction=direction,
+                htf_alignment=args.htf or 0,
+                model_clarity=args.model or 0,
+                session_timing=args.timing or 0,
+                confluence_count=args.confluence or 0,
+                risk_reward=args.rr or 0,
+                model_name=args.model_name,
+                notes=args.notes
+            )
+            print("\n" + grader.format_ict_10point_report(result))
+        
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+
+
 def cmd_analyze(args):
     """AI-powered chart analysis."""
     try:
@@ -940,6 +1147,33 @@ Commands:
     db_parser.add_argument('query', nargs='?', help='Concept/model name or search query')
     db_parser.set_defaults(func=cmd_db)
     
+    # Knowledge Base command
+    kb_parser = subparsers.add_parser('kb', help='Knowledge base - search ICT content')
+    kb_parser.add_argument('action', nargs='?', default='stats',
+                          choices=['search', 'model', 'concept', 'term', 'stats'],
+                          help='KB action')
+    kb_parser.add_argument('query', nargs='?', help='Search query or name')
+    kb_parser.set_defaults(func=cmd_kb)
+    
+    # OSOK (One Shot One Kill) command
+    osok_parser = subparsers.add_parser('osok', help='Model 9 - One Shot One Kill weekly analysis')
+    osok_parser.add_argument('pair', help='Currency pair (e.g., EURUSD)')
+    osok_parser.set_defaults(func=cmd_osok)
+    
+    # Score (10-point ICT scoring) command
+    score_parser = subparsers.add_parser('score', help='ICT 10-point setup scoring')
+    score_parser.add_argument('pair', help='Currency pair')
+    score_parser.add_argument('direction', help='LONG or SHORT')
+    score_parser.add_argument('-i', '--interactive', action='store_true', help='Interactive scoring')
+    score_parser.add_argument('--htf', type=int, help='HTF alignment score (0-3)')
+    score_parser.add_argument('--model', type=int, help='Model clarity score (0-2)')
+    score_parser.add_argument('--timing', type=int, help='Session timing score (0-2)')
+    score_parser.add_argument('--confluence', type=int, help='Confluence count score (0-2)')
+    score_parser.add_argument('--rr', type=int, help='Risk:Reward score (0-1)')
+    score_parser.add_argument('--model-name', help='Name of ICT model being traded')
+    score_parser.add_argument('--notes', help='Trade notes')
+    score_parser.set_defaults(func=cmd_score)
+    
     args = parser.parse_args()
     
     print_header()
@@ -956,10 +1190,14 @@ Commands:
         print("  python vex.py analyze                # AI chart analysis (latest screenshot)")
         print("  python vex.py analyze chart.png      # AI analyze specific chart")
         print("  python vex.py cbdr EURUSD            # CBDR & SD levels")
-        print("  python vex.py grade EURUSD LONG      # Grade a setup")
+        print("  python vex.py osok EURUSD            # Model 9 One Shot One Kill analysis")
+        print("  python vex.py score EURUSD LONG -i   # ICT 10-point scoring (interactive)")
+        print("  python vex.py grade EURUSD LONG      # Grade a setup (template mode)")
         print("  python vex.py journal new            # New trade journal")
         print("  python vex.py dashboard open         # Performance dashboard")
-        print("  python vex.py db concept FVG         # Look up ICT concept")
+        print("  python vex.py kb search FVG          # Search knowledge base")
+        print("  python vex.py kb model model_9       # Get Model 9 details")
+        print("  python vex.py kb concept cbdr        # Get CBDR concept details")
         print("  python vex.py db sync                # Sync trades to cloud")
         print("  python vex.py db trades              # View cloud trades")
         print()

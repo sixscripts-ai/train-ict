@@ -44,21 +44,87 @@ class SetupGrade:
 
 class SetupGrader:
     """
-    Grades trading setups against Ashton's template trade criteria.
+    Grades trading setups against ICT criteria with two scoring modes:
     
-    Template Trade Criteria (from Jan 16, 2026 FTMO-passing trade):
-    1. Prior displacement establishes bias
-    2. 4H FVG as primary entry zone
-    3. 15M OB + 15M FVG confluence
-    4. CBDR setup present (<30 pips)
-    5. Asian range liquidity swept
-    6. Clear liquidity target
-    7. Stop accounts for deeper retest
-    8. TP at CBDR extension
+    1. ICT 10-Point System (from knowledge base):
+       - HTF Alignment: 3 points
+       - Model Clarity: 2 points  
+       - Session/Timing: 2 points
+       - Confluence Count: 2 points
+       - Risk:Reward: 1 point
+    
+    2. Template Trade System (Ashton's A+ setup from Jan 16):
+       - Displacement, 4H FVG, 15M OB+FVG, CBDR, Liquidity, etc.
     """
     
-    # Template trade criteria with weights
-    CRITERIA = {
+    # ═══════════════════════════════════════════════════════════════
+    # ICT 10-POINT SCORING SYSTEM (from knowledge_base/pre_trade_scoring.md)
+    # ═══════════════════════════════════════════════════════════════
+    ICT_CRITERIA = {
+        "htf_alignment": {
+            "name": "HTF Alignment",
+            "description": "Higher timeframe bias alignment",
+            "max_points": 3,
+            "scoring": {
+                3: "Daily bias clear + Weekly structure supports + Monthly draw visible",
+                2: "Daily bias clear + One higher TF supports",
+                1: "Daily bias established",
+                0: "No clear HTF bias"
+            }
+        },
+        "model_clarity": {
+            "name": "Model Clarity", 
+            "description": "Trading exact ICT model",
+            "max_points": 2,
+            "scoring": {
+                2: "Trading exact ICT model (Buy/Sell Model, Silver Bullet, Judas, OSOK, etc.)",
+                1: "Partial model elements present",
+                0: "No clear model"
+            }
+        },
+        "session_timing": {
+            "name": "Session/Timing",
+            "description": "Killzone and day of week",
+            "max_points": 2,
+            "scoring": {
+                2: "Inside prime killzone (London Open, NY AM) + favorable day (Tue-Thu)",
+                1: "Inside any killzone OR favorable day",
+                0: "Outside killzone on unfavorable day"
+            }
+        },
+        "confluence_count": {
+            "name": "Confluence Count",
+            "description": "Number of confirming factors",
+            "max_points": 2,
+            "scoring": {
+                2: "5+ confluences (FVG, OB, liquidity sweep, displacement, etc.)",
+                1: "3-4 confluences",
+                0: "Less than 3 confluences"
+            }
+        },
+        "risk_reward": {
+            "name": "Risk:Reward",
+            "description": "R:R ratio quality",
+            "max_points": 1,
+            "scoring": {
+                1: "3:1 or better with clear target",
+                0: "Less than 3:1 or unclear target"
+            }
+        }
+    }
+    
+    # Valid ICT Models for model_clarity scoring
+    ICT_MODELS = [
+        "buy_model", "sell_model", "silver_bullet", "judas_swing",
+        "one_shot_one_kill", "osok", "model_9", "model_12", "ob_fvg",
+        "turtle_soup", "ote", "power_of_three", "po3", "asian_range",
+        "london_open", "ny_am", "cbdr", "market_maker"
+    ]
+    
+    # ═══════════════════════════════════════════════════════════════
+    # TEMPLATE TRADE CRITERIA (Ashton's A+ setup)
+    # ═══════════════════════════════════════════════════════════════
+    TEMPLATE_CRITERIA = {
         "displacement": {
             "name": "Prior Displacement",
             "description": "Clear displacement establishing directional bias",
@@ -120,6 +186,9 @@ class SetupGrader:
             "required": True
         }
     }
+    
+    # Backwards compatibility
+    CRITERIA = TEMPLATE_CRITERIA
     
     GRADE_THRESHOLDS = {
         "A+": 9.0,
@@ -247,6 +316,227 @@ class SetupGrader:
             similar_trades=similar_trades,
             warnings=warnings
         )
+    
+    def grade_ict_10point(
+        self,
+        pair: str,
+        direction: str,
+        htf_alignment: int,
+        model_clarity: int,
+        session_timing: int,
+        confluence_count: int,
+        risk_reward: int,
+        model_name: Optional[str] = None,
+        confluences: Optional[List[str]] = None,
+        notes: Optional[str] = None
+    ) -> Dict:
+        """
+        Grade setup using ICT 10-point scoring system.
+        
+        Args:
+            pair: Trading pair
+            direction: LONG or SHORT
+            htf_alignment: 0-3 points (HTF bias alignment)
+            model_clarity: 0-2 points (trading exact ICT model)
+            session_timing: 0-2 points (killzone + day of week)
+            confluence_count: 0-2 points (number of confirmations)
+            risk_reward: 0-1 points (R:R quality)
+            model_name: Optional name of ICT model being traded
+            confluences: Optional list of confluence factors
+            notes: Optional trade notes
+        
+        Returns:
+            Dict with score, grade, action, and breakdown
+        """
+        # Validate inputs
+        htf_alignment = max(0, min(3, htf_alignment))
+        model_clarity = max(0, min(2, model_clarity))
+        session_timing = max(0, min(2, session_timing))
+        confluence_count = max(0, min(2, confluence_count))
+        risk_reward = max(0, min(1, risk_reward))
+        
+        total_score = htf_alignment + model_clarity + session_timing + confluence_count + risk_reward
+        
+        # Determine action
+        if total_score >= 9:
+            grade = "A+"
+            action = "FULL SIZE, high confidence"
+            emoji = "🟢"
+        elif total_score >= 7:
+            grade = "A" if total_score >= 8 else "B+"
+            action = "STANDARD SIZE"
+            emoji = "🟢" if total_score >= 8 else "🟡"
+        elif total_score >= 5:
+            grade = "B" if total_score >= 6 else "C"
+            action = "REDUCE SIZE or pass"
+            emoji = "🟡"
+        else:
+            grade = "D" if total_score >= 4 else "F"
+            action = "DO NOT TRADE"
+            emoji = "🔴"
+        
+        result = {
+            "pair": pair,
+            "direction": direction,
+            "timestamp": datetime.now().isoformat(),
+            "scoring_system": "ICT_10_POINT",
+            "total_score": total_score,
+            "max_score": 10,
+            "grade": grade,
+            "action": action,
+            "emoji": emoji,
+            "breakdown": {
+                "htf_alignment": {
+                    "score": htf_alignment,
+                    "max": 3,
+                    "description": self.ICT_CRITERIA["htf_alignment"]["scoring"].get(htf_alignment, "")
+                },
+                "model_clarity": {
+                    "score": model_clarity,
+                    "max": 2,
+                    "description": self.ICT_CRITERIA["model_clarity"]["scoring"].get(model_clarity, ""),
+                    "model_name": model_name
+                },
+                "session_timing": {
+                    "score": session_timing,
+                    "max": 2,
+                    "description": self.ICT_CRITERIA["session_timing"]["scoring"].get(session_timing, "")
+                },
+                "confluence_count": {
+                    "score": confluence_count,
+                    "max": 2,
+                    "description": self.ICT_CRITERIA["confluence_count"]["scoring"].get(confluence_count, ""),
+                    "confluences": confluences or []
+                },
+                "risk_reward": {
+                    "score": risk_reward,
+                    "max": 1,
+                    "description": self.ICT_CRITERIA["risk_reward"]["scoring"].get(risk_reward, "")
+                }
+            },
+            "notes": notes
+        }
+        
+        return result
+    
+    def format_ict_10point_report(self, result: Dict) -> str:
+        """Format ICT 10-point grade as readable report"""
+        breakdown = result["breakdown"]
+        
+        lines = [
+            f"═══════════════════════════════════════",
+            f"  ICT 10-POINT SCORE: {result['pair']} {result['direction']}",
+            f"═══════════════════════════════════════",
+            f"",
+            f"{result['emoji']} TOTAL: {result['total_score']}/10 ({result['grade']})",
+            f"📋 ACTION: {result['action']}",
+            f"",
+            f"─── BREAKDOWN ───",
+            f"",
+            f"HTF Alignment:    {breakdown['htf_alignment']['score']}/3",
+            f"  → {breakdown['htf_alignment']['description']}",
+            f"",
+            f"Model Clarity:    {breakdown['model_clarity']['score']}/2",
+            f"  → {breakdown['model_clarity']['description']}",
+        ]
+        
+        if breakdown['model_clarity'].get('model_name'):
+            lines.append(f"  → Model: {breakdown['model_clarity']['model_name']}")
+        
+        lines.extend([
+            f"",
+            f"Session/Timing:   {breakdown['session_timing']['score']}/2",
+            f"  → {breakdown['session_timing']['description']}",
+            f"",
+            f"Confluence Count: {breakdown['confluence_count']['score']}/2",
+            f"  → {breakdown['confluence_count']['description']}",
+        ])
+        
+        if breakdown['confluence_count'].get('confluences'):
+            for conf in breakdown['confluence_count']['confluences']:
+                lines.append(f"    • {conf}")
+        
+        lines.extend([
+            f"",
+            f"Risk:Reward:      {breakdown['risk_reward']['score']}/1",
+            f"  → {breakdown['risk_reward']['description']}",
+        ])
+        
+        if result.get('notes'):
+            lines.extend([
+                f"",
+                f"─── NOTES ───",
+                result['notes']
+            ])
+        
+        return "\n".join(lines)
+    
+    def interactive_ict_10point(self, pair: str, direction: str) -> Dict:
+        """
+        Interactive 10-point grading - prompts for each criterion.
+        For CLI use.
+        """
+        print(f"\n{'='*60}")
+        print(f"  ICT 10-POINT SCORER: {pair} {direction}")
+        print(f"{'='*60}\n")
+        
+        # HTF Alignment (0-3)
+        print("📊 HTF ALIGNMENT (0-3 points)")
+        print("  3 = Daily + Weekly + Monthly all aligned")
+        print("  2 = Daily + one higher TF aligned")
+        print("  1 = Daily bias clear")
+        print("  0 = No clear HTF bias")
+        htf = int(input("  Score (0-3): ").strip() or "0")
+        
+        # Model Clarity (0-2)
+        print("\n🎯 MODEL CLARITY (0-2 points)")
+        print("  2 = Trading exact ICT model")
+        print("  1 = Partial model elements")
+        print("  0 = No clear model")
+        model = int(input("  Score (0-2): ").strip() or "0")
+        model_name = input("  Model name (optional): ").strip() or None
+        
+        # Session/Timing (0-2)
+        print("\n⏰ SESSION/TIMING (0-2 points)")
+        print("  2 = Prime killzone + Tue-Thu")
+        print("  1 = Any killzone OR favorable day")
+        print("  0 = Outside killzone, bad day")
+        timing = int(input("  Score (0-2): ").strip() or "0")
+        
+        # Confluence Count (0-2)
+        print("\n🔗 CONFLUENCE COUNT (0-2 points)")
+        print("  2 = 5+ confluences")
+        print("  1 = 3-4 confluences")
+        print("  0 = Less than 3")
+        conf = int(input("  Score (0-2): ").strip() or "0")
+        confluences_str = input("  List confluences (comma-separated): ").strip()
+        confluences = [c.strip() for c in confluences_str.split(",")] if confluences_str else []
+        
+        # Risk:Reward (0-1)
+        print("\n📈 RISK:REWARD (0-1 points)")
+        print("  1 = 3:1 or better with clear target")
+        print("  0 = Less than 3:1 or unclear")
+        rr = int(input("  Score (0-1): ").strip() or "0")
+        
+        # Notes
+        notes = input("\n📝 Trade notes (optional): ").strip() or None
+        
+        # Grade it
+        result = self.grade_ict_10point(
+            pair=pair,
+            direction=direction,
+            htf_alignment=htf,
+            model_clarity=model,
+            session_timing=timing,
+            confluence_count=conf,
+            risk_reward=rr,
+            model_name=model_name,
+            confluences=confluences,
+            notes=notes
+        )
+        
+        print("\n" + self.format_ict_10point_report(result))
+        return result
     
     def _find_similar_trades(
         self,

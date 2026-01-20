@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashton's Trading Journal</title>
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --bg-card: #16213e;
+            --accent: #e94560;
+            --accent-green: #00d26a;
+            --accent-red: #ff6b6b;
+            --accent-yellow: #ffd93d;
+            --text: #eaeaea;
+            --text-muted: #a0a0a0;
+            --border: #0f3460;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            color: var(--text);
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin: 20px 0 10px 0;
+            color: var(--accent-yellow);
+        }
+
+        .header {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--accent);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin: 5px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .stat-card.positive .value {
+            color: var(--accent-green);
+        }
+
+        .stat-card.negative .value {
+            color: var(--accent-red);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: var(--border);
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .win {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .loss {
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+
+        .live {
+            color: var(--accent-yellow);
+            font-weight: bold;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .badge-win {
+            background: rgba(0, 210, 106, 0.2);
+            color: var(--accent-green);
+        }
+
+        .badge-loss {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--accent-red);
+        }
+
+        .badge-live {
+            background: rgba(255, 217, 61, 0.2);
+            color: var(--accent-yellow);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .monthly-section {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .best-trade {
+            background: linear-gradient(135deg, var(--bg-card), rgba(233, 69, 96, 0.2));
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid var(--accent-green);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👤 Ashton's Trading Journal</h1>
+            <p><strong>Account:</strong> FTMO (Manual trading via MT5 mobile)</p>
+            <p><strong>Risk:</strong> 2.5% per trade</p>
+            <p><strong>Broker:</strong> FTMO / OANDA</p>
+        </div>
+
+        <h2>📊 Statistics Summary</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="value">3</div>
+                <div class="label">Total Trades</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">1</div>
+                <div class="label">Wins</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">1</div>
+                <div class="label">Losses</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">50%</div>
+                <div class="label">Win Rate</div>
+            </div>
+            <div class="stat-card positive">
+                <div class="value">+5.2R</div>
+                <div class="label">Total R Captured</div>
+            </div>
+            <div class="stat-card positive">
+                <div class="value">+$300</div>
+                <div class="label">Total P/L</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">EURUSD</div>
+                <div class="label">Best Pair</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">NY AM</div>
+                <div class="label">Best Session</div>
+            </div>
+        </div>
+
+        <h2>📝 Trade Log</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Pair</th>
+                    <th>Direction</th>
+                    <th>Model</th>
+                    <th>Result</th>
+                    <th>R</th>
+                    <th>P/L</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>2026-01-15</td>
+                    <td>EURUSD</td>
+                    <td>🔴 SHORT</td>
+                    <td>Weekly Sell Model</td>
+                    <td><span class="badge badge-win">✅ WIN</span></td>
+                    <td class="win">+11.3R</td>
+                    <td class="win">+$534</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>2026-01-15</td>
+                    <td>GBPUSD</td>
+                    <td>🔴 SHORT</td>
+                    <td>LTF Breakdown</td>
+                    <td><span class="badge badge-loss">❌ LOSS</span></td>
+                    <td class="loss">-0.85R</td>
+                    <td class="loss">-$234</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>2026-01-15</td>
+                    <td>EURUSD</td>
+                    <td>🔴 SHORT</td>
+                    <td>VEX Analysis</td>
+                    <td><span class="badge badge-live">🟢 LIVE</span></td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>📅 Monthly Breakdown</h2>
+        <div class="monthly-section">
+            <h3>January 2026</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="value">3</div>
+                    <div class="label">Trades</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">1</div>
+                    <div class="label">Wins</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">1</div>
+                    <div class="label">Losses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value">50%</div>
+                    <div class="label">Win Rate</div>
+                </div>
+            </div>
+            <div class="best-trade">
+                🔥 <strong>Best Trade:</strong> EURUSD SHORT +$534 (+11.3R)
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>VEX Trading System • ICT Methodology • Updated: January 15, 2026</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,432 @@
+# ICT Terminology Dictionary
+# Comprehensive glossary of all ICT (Inner Circle Trader) terms
+# Used by the AI agent for consistent definitions and pattern detection
+
+version: "1.0"
+last_updated: "2026-01-15"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CORE CONCEPTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+liquidity:
+  full_name: "Liquidity"
+  definition: "Resting orders in the market, primarily stop-losses, that institutional participants target before moving price"
+  types:
+    - "SSL (Sellside Liquidity)"
+    - "BSL (Buyside Liquidity)"
+  key_insight: "Smart money needs liquidity to fill large orders - they CREATE moves to access it"
+  related: ["stop_hunt", "sweep", "raid"]
+
+SSL:
+  full_name: "Sellside Liquidity"
+  definition: "Buy stop orders resting ABOVE swing highs, placed by shorts as stop-losses"
+  location: "Above swing highs, equal highs, previous highs"
+  who_placed_it: "Retail traders who sold and placed stops above resistance"
+  what_happens: "When price rises to sweep SSL, these buy stops trigger, providing liquidity for institutions to sell"
+  trading_implication: "After SSL is swept, expect price to reverse DOWN"
+  related: ["swing_high", "equal_highs", "turtle_soup_sell"]
+
+BSL:
+  full_name: "Buyside Liquidity"  
+  definition: "Sell stop orders resting BELOW swing lows, placed by longs as stop-losses"
+  location: "Below swing lows, equal lows, previous lows"
+  who_placed_it: "Retail traders who bought and placed stops below support"
+  what_happens: "When price drops to sweep BSL, these sell stops trigger, providing liquidity for institutions to buy"
+  trading_implication: "After BSL is swept, expect price to reverse UP"
+  related: ["swing_low", "equal_lows", "turtle_soup_buy"]
+
+smart_money:
+  full_name: "Smart Money"
+  aliases: ["institutions", "market makers", "banks", "composite man"]
+  definition: "Large institutional players who have the capital to move markets and access to information retail doesn't have"
+  behavior:
+    - "Accumulate positions during consolidation"
+    - "Engineer liquidity by moving price to stop clusters"
+    - "Distribute at premium (for longs) or discount (for shorts)"
+  key_insight: "Don't fight smart money - learn to identify their footprints and trade with them"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PRICE STRUCTURES
+# ═══════════════════════════════════════════════════════════════════════════════
+
+FVG:
+  full_name: "Fair Value Gap"
+  aliases: ["imbalance", "inefficiency", "void"]
+  definition: "A 3-candle pattern where aggressive buying/selling creates a gap in price"
+  detection:
+    bullish: "Candle 1 high < Candle 3 low (gap between them)"
+    bearish: "Candle 1 low > Candle 3 high (gap between them)"
+  trading_use:
+    - "Price tends to return to fill FVGs"
+    - "Entry point on retracement"
+    - "The midpoint (consequent encroachment) is key level"
+  key_terms:
+    CE: "Consequent Encroachment - the 50% midpoint of FVG"
+    IOFED: "Institutional Order Flow Entry Drill - entry at FVG"
+  related: ["order_block", "displacement"]
+
+order_block:
+  full_name: "Order Block"
+  aliases: ["OB", "mitigation block"]
+  definition: "The last opposing candle before a strong displacement move - where institutions placed orders"
+  types:
+    bullish_OB: "Last DOWN candle before strong UP move"
+    bearish_OB: "Last UP candle before strong DOWN move"
+  trading_use:
+    - "Entry point when price returns to mitigate the OB"
+    - "Stop-loss beyond the OB extreme"
+  key_insight: "OBs are where institutions left unfilled orders - price returns to fill them"
+  related: ["FVG", "breaker_block", "mitigation"]
+
+breaker_block:
+  full_name: "Breaker Block"
+  definition: "A failed order block that gets broken and then acts as support/resistance from the other side"
+  formation: "OB forms → price returns → OB breaks → now acts as opposite S/R"
+  trading_use: "Entry when price retests the broken OB from the other side"
+  related: ["order_block", "market_structure"]
+
+displacement:
+  full_name: "Displacement"
+  definition: "Aggressive, one-sided price movement with large candles showing institutional intent"
+  characteristics:
+    - "Large range candles"
+    - "Closes near high (bullish) or low (bearish)"
+    - "Often creates FVGs"
+    - "Usually follows liquidity sweep"
+  trading_use: "Confirms direction of smart money flow"
+  related: ["FVG", "order_block", "impulse"]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# MARKET STRUCTURE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+market_structure:
+  full_name: "Market Structure"
+  definition: "The sequence of swing highs and swing lows that define trend direction"
+  bullish_structure:
+    pattern: "Higher Highs (HH) and Higher Lows (HL)"
+    implication: "Uptrend - look for longs"
+  bearish_structure:
+    pattern: "Lower Highs (LH) and Lower Lows (LL)"
+    implication: "Downtrend - look for shorts"
+  key_insight: "Structure on HTF determines bias, structure on LTF determines entry"
+
+BOS:
+  full_name: "Break of Structure"
+  definition: "When price breaks a significant swing point, confirming trend continuation"
+  bullish_BOS: "Price breaks above previous swing high"
+  bearish_BOS: "Price breaks below previous swing low"
+  requirement: "Must absorb 'inducement' (minor liquidity) before the break"
+  related: ["market_structure", "MSS", "CHoCH"]
+
+MSS:
+  full_name: "Market Structure Shift"
+  aliases: ["shift", "structure shift"]
+  definition: "When price breaks structure in the OPPOSITE direction, signaling potential trend reversal"
+  bullish_MSS: "In downtrend, price breaks above a previous lower high"
+  bearish_MSS: "In uptrend, price breaks below a previous higher low"
+  key_difference_from_BOS: "MSS doesn't require inducement absorption - it's an early reversal signal"
+  trading_use: "Confirmation signal for entries after liquidity sweep"
+  related: ["BOS", "CHoCH", "turtle_soup"]
+
+CHoCH:
+  full_name: "Change of Character"
+  definition: "Similar to MSS - a shift in market behavior from bullish to bearish or vice versa"
+  usage: "Some traders use CHoCH and MSS interchangeably"
+  related: ["MSS", "BOS"]
+
+swing_points:
+  swing_high: 
+    definition: "A candle high with lower highs on both sides"
+    detection: "candle[i].high > candle[i-1].high AND candle[i].high > candle[i+1].high"
+  swing_low:
+    definition: "A candle low with higher lows on both sides"
+    detection: "candle[i].low < candle[i-1].low AND candle[i].low < candle[i+1].low"
+  related: ["liquidity", "SSL", "BSL"]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TIME-BASED CONCEPTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+killzones:
+  full_name: "Killzones"
+  definition: "Specific time windows during the trading day when institutional activity is highest"
+  zones:
+    asian:
+      time: "7:00 PM - 12:00 AM NY"
+      characteristics: "Low volatility, range building, liquidity accumulation"
+      trading_approach: "Generally avoid trading, use for range identification"
+    london:
+      time: "2:00 AM - 5:00 AM NY"
+      aliases: ["London Open", "LO"]
+      characteristics: "High volatility, often sweeps Asian range, directional bias established"
+      trading_approach: "Prime time for entries, watch for Judas swing"
+    new_york:
+      time: "7:00 AM - 10:00 AM NY"
+      aliases: ["New York Open", "NYO"]  
+      characteristics: "Highest volume, major moves, often continues or reverses London"
+      trading_approach: "Best entries, highest probability setups"
+    london_close:
+      time: "10:00 AM - 12:00 PM NY"
+      characteristics: "Profit-taking, reversals possible"
+      trading_approach: "Close positions, avoid new entries"
+  key_insight: "90% of daily range is made during killzones - trade ONLY during these times"
+
+CBDR:
+  full_name: "Central Bank Dealers Range"
+  time: "2:00 PM - 8:00 PM NY"
+  definition: "The price range during afternoon NY hours when central bank traders are less active"
+  ideal_range: "Less than 40 pips, preferably 20-30 pips"
+  usage:
+    - "Projects standard deviation levels for next day"
+    - "Tight CBDR = directional move likely"
+    - "Wide CBDR = consolidation likely"
+  related: ["asian_range", "standard_deviation"]
+
+asian_range:
+  full_name: "Asian Session Range"
+  time: "7:00 PM - 12:00 AM NY (approximately)"
+  definition: "The high and low formed during the Asian session"
+  characteristics:
+    tight: "Less than 20 pips - explosive move coming"
+    ideal: "20-30 pips - good for London sweep play"
+    wide: "Over 40 pips - consolidation likely"
+  trading_use:
+    - "London often sweeps Asian high or low (Judas swing)"
+    - "Projects targets via standard deviation"
+  related: ["CBDR", "judas_swing", "london_open"]
+
+macro_times:
+  full_name: "Macro Times"
+  definition: "Specific 20-minute windows within killzones when major moves often begin"
+  windows:
+    - "9:50 - 10:10 AM NY"
+    - "10:50 - 11:10 AM NY"  
+    - "1:50 - 2:10 PM NY"
+    - "2:50 - 3:10 PM NY"
+  usage: "Look for entries during macro times for higher probability"
+  related: ["killzones", "silver_bullet"]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PREMIUM / DISCOUNT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+premium_discount:
+  full_name: "Premium and Discount Arrays"
+  concept: "Price is either 'expensive' (premium) or 'cheap' (discount) relative to a range"
+  calculation:
+    range: "Any significant high to low (daily range, swing range, etc.)"
+    equilibrium: "50% of the range"
+    premium: "Above 50% - price is expensive"
+    discount: "Below 50% - price is cheap"
+  trading_rules:
+    - "BUY in discount zones"
+    - "SELL in premium zones"
+    - "Never buy in premium, never sell in discount"
+  fib_levels:
+    premium_zone: "50% to 100% (0.5 to 1.0)"
+    discount_zone: "0% to 50% (0.0 to 0.5)"
+    OTE: "62-79% retracement (Optimal Trade Entry)"
+  related: ["OTE", "fib_levels"]
+
+OTE:
+  full_name: "Optimal Trade Entry"
+  definition: "The 62-79% Fibonacci retracement zone - optimal entry area"
+  fib_levels: 
+    - "0.62 (62%)"
+    - "0.705 (70.5% - sweet spot)"
+    - "0.79 (79%)"
+  trading_use:
+    - "For longs: wait for price to retrace to OTE in discount"
+    - "For shorts: wait for price to retrace to OTE in premium"
+  related: ["premium_discount", "fib_levels"]
+
+PD_array:
+  full_name: "Premium/Discount Array"
+  definition: "A zone from higher timeframe analysis representing significant premium or discount area"
+  examples:
+    - "Daily order block"
+    - "Weekly FVG"
+    - "Monthly swing level"
+  usage: "Higher timeframe PD arrays are targets for lower timeframe entries"
+  related: ["premium_discount", "HTF", "LTF"]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TRADING MODELS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+MMBM:
+  full_name: "Market Maker Buy Model"
+  definition: "Complete institutional accumulation and reversal pattern for LONG trades"
+  phases:
+    1_consolidation: "Original range where smart money accumulates"
+    2_sellside_curve: "Engineered lower highs (-1, -2, -3) creating liquidity above"
+    3_pd_array: "Price reaches discount zone for reversal"
+    4_MSS: "Market Structure Shift confirms reversal"
+    5_smart_money_reversal: "Entry on FVG/OB, target original consolidation high"
+  visual: "Consolidation → Breakdown → Sweep lows → Reverse up → Target highs"
+  related: ["MMSM", "AMD", "turtle_soup"]
+
+MMSM:
+  full_name: "Market Maker Sell Model"
+  definition: "Complete institutional distribution and reversal pattern for SHORT trades"
+  phases:
+    1_consolidation: "Original range where smart money distributes"
+    2_buyside_curve: "Engineered higher lows (+1, +2, +3) creating liquidity below"
+    3_pd_array: "Price reaches premium zone for reversal"
+    4_MSS: "Market Structure Shift confirms reversal"
+    5_smart_money_reversal: "Entry on FVG/OB, target original consolidation low"
+  visual: "Consolidation → Breakout → Sweep highs → Reverse down → Target lows"
+  related: ["MMBM", "AMD", "turtle_soup"]
+
+AMD:
+  full_name: "Accumulation, Manipulation, Distribution"
+  aliases: ["power of three", "PO3"]
+  definition: "The three phases of every market move"
+  phases:
+    accumulation: "Quiet range building, smart money enters"
+    manipulation: "False move to opposite direction, sweeps liquidity"
+    distribution: "Real move in intended direction, smart money exits"
+  key_insight: "The manipulation phase (Judas swing) ALWAYS happens before distribution"
+  related: ["MMBM", "MMSM", "judas_swing"]
+
+turtle_soup:
+  full_name: "Turtle Soup"
+  definition: "Failed breakout strategy - the opposite of trend-following"
+  origin: "Named after the Turtle Traders' breakout strategy - we do the opposite"
+  concept:
+    - "Price sweeps beyond a significant high/low (triggers stops)"
+    - "Price fails to continue (failed breakout)"
+    - "MSS confirms reversal"
+    - "Enter in opposite direction"
+  types:
+    bullish: "Sweep below swing low (BSL) → Reverse UP"
+    bearish: "Sweep above swing high (SSL) → Reverse DOWN"
+  related: ["liquidity", "sweep", "MSS"]
+
+judas_swing:
+  full_name: "Judas Swing"
+  definition: "The false move that traps traders before the real direction"
+  timing: "Usually happens during London open (2-5 AM NY)"
+  mechanism:
+    - "Price sweeps Asian high or low"
+    - "Retail enters in direction of sweep"
+    - "Price reverses violently"
+    - "Retail gets stopped out"
+  trading_use: "Don't chase the first move of London - wait for the reversal"
+  related: ["AMD", "asian_range", "london_open"]
+
+silver_bullet:
+  full_name: "Silver Bullet"
+  definition: "Specific entry model during macro times targeting FVG"
+  times:
+    - "10:00 - 11:00 AM NY"
+    - "2:00 - 3:00 PM NY"
+    - "3:00 - 4:00 AM NY (London)"
+  setup:
+    1: "Wait for FVG to form during macro time"
+    2: "Enter on FVG retracement"
+    3: "Target the other side of the range"
+  related: ["FVG", "macro_times", "killzones"]
+
+model_12:
+  full_name: "Model 12 (OB + FVG 20 Pip)"
+  definition: "Precision scalping model combining order block with FVG"
+  setup:
+    1: "Identify order block"
+    2: "Wait for retest of OB"
+    3: "Expansion creates FVG"
+    4: "Enter on FVG retracement"
+    5: "Target 20 pips"
+  related: ["order_block", "FVG", "scalping"]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ADVANCED CONCEPTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+SMT:
+  full_name: "Smart Money Technique / Smart Money Trap / Smart Money Tool"
+  definition: "When correlated pairs diverge at key levels - one sweeps while other doesn't"
+  example:
+    - "EUR/USD makes new low, but GBP/USD doesn't"
+    - "This is bearish divergence - expect EUR reversal up"
+  usage: "Confluence signal for entries - if SMT present, higher probability"
+  related: ["correlation", "divergence"]
+
+IRL_ERL:
+  full_name: "Internal Range Liquidity / External Range Liquidity"
+  definition: "The 'decoder key' - internal targets external liquidity"
+  IRL:
+    definition: "Liquidity INSIDE a range (recent swing points, FVGs, OBs)"
+    trading_use: "Entry zone"
+  ERL:
+    definition: "Liquidity OUTSIDE a range (old highs, old lows, previous week H/L)"
+    trading_use: "Target zone"
+  key_insight: "Enter at IRL, target ERL"
+  related: ["liquidity", "draw_on_liquidity"]
+
+draw_on_liquidity:
+  full_name: "Draw on Liquidity"
+  aliases: ["DOL"]
+  definition: "Where price is likely headed - the next liquidity target"
+  identification:
+    - "Previous session highs/lows"
+    - "Previous day/week/month highs/lows"
+    - "Equal highs/lows"
+    - "Old swing points with untapped liquidity"
+  trading_use: "Your target should always be a liquidity pool"
+  related: ["IRL_ERL", "liquidity"]
+
+liquidity_void:
+  full_name: "Liquidity Void"
+  definition: "Large FVG or area with no significant trading activity"
+  characteristics: "Very one-sided candles, huge range, no overlap"
+  trading_implication: "Price may return quickly to fill the void"
+  related: ["FVG", "displacement"]
+
+mitigation:
+  full_name: "Mitigation"
+  definition: "When price returns to an order block to 'mitigate' (fill) the resting orders"
+  behavior: "First return to OB is mitigation entry, second return may break it"
+  related: ["order_block", "breaker_block"]
+
+propulsion_block:
+  full_name: "Propulsion Block"
+  definition: "An order block that has already been mitigated once and is now a stronger zone"
+  related: ["order_block", "mitigation"]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TIMEFRAME CONCEPTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+HTF:
+  full_name: "Higher Timeframe"
+  definition: "Larger timeframes used for bias and direction"
+  typical: ["Daily", "4H", "1H"]
+  usage: "Determine WHAT direction to trade"
+  related: ["LTF", "top_down_analysis"]
+
+LTF:
+  full_name: "Lower Timeframe"
+  definition: "Smaller timeframes used for precise entries"
+  typical: ["15m", "5m", "1m"]
+  usage: "Determine WHEN to enter"
+  related: ["HTF", "top_down_analysis"]
+
+top_down_analysis:
+  full_name: "Top-Down Analysis"
+  definition: "Analyzing from higher to lower timeframes for complete picture"
+  process:
+    1: "Monthly/Weekly - Major swing structure, key levels"
+    2: "Daily - Bias for the day, PD arrays"
+    3: "4H/1H - Entry zones, structure"
+    4: "15m/5m - Precise entries, FVGs, OBs"
+  key_insight: "Never trade against HTF bias"
+  related: ["HTF", "LTF"]
+
+fractal:
+  full_name: "Fractal Nature of Markets"
+  definition: "Price patterns repeat identically on all timeframes"
+  implication: "A MMBM on the daily chart looks the same as on the 5m chart"
+  trading_use: "Learn patterns on any TF, apply to any TF"

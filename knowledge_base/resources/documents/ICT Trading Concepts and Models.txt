@@ -1,0 +1,160 @@
+ICT Trading Concepts and Models: 
+
+Briefing Document: ICT Trading Concepts and Models
+This document provides a detailed review of the main themes and important ideas presented in the provided audio and video excerpts related to ICT (Inner Circle Trader) trading methodologies. The sources cover a range of concepts, from identifying liquidity and order blocks to specific trading models and time-based analysis.
+
+I. Liquidity (External and Internal)
+
+A central theme across multiple sources is the concept of liquidity, categorized into external range liquidity and internal range liquidity.
+
+External Range Liquidity: Refers to liquidity resting outside the current short-term dealing range, such as above double tops (buy-side liquidity) and below double bottoms (sell-side liquidity). These areas are often targeted for stop runs or breakouts.
+"One being external range liquidity that being like uh run on outside double top highs and double bottom lows..." (ICT Models.mp3)
+Internal Range Liquidity: Encompasses liquidity within the current dealing range, including fair value gaps (FVGs), liquidity voids, and order blocks. These areas often serve as entry points.
+"...and internal range liquidity which is fair value gap liquidity voids and order blocks." (ICT Models.mp3)
+Relationship between Internal and External Liquidity: ICT methodology suggests that trades often initiate from internal range liquidity (e.g., an order block entry within an FVG) and target external range liquidity (e.g., running stops above a previous high). Conversely, turtle soup entries (fading stop runs at external liquidity) can target internal range liquidity for exits.
+"Most of the time You're going to find that internal range liquidity entries will run to external range liquidity." (ICT Models.mp3)
+"Conversely, if you are using turtle soup entry style trading... you can use as your entry and then you're going to target internal range liquidity for your exits." (ICT Models.mp3)
+Low Resistance Liquidity Runs: Price movements are often characterized as low resistance liquidity runs towards these identified liquidity pools.
+"...and that is your low resistance liquidity run." (ICT Models.mp3)
+II. Order Blocks
+
+Order blocks are identified as the last opposing candle before a significant price move. Their trustworthiness is increased by several factors:
+
+Break of Market Structure (Breaker): An order block formed after a breaker (a candle that breaks a significant high or low) is considered more reliable.
+"Notice this down close candle right here. Above the breaker. There the market trades up and then down. Bullish order block it." (good OB lesson.mp4)
+Fair Value Gaps (FVGs): The presence of a fair value gap associated with an order block enhances its likelihood of being respected.
+"Every up close candle in my mind is a likely bearish order block. It's further increased in its likelihood if there is a fair value gap associated with it." (good OB lesson.mp4)
+Kill Zones: Order blocks are more valid if traded into during specific ICT kill zones (London Open, New York Open, London Close).
+"...it must be traded up into during a kill zone for it to be a valid bearish order block." (good OB lesson.mp4)
+Run on Stops: Order blocks formed after a run on stops (liquidity grab) are also considered high probability.
+"Another one is if we have inside this price swing here, say it went high and then higher to make this high. Okay, that would be a run on stops and then it breaks lower. Then I really like every up close candles after that because we had a stop run and then it should accelerate." (good OB lesson.mp4)
+Reclaimed Order Blocks: Old order blocks that are revisited after a breaker can act as support or resistance again.
+"Well, it's revisiting this old order blocks that becomes a bullish reclaimed order block trades into that. You can buy that again and trust that it's not likely to go down. Why? Because it has the backdrop of the breaker as well." (good OB lesson.mp4)
+III. Fair Value Gaps (FVGs) and Inefficiencies
+
+Fair value gaps (also referred to as imbalances or liquidity voids) are ranges in price where there was a lack of efficient trading, often represented by a gap between the wicks of consecutive candles.
+
+Entry Points: FVGs can act as magnets for price and provide high-probability entry points when aligned with the overall bias and other confluences like order blocks and kill zones.
+"I want to see it erode. Notice how we have a higher low than this one and higher low than this one. So we have a low resistance equity run signatures all in play. So even on the near term we got about 20 pips 30 pips before we get below here..." (good OB lesson.mp4 - implying a target at sell-side liquidity below an FVG)
+"...ran up into it beautifully at LMC minutes release at 2:00 in the afternoon New York time and then rejected that." (good OB lesson.mp4 - demonstrating price reacting to an FVG)
+Consequent Encouragement (CE): The midpoint of an FVG is often a significant level of sensitivity where price may find support or resistance.
+"Consequent encouragement, which is the midpoint of a fair value gap or inefficiency. That's what this is here. That's what you see that sensitivity there." (ICT Models.mp3)
+Trading FVGs: A strategy mentioned involves entering at the bottom of the gap with a stop loss beyond the other side. Limit orders at the midpoint can also be used.
+"This is the reason why I like to trade the bottom of the gap and allow my stop to go through all the way to the other side of the gap. That's how I trade them." (ICT Models.mp3)
+"if I look at it and it's live... then I'll do a limit right at the midpoint and try to get that." (ICT Models.mp3)
+FVGs in Model 12: Model 12 specifically focuses on using FVGs that form after an order block has facilitated an expansion swing, providing entry points within the price run for 20-pip targets.
+"Coupling both order block expansion swing then fair value gap formation..." (model_12obfvg.mp4)
+"...we're waiting for an order block to form, then an expansion swing to unfold. ... Then after that takes place the expansion swing that unfolds after the retest of the order block. We are then looking for the fair value gap..." (model_12obfvg.mp4)
+IV. Time-Based Analysis (Kill Zones, Central Bank Dealers Range - CBDR)
+
+Specific time windows are crucial for identifying high-probability trading setups.
+
+Kill Zones (New York Time):Asian Range: 8:00 PM - Midnight EST
+London Kill Zone: 1:00 AM - 5:00 AM EST
+New York Kill Zone: 7:00 AM - 10:00 AM EST
+London Close Kill Zone: 10:00 AM - 12:00 PM EST
+These kill zones are periods of heightened institutional activity where specific patterns are more likely to play out.
+"Every day at 8:00 p.m. Eastern Standard Time, New York time, this begins the Asian range." (dailyrange_defined.mp4)
+"Every day at 1:00 a.m. Eastern Standard Time, New York begins the London Kill Zone." (dailyrange_defined.mp4)
+"Every day at 7:00 a.m. Eastern Standard Time, New York begins the New York kill zone." (dailyrange_defined.mp4)
+"Every day at 10 a.m. Eastern Standard Time, New York begins the London close kill zone..." (dailyrange_defined.mp4)
+Central Bank Dealers Range (CBDR): The price range between 2:00 PM and 8:00 PM New York time.
+"The time period that frames the central bank dealers range is 2:00 p.m. to 8:00 p.m. New York time." (cbdr.mp4)
+Ideal Range: Less than 40 pips, preferably 20-30 pips. Ranges outside this may be less fruitful for projections.
+"The ideal range is less than 40 pips. Preferably, the range should be no more than 20 to 30 pips in total range, high to low." (cbdr.mp4)
+Standard Deviations of CBDR and Asian Range: Standard deviations of the CBDR and Asian Range can be used to project potential highs and lows of the day, especially during the London session.
+"Typically, most sell days will create the high of the day from the central bank dealers range up to three standard deviations." (cbdr.mp4)
+"Ideal buy days will create the low of the day no less than two standard deviations below the central bank dealers's range." (cbdr.mp4)
+Time-Based Projections: The timing of highs and lows can often align with the beginning or end of kill zones or specific times like 2:00 PM NY time, which can cap higher lows on trending days.
+"2 o'clock usually caps the higher low of the day." (Projecting HLDs 4.mp4)
+CME Open (8:20 AM NY Time): This is highlighted as a significant time for potential turning points.
+"I want to add the 8:20 a.m. New York time. This is the CME open. Look at this line. Draw straight up... and goes right to that little short-term low and price rallies away from that. That is not randomness." (dailyrange_defined.mp4)
+V. Specific Trading Models (Model 11 and Model 12)
+
+Two specific intraday trading models are detailed:
+
+Model 11: 30 Pips Intraday Trade Model:A "bread and butter" model with frequent setups, but lower risk-to-reward.
+Focuses on identifying a 30-pip expansion potential based on a 60-minute chart.
+Looks for optimal trade entry (OTE) setups on 15 or 5-minute charts during London and New York open kill zones, aligned with the weekly bias and volatility injections from economic calendar events.
+Entry often uses the 62% Fibonacci retracement level (+/- 5 pips).
+Targets a fixed 30-pip profit.
+Initial stop loss of 20 pips, with the possibility of reducing it as the trade moves into profit.
+Model 12: 20 Pips Scalping Model:Another "bread and butter" model focused on scalping 20 pips per trade.
+Relies on the daily range expansion, order blocks, and fair value gaps.
+The setup involves an order block forming, followed by an expansion swing. The entry is then based on a fair value gap that forms within that expansion swing, targeting a simple 20-pip run.
+Must occur during ICT kill zones (London Open and/or New York Open).
+Entry often uses the institutional order flow entry drill (+/- 5 pips) on a 5-minute chart.
+Targets a fixed 20-pip profit.
+Standard stop loss of 20 pips.
+VI. Market Maker Models (Buy and Sell)
+
+The concept of market maker buy and sell models is introduced, highlighting the manipulation and distribution phases.
+
+Sell-Side Market Maker Profile: Involves an initial consolidation, a run-up (manipulation to induce buying), a retracement back to the consolidation (distribution), and then a sell-off to target sell-side liquidity below old lows.
+"Using the market maker sell model, you could be a buyer on the buy side of the curve, buying it here and distributing your long and looking to go short at the smart money reversal." (model_7_2.mp4)
+Liquidity Distribution: Understanding how the interbank price delivery algorithm (IPDA) distributes and engineers liquidity is crucial. Monitoring price fluctuations within predetermined ranges on the buy and sell sides of the curve helps identify the true order flow.
+"I'm going to show you what really is going on from an interbank level today... think about the range, the the price range itself. That's what I'm monitoring." (model_7_2.mp4)
+Shift in Market Structure: A qualified shift in market structure in a sell model occurs when the highest level of reaccumulation of longs on the left side of the curve is taken out.
+"Once that highest level of reaccumulation of longs on the left side of the curve is taken out, we do have a qualified shift in market structure." (priceactionmodel7.mp4)
+Model 7: Universal Trade Plan (Sellside Focus):Applicable to all trading styles, focusing on sell-side low resistance liquidity runs.
+Stage: Liquidity draw towards a higher timeframe level.
+Setup: Sellside market maker profile.
+Pattern: Fair value gap as a primary entry trigger.
+Looks for short entries at premium fair value gaps or short buy stops during redistribution phases, often converging with standard deviations within kill zones.
+Targets sell-side liquidity below old lows.
+VII. High Probability Day Trades (Buying and Selling)
+
+Specific conditions are outlined for high-probability buy and sell day trades:
+
+Bullish Conditions for Buying:Bullish institutional order flow.
+Positive reaction on a discount PD array (e.g., bullish order block).
+Clear, unobscured path to an opposing premium array.
+Ideal days: Monday, Tuesday, Wednesday.
+CBDR less than 40 pips, Asian range 20 pips or less before Frankfurt open.
+Buying at 1-2 standard deviations of CBDR/Asian range with a discount PD array during London Open.
+Buying below Asian range, below short-term lows into FVGs/bullish order blocks during London.
+Bearish Conditions for Selling:Bearish institutional order flow.
+Positive reaction on a premium PD array (e.g., bearish order block).
+Clear, unobscured path to an opposing discount array.
+Ideal days: Tuesday, Wednesday, Thursday.
+CBDR less than 40 pips, Asian range 20 pips or less before Frankfurt open.
+Selling at 1-2 standard deviations of CBDR/Asian range with a premium PD array during London Open.
+Selling above Asian range, above short-term highs into FVGs/bearish order blocks during London.
+Stop Loss and Take Profit Guidelines: Specific stop-loss placements are provided for various entry scenarios (CBDR overlap, Asian range run, retracement into order block). Profit-taking strategies include scaling out at 20-30 pips initially, at every two standard deviations, at previous day's/week's/month's lows (for shorts), and during specific times of day.
+VIII. Projecting Highs and Lows of the Day (HLDs)
+
+The Central Bank Dealers Range (CBDR) plays a significant role in projecting daily highs and lows.
+
+CBDR Range as a Basis: The pip range of the CBDR (2 PM - 8 PM NY time) is used to project standard deviations above and below this range.
+Premium and Discount PDAs: Projections are often made from highs formed after trading into a premium PD array (for sell days) or lows formed after trading into a discount PD array (for buy days) during the London session.
+Standard Deviation Multipliers: The total range used to make the high or low in London (including standard deviations of the CBDR) becomes a multiplier to project the daily range.
+Time Element: While not perfectly precise, time windows provide a ballpark figure for when the projected moves are anticipated to unfold.
+IX. Importance of Bias and Higher Time Frame Analysis
+
+Having a directional bias based on higher time frame PD arrays and institutional order flow is emphasized as crucial for the success of intraday trading models.
+
+"Knowing that gives us directional bias. It gives us an understanding of what we should be looking for being a buyer or seller." (htf_dayentry8.mp4)
+Day trading setups should ideally align with the higher time frame bias.
+X. Natural Breaks in Market Structure
+
+A "natural" break in market structure is defined by high-energy price movements that break significant support or resistance levels.
+
+High Energy Moves: Candles with significant range indicate a higher energy move.
+Violation of Significant Levels: Breaking through previous highs (for bullish) or lows (for bearish) with conviction (closing beyond the level) constitutes a natural break.
+Inversion Levels: Broken support can become future resistance (and vice versa).
+Retests and Retrades: Price may return to these broken levels to retest (multiple small touches) or retrade (a more significant move back) before continuing in the direction of the break, often occurring during kill zones.
+Distinguishing Stop Runs from True Breaks: A break below equal lows with high energy suggests more than just a stop run; it indicates meaningful distribution.
+XI. 0 GMT Opening Price
+
+The opening price at 0 GMT (midnight New York time) is highlighted as a key reference point for potential daily range movements, especially for traders unable to participate in the London session.
+
+Power Three: The concept of Power Three (accumulation, manipulation, distribution) often revolves around the opening price.
+Trading around 0 GMT: Strategies include placing limit orders to buy below or sell above the 0 GMT opening, anticipating a "Judas swing" (a temporary move in the opposite direction of the intended daily move) in the London session.
+Stop Loss Based on Average Daily Range: Stop losses for these strategies can be based on the 5-day average daily range.
+XII. Practice and Personalization
+
+The importance of backtesting, practicing, and finding a trading model that resonates with one's personality is consistently stressed. Traders are encouraged to develop their own "bread and butter" setups based on the core ICT concepts.
+
+"You're not limited to just this. I'm not saying that this is all ICT concepts are limited to... you can make it as simple as you want it to be." (Model_12_Algo.mp4)
+"All you need to do is have something that works that really resonates with your personality." (Model_12_Algo.mp4)
+This briefing document captures the key concepts and ideas presented in the provided sources, emphasizing the interconnectedness of liquidity, order blocks, fair value gaps, time-based analysis, and specific trading models within the ICT methodology. Understanding these elements is crucial for developing a comprehensive trading approach based on institutional order flow and market mechanics.
