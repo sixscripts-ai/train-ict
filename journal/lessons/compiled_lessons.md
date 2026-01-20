@@ -133,3 +133,84 @@ Same day. Same pair. Same thesis. **$579 difference.**
 
 ---
 
+## 🏆 TEMPLATE TRADE #2: January 20, 2026 - GBPUSD/GBPJPY
+
+> **"Combining CBDR/ASIA Range SDs with ICT Time and Price theory. This was a good trade setup with the combining factors."**
+
+### The CBDR + ASIA SD Method:
+1. **Prior day CBDR range** marked with SD extensions (0.5, 1, 1.5, 2, 2.5, 3 SD)
+2. **Current ASIA range** marked with SD extensions
+3. **Find confluence** where both SD extensions align at similar price
+4. **Wait for liquidity sweep** (new high/low formed first)
+5. **Enter at PD Array** - FVG + OB combo (double confluence)
+6. **Confirm with displacement** - bullish/bearish FVG must form
+7. **Target** where opposite SD extensions align (CBDR-1SD + ASIA-3SD = strong zone)
+
+**Result: +$277.45 GBPUSD, +$156.01 GBPJPY | FTMO VERIFICATION #2 PASSED ✅**
+
+### Key Entry Detail:
+- 15M OB was the **last down candle before bullish displacement**
+- OB was **INSIDE the FVG** (double confluence)
+- At 00:00 new day, price dropped 20 pips directly into OB/FVG zone
+- Displacement confirmed → ENTER LONG
+
+---
+
+## Jan 20 Lessons
+
+### Entry Timing
+- **[2026-01-20 GBPUSD]** ⭐ TEMPLATE: FVG + OB inside each other = double confluence entry. This combo is A+.
+- **[2026-01-20 GBPUSD]** Wait for 00:00 new day liquidity sweep before entering reversal at PD array.
+- **[2026-01-20 GBPJPY]** Don't chase after 50 pip moves already happened. "Me trying to be superman basically."
+
+### Exit Timing
+- **[2026-01-20 GBPUSD]** ⭐ TEMPLATE: CBDR-1SD aligned with ASIA-3SD = perfect target zone. Exited at pre-defined level.
+
+### Risk Management
+- **[2026-01-20 Counter-trend]** Don't catch tops/bottoms without displacement. Had levels but no confirmation = loss.
+- **[2026-01-20 Counter-trend]** Need price to take out the low that created the high before shorting.
+
+### Psychology
+- **[2026-01-20]** 🚨 **HOUSE MONEY EFFECT**: After profits, brain says "I can afford to lose." Creates break-even cycles.
+- **[2026-01-20]** "Gotta stop doing this because it's a constant loop of 'breaking even' type of mindset."
+- **[2026-01-20]** Counter-trend shorts after +$277 win = house money mentality, not trading plan.
+
+### ICT Concepts
+- **[2026-01-20 GBPUSD]** ⭐ TEMPLATE: CBDR + ASIA SD confluence zones are high probability.
+- **[2026-01-20 GBPUSD]** ⭐ When BSL aligns with CBDR and ASIA extensions at same area = target zone.
+- **[2026-01-20 GBPUSD]** Early week bullish restructuring + time of expected movement + PD Array = educated prediction.
+
+---
+
+## All Lessons (Chronological)
+
+| Date | Pair | Lesson | Outcome |
+|------|------|--------|---------|
+| 2026-01-20 | GBPUSD | ⭐ TEMPLATE: CBDR + ASIA SD confluence + FVG/OB combo | **+$277** |
+| 2026-01-20 | GBPJPY | Correlated momentum, same thesis | **+$156** |
+| 2026-01-20 | EURUSD/GBPUSD | Counter-trend without displacement = guessing | -$31 |
+| 2026-01-20 | GBPJPY | Don't chase 50 pip moves, don't be superman | -$25 |
+| 2026-01-20 | PSYCHOLOGY | House Money Effect creates break-even cycles | IDENTIFIED |
+| 2026-01-16 | EURUSD | ⭐ TEMPLATE TRADE: Multi-TF FVG + OB + CBDR + Asian sweep | **+$612** |
+| 2026-01-16 | GBPUSD | Same thesis, same execution, take profit at goal | **+$113** |
+| 2026-01-16 | BOTH | When we agree with full analysis, we are unstoppable | **+$691 TOTAL** |
+| 2026-01-15 | EURUSD | Trust HTF thesis, let winners run | +$534 |
+| 2026-01-15 | EURUSD | Weekly Sell Model timing accurate - Tuesday high | +$534 |
+| 2026-01-15 | GBPUSD | Account for spread on tight stops | -$234 |
+| 2026-01-15 | GBPUSD | Three entries on same thesis = wait for better confirmation | -$234 |
+| 2026-01-15 | GBPUSD | Don't counter-trend trade when thesis is intact | -$53 |
+| 2026-01-15 | GBPUSD | Over-trading one pair = death by 1000 cuts | -$234 |
+
+---
+
+## Key Insight from Jan 20 🏆
+> **"I saw the BSL aligned with CBDR and ASIA range extensions and a reversal model playout at a time where we expect movement. Combine that with early week bullish market restructuring, signaling high of the week, retracement into a buy model PDA... we can make an educated prediction price will go higher and target its weekly high and take out BSL."**
+
+---
+
+## Key Insight from Jan 16 🏆
+> **"This is the template. 4H FVG entry, stop accounts for 15M OB+FVG, CBDR extension target, Asian sweep confirmation. When everything aligns, SIZE UP and TRUST IT."**
+
+---
+
+## Key Insight from Jan 15
