@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-#                              VEX COMMAND CENTER v2.0
+#                              VEX COMMAND CENTER v2.1
 #                         ICT Trading Journal & Advisor AI
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -11,15 +11,67 @@
 python vex.py
 
 # ─────────────────────────────────────────────────────────────────────────────────
-# 📈 CHART MARKUP
+# 📈 CHART MARKUP & AI ANALYSIS
 # ─────────────────────────────────────────────────────────────────────────────────
 
 python vex.py markup EURUSD              # All timeframes
 python vex.py markup GBPJPY              # All timeframes
 python vex.py markup EURUSD -t 15M       # Specific timeframe
 
+python vex.py analyze                    # AI analysis of latest screenshot
+python vex.py analyze chart.png          # AI analysis of specific chart
+python vex.py analyze --quick            # Quick bias check only
+
 # ─────────────────────────────────────────────────────────────────────────────────
-# ⚖️ SETUP GRADER (Interactive)
+# 🎯 ICT 10-POINT SCORING (NEW in v2.1)
+# ─────────────────────────────────────────────────────────────────────────────────
+
+python vex.py score EURUSD LONG -i       # Interactive 10-point scoring
+python vex.py score EURUSD LONG --htf 3 --model 2 --timing 2 --confluence 2 --rr 1
+
+# Scoring Breakdown:
+# - HTF Alignment (0-3): Daily + Weekly + Monthly bias alignment
+# - Model Clarity (0-2): Trading exact ICT model
+# - Session/Timing (0-2): Killzone + favorable day
+# - Confluence Count (0-2): Number of confirmations (5+ = 2pts)
+# - Risk:Reward (0-1): 3:1 or better with clear target
+#
+# Total: /10 - 9-10 = A+ (full size), 7-8 = Good, 5-6 = Reduce, 0-4 = Pass
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# 📊 MODEL 9: ONE SHOT ONE KILL (NEW in v2.1)
+# ─────────────────────────────────────────────────────────────────────────────────
+
+python vex.py osok EURUSD                # Weekly OSOK analysis
+
+# Output:
+# - Weekly bias (bullish/bearish)
+# - External Range Liquidity targets (swing highs/lows)
+# - Internal Range Liquidity entry zones (FVGs/OBs)
+# - Trade plan: Entry zone → Target
+# - Trade parameters: Stop, Target, R:R
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# 📚 KNOWLEDGE BASE (NEW in v2.1)
+# ─────────────────────────────────────────────────────────────────────────────────
+
+python vex.py kb stats                   # Knowledge base statistics
+python vex.py kb search liquidity        # Search all KB content
+python vex.py kb model                   # List all ICT models
+python vex.py kb model model_9           # Get Model 9 details
+python vex.py kb concept                 # List all concepts
+python vex.py kb concept cbdr            # Get CBDR concept details
+python vex.py kb term OTE                # Look up terminology
+
+# Knowledge Base Contents:
+# - 8 ICT models (Model 7, 9, 12, 2022 Mentorship)
+# - 6 detailed concepts (CBDR, SIBI/BISI, Market Structure)
+# - 10 episode transcripts
+# - 39 terms defined
+# - Chart examples, PDFs
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# ⚖️ SETUP GRADER (Template Mode)
 # ─────────────────────────────────────────────────────────────────────────────────
 
 python vex.py grade EURUSD LONG          # Grade a long setup
