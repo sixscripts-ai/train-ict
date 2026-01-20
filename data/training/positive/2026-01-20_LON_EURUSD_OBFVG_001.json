@@ -1,0 +1,206 @@
+{
+  "id": "2026-01-20_LON_EURUSD_OBFVG_001",
+
+  "meta": {
+    "author": "Ashton",
+    "created_at": "2026-01-20T14:00:00Z",
+    "version": "1.0",
+    "tags": ["ICT", "London_model", "OB_FVG", "EURUSD", "FTMO_verification", "win", "Judas_swing"]
+  },
+
+  "market": {
+    "pair": "EURUSD",
+    "instrument_type": "FX",
+    "broker_feed": "OANDA",
+    "spread_pips": 0.2
+  },
+
+  "references": {
+    "conversation_id": "EURUSD_GBPUSD_BUY_01:20:26",
+    "transcript_timestamps": ["0:02:28", "0:02:57", "0:03:26", "0:03:27", "0:03:49"],
+    "image_ids": ["frame_007", "frame_008", "frame_009", "frame_010", "frame_011"],
+    "chart_link": "",
+    "session_video_clip": "journal/ashton/videos/2026-01-20_EURUSD_GBPUSD_BUY.mp4"
+  },
+
+  "time": {
+    "date": "2026-01-20",
+    "session": "London",
+    "killzone": "London Open",
+    "entry_timestamp": "2026-01-20T07:45:00Z",
+    "exit_timestamp": "2026-01-20T09:30:00Z",
+    "htf_tf": "H4",
+    "mtf_tf": "H1",
+    "ltf_tf": "M15",
+    "execution_tf": "M5"
+  },
+
+  "context": {
+    "day_type": "trend_day",
+    "vol_regime": "normal",
+    "news_context": "none",
+    "htf_bias": "bullish",
+    "environment_notes": "Textbook setup. Terminus identified on HTF. Prior distribution becomes accumulation zone. Judas swing down before real expansion.",
+    
+    "range": {
+      "prior_day_high": 1.1700,
+      "prior_day_low": 1.1612,
+      "asia_high": 1.1680,
+      "asia_low": 1.1654,
+      "terminus_level": 1.1612,
+      "prior_distribution_zone": [1.1650, 1.1680],
+      "current_open": 1.1660
+    },
+    
+    "liquidity_map": {
+      "buy_side_levels": [
+        {"price": 1.1680, "type": "asia_high"},
+        {"price": 1.1700, "type": "prior_day_high"},
+        {"price": 1.1720, "type": "cbdr_extension"}
+      ],
+      "sell_side_levels": [
+        {"price": 1.1654, "type": "asia_low"},
+        {"price": 1.1612, "type": "terminus"}
+      ]
+    }
+  },
+
+  "pd_arrays": {
+    "htf_order_blocks": [
+      {
+        "direction": "bullish",
+        "tf": "H1",
+        "price_zone": [1.1650, 1.1665],
+        "origin_description": "Last down candle before impulsive BOS on prior day"
+      }
+    ],
+    
+    "ltf_order_blocks": [
+      {
+        "direction": "bullish",
+        "tf": "M5",
+        "price_zone": [1.1660, 1.1668],
+        "midpoint": 1.1664,
+        "mitigation_type": "full_body"
+      }
+    ],
+    
+    "fair_value_gaps": [
+      {
+        "tf": "M5",
+        "price_zone": [1.1668, 1.1682],
+        "direction": "up",
+        "origin_leg_strength": "strong"
+      }
+    ],
+    
+    "extensions": {
+      "cbdr_range": [1.1656, 1.1665],
+      "cbdr_extensions": [1.1675, 1.1690, 1.1705]
+    },
+    
+    "discount_premium": {
+      "anchor_swing": [1.1612, 1.1700],
+      "entry_in_discount": true,
+      "entry_discount_pct": 0.40
+    }
+  },
+
+  "setup": {
+    "bias": "long",
+    "setup_type": "OB_FVG_retrace",
+    
+    "pattern_story": {
+      "structure": "Terminus_to_Prior_Distribution_to_Accumulation",
+      "liquidity_objective": "what_buys_will_sell_what_sells_will_buy",
+      "timing_model": "Judas_swing_down_then_expansion",
+      "session_model": "London_morning_buy"
+    },
+    
+    "confirmation": {
+      "bos_or_choch": "M15_BOS_up",
+      "displacement": true,
+      "volume_spike": false,
+      "entry_model": "limit_at_OB_50",
+      "extra_filters": ["range_break_candle_confirmed_direction", "judas_swing_completed", "5m_ob_for_precision"]
+    }
+  },
+
+  "execution": {
+    "entry_price": 1.1664,
+    "stop_loss": 1.1650,
+    "risk_pips": 14,
+    "position_size_risk_pct": 1.0,
+    "max_adverse_excursion_pips": 4,
+    "max_favorable_excursion_pips": 49,
+    "targets": [
+      {
+        "label": "TP1_asia_high",
+        "price": 1.1680,
+        "reason": "asia_high_liquidity",
+        "expected_rr": 1.14
+      },
+      {
+        "label": "TP2_prior_day_high",
+        "price": 1.1700,
+        "reason": "prior_day_high",
+        "expected_rr": 2.57
+      },
+      {
+        "label": "TP3_extension",
+        "price": 1.1713,
+        "reason": "cbdr_extension",
+        "expected_rr": 3.5
+      }
+    ]
+  },
+
+  "management": {
+    "partials": [
+      {
+        "tp_label": "TP1_asia_high",
+        "taken_pct": 40,
+        "timestamp": "2026-01-20T08:30:00Z"
+      },
+      {
+        "tp_label": "TP2_prior_day_high",
+        "taken_pct": 30,
+        "timestamp": "2026-01-20T09:00:00Z"
+      }
+    ],
+    
+    "breakeven_move": {
+      "moved_to_be": true,
+      "trigger_reason": "TP1_hit_moved_stop_to_entry"
+    },
+    
+    "manual_interventions": [],
+    
+    "final_outcome": {
+      "result": "win_partials",
+      "rr_realized": 2.1
+    }
+  },
+
+  "reasoning": {
+    "why_here": "Price retraced into M5 bullish OB inside accumulation zone. Prior distribution = future accumulation. 'What buys will sell, what sells will buy.'",
+    "why_now": "London open Judas swing down into OB after range break candle confirmed bullish bias. Time and price aligned.",
+    "what_invalidates": "Clean break and close below M5 OB and Asia low at 1.1654, or below terminus at 1.1612.",
+    "notes": "FTMO Verification #2 trade. 'Order block, expansion, displacement, easy money.'",
+    "psychology": "Textbook confidence. Waited for Judas swing to complete before entry. No chase.",
+    "post_trade_review": "Perfect execution. 'London hits, Judas swing down, 5M OB, expansion, displacement, easy money.'",
+    "pattern_confidence_score": 0.92
+  },
+
+  "labels": {
+    "quality_tag": "A_plus",
+    "example_type": "positive",
+    "teaching_focus": [
+      "judas_swing_into_OB",
+      "what_buys_will_sell_what_sells_will_buy",
+      "5m_ltf_refinement",
+      "range_break_candle_confirmation",
+      "time_and_price_confluence"
+    ]
+  }
+}

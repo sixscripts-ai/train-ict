@@ -1,0 +1,194 @@
+{
+  "id": "2026-01-20_LON_GBPUSD_OBFVG_001",
+
+  "meta": {
+    "author": "Ashton",
+    "created_at": "2026-01-20T14:00:00Z",
+    "version": "1.0",
+    "tags": ["ICT", "London_model", "OB_FVG", "GBPUSD", "FTMO_verification", "win"]
+  },
+
+  "market": {
+    "pair": "GBPUSD",
+    "instrument_type": "FX",
+    "broker_feed": "OANDA",
+    "spread_pips": 0.3
+  },
+
+  "references": {
+    "conversation_id": "EURUSD_GBPUSD_BUY_01:20:26",
+    "transcript_timestamps": ["0:00:01", "0:00:17", "0:00:56", "0:01:34", "0:01:52", "0:02:14"],
+    "image_ids": ["frame_001", "frame_002", "frame_003", "frame_004", "frame_005", "frame_006"],
+    "chart_link": "",
+    "session_video_clip": "journal/ashton/videos/2026-01-20_EURUSD_GBPUSD_BUY.mp4"
+  },
+
+  "time": {
+    "date": "2026-01-20",
+    "session": "London",
+    "killzone": "London Open",
+    "entry_timestamp": "2026-01-20T07:30:00Z",
+    "exit_timestamp": "2026-01-20T09:00:00Z",
+    "htf_tf": "H4",
+    "mtf_tf": "H1",
+    "ltf_tf": "M15",
+    "execution_tf": "M5"
+  },
+
+  "context": {
+    "day_type": "trend_day",
+    "vol_regime": "normal",
+    "news_context": "none",
+    "htf_bias": "bullish",
+    "environment_notes": "Buy model forming after extended selloff. Price returning to prior distribution zone for accumulation.",
+    
+    "range": {
+      "prior_day_high": 1.3480,
+      "prior_day_low": 1.3360,
+      "asia_high": 1.3420,
+      "asia_low": 1.3390,
+      "terminus_level": 1.3375,
+      "prior_distribution_zone": [1.3430, 1.3480],
+      "current_open": 1.3400
+    },
+    
+    "liquidity_map": {
+      "buy_side_levels": [
+        {"price": 1.3420, "type": "asia_high"},
+        {"price": 1.3480, "type": "prior_distribution_high"},
+        {"price": 1.3510, "type": "cbdr_extension"}
+      ],
+      "sell_side_levels": [
+        {"price": 1.3390, "type": "asia_low"},
+        {"price": 1.3375, "type": "terminus"}
+      ]
+    }
+  },
+
+  "pd_arrays": {
+    "htf_order_blocks": [
+      {
+        "direction": "bullish",
+        "tf": "H1",
+        "price_zone": [1.3395, 1.3410],
+        "origin_description": "Last down candle before displacement up on Jan 19"
+      }
+    ],
+    
+    "ltf_order_blocks": [
+      {
+        "direction": "bullish",
+        "tf": "M15",
+        "price_zone": [1.3400, 1.3415],
+        "midpoint": 1.3407,
+        "mitigation_type": "full_body"
+      }
+    ],
+    
+    "fair_value_gaps": [
+      {
+        "tf": "M15",
+        "price_zone": [1.3408, 1.3425],
+        "direction": "up",
+        "origin_leg_strength": "strong"
+      }
+    ],
+    
+    "extensions": {
+      "cbdr_range": [1.3395, 1.3407],
+      "cbdr_extensions": [1.3420, 1.3445, 1.3470]
+    },
+    
+    "discount_premium": {
+      "anchor_swing": [1.3375, 1.3480],
+      "entry_in_discount": true,
+      "entry_discount_pct": 0.35
+    }
+  },
+
+  "setup": {
+    "bias": "long",
+    "setup_type": "OB_FVG_retrace",
+    
+    "pattern_story": {
+      "structure": "Distribution_to_Terminus_to_Accumulation",
+      "liquidity_objective": "take_asia_high_then_prior_distribution",
+      "timing_model": "Asia_range_set_London_expands",
+      "session_model": "London_morning_buy"
+    },
+    
+    "confirmation": {
+      "bos_or_choch": "M15_BOS_up",
+      "displacement": true,
+      "volume_spike": false,
+      "entry_model": "limit_at_OB_50",
+      "extra_filters": ["asia_structure_break_bullish", "cbdr_tight_11.9_pips"]
+    }
+  },
+
+  "execution": {
+    "entry_price": 1.3407,
+    "stop_loss": 1.3390,
+    "risk_pips": 17,
+    "position_size_risk_pct": 1.0,
+    "max_adverse_excursion_pips": 5,
+    "max_favorable_excursion_pips": 72,
+    "targets": [
+      {
+        "label": "TP1_asia_high",
+        "price": 1.3420,
+        "reason": "asia_high_liquidity",
+        "expected_rr": 0.76
+      },
+      {
+        "label": "TP2_prior_distribution",
+        "price": 1.3480,
+        "reason": "prior_distribution_zone_high",
+        "expected_rr": 4.3
+      }
+    ]
+  },
+
+  "management": {
+    "partials": [
+      {
+        "tp_label": "TP1_asia_high",
+        "taken_pct": 50,
+        "timestamp": "2026-01-20T08:15:00Z"
+      }
+    ],
+    
+    "breakeven_move": {
+      "moved_to_be": true,
+      "trigger_reason": "TP1_hit_moved_stop_to_entry"
+    },
+    
+    "manual_interventions": [],
+    
+    "final_outcome": {
+      "result": "win_partials",
+      "rr_realized": 2.8
+    }
+  },
+
+  "reasoning": {
+    "why_here": "Price retraced into M15 bullish OB at 50% inside FVG, within prior distribution zone that becomes accumulation on reversal.",
+    "why_now": "London open after Asia range set tight CBDR (11.9 pips). Structure break at Asia highs confirmed bullish. No major news.",
+    "what_invalidates": "Clean break and close below M15 OB and Asia low at 1.3390.",
+    "notes": "FTMO Verification #2 trade. Buy model textbook: Distribution → 1-2-3 → Terminus → Reversal → Accumulation.",
+    "psychology": "Confident. Model aligned across all timeframes. No FOMO - waited for retrace to OB.",
+    "post_trade_review": "Textbook execution. 'Price hits the order block perfectly at 50%'",
+    "pattern_confidence_score": 0.95
+  },
+
+  "labels": {
+    "quality_tag": "A_plus",
+    "example_type": "positive",
+    "teaching_focus": [
+      "multi_tf_alignment",
+      "prior_distribution_becomes_accumulation",
+      "50pct_OB_entry",
+      "tight_cbdr_expansion_signal"
+    ]
+  }
+}
