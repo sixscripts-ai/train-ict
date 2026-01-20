@@ -1,0 +1,209 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ICT Trade Object",
+  "description": "Standard structure for recording ICT trades",
+  "type": "object",
+  "required": ["id", "date", "pair", "direction", "entry", "stop", "target", "model"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique trade identifier"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Trade date (YYYY-MM-DD)"
+    },
+    "time": {
+      "type": "string",
+      "description": "Entry time (HH:MM EST)"
+    },
+    "pair": {
+      "type": "string",
+      "enum": ["EURUSD", "GBPUSD", "USDJPY", "GBPJPY", "XAUUSD", "US30", "NAS100"],
+      "description": "Trading instrument"
+    },
+    "direction": {
+      "type": "string",
+      "enum": ["LONG", "SHORT"],
+      "description": "Trade direction"
+    },
+    "session": {
+      "type": "string",
+      "enum": ["asia", "london", "ny_am", "ny_pm", "london_close"],
+      "description": "Trading session"
+    },
+    "model": {
+      "type": "object",
+      "description": "ICT model context",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["MMBM", "MMSM"],
+          "description": "Market Maker Buy/Sell Model"
+        },
+        "stage": {
+          "type": "string",
+          "enum": ["accumulation", "manipulation", "distribution"],
+          "description": "Current AMD stage"
+        },
+        "setup_type": {
+          "type": "string",
+          "enum": ["OB+FVG retrace", "Judas into OB", "LTF refinement", "CBDR+ASIA SD", "liquidity raid reversal"],
+          "description": "Specific entry pattern"
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "description": "Market context at time of trade",
+      "properties": {
+        "htf_bias": {
+          "type": "string",
+          "enum": ["bullish", "bearish", "neutral"]
+        },
+        "terminus": {
+          "type": "number",
+          "description": "Predetermined terminus level"
+        },
+        "prior_distribution": {
+          "type": "object",
+          "properties": {
+            "high": { "type": "number" },
+            "low": { "type": "number" }
+          }
+        },
+        "range_high": { "type": "number" },
+        "range_low": { "type": "number" },
+        "cbdr_pips": { "type": "number" },
+        "asia_pips": { "type": "number" }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "description": "Entry details",
+      "properties": {
+        "price": {
+          "type": "number",
+          "description": "Entry price"
+        },
+        "timeframe": {
+          "type": "string",
+          "enum": ["1M", "5M", "15M", "1H", "4H"],
+          "description": "Entry timeframe"
+        },
+        "confluence": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of confluences at entry",
+          "examples": ["FVG", "OB", "50% retracement", "ASIA SD", "session timing"]
+        },
+        "ob_level": { "type": "number" },
+        "fvg_high": { "type": "number" },
+        "fvg_low": { "type": "number" }
+      }
+    },
+    "stop": {
+      "type": "object",
+      "properties": {
+        "price": {
+          "type": "number",
+          "description": "Stop loss price"
+        },
+        "placement": {
+          "type": "string",
+          "enum": ["below_ob", "below_fvg", "below_swing", "above_ob", "above_fvg", "above_swing"],
+          "description": "Stop placement logic"
+        },
+        "pips": { "type": "number" }
+      }
+    },
+    "target": {
+      "type": "object",
+      "properties": {
+        "primary": {
+          "type": "number",
+          "description": "Primary target price"
+        },
+        "secondary": {
+          "type": "number",
+          "description": "Secondary target price"
+        },
+        "target_type": {
+          "type": "string",
+          "enum": ["equal_highs", "equal_lows", "cbdr_extension", "asia_extension", "prior_high", "prior_low", "terminus"],
+          "description": "What the target represents"
+        }
+      }
+    },
+    "invalidation": {
+      "type": "object",
+      "description": "What would invalidate the trade idea",
+      "properties": {
+        "level": {
+          "type": "number",
+          "description": "Price level that invalidates thesis"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Description of invalidation condition"
+        },
+        "origination_displacement": {
+          "type": "number",
+          "description": "If price falls below this, move is done"
+        }
+      }
+    },
+    "position": {
+      "type": "object",
+      "properties": {
+        "size_lots": { "type": "number" },
+        "risk_dollars": { "type": "number" },
+        "risk_percent": { "type": "number" }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["open", "win", "loss", "breakeven"]
+        },
+        "exit_price": { "type": "number" },
+        "exit_time": { "type": "string" },
+        "pnl_dollars": { "type": "number" },
+        "pnl_pips": { "type": "number" },
+        "r_achieved": { "type": "number" }
+      }
+    },
+    "notes": {
+      "type": "object",
+      "properties": {
+        "pre_trade": { "type": "string" },
+        "in_trade": { "type": "string" },
+        "post_trade": { "type": "string" },
+        "mistakes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "lessons": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "correlation_confirmation": {
+      "type": "object",
+      "description": "Correlated pair used for confirmation (e.g., GBPJPY new high = GBP bulls confirmed)",
+      "properties": {
+        "pair": { "type": "string" },
+        "signal": { "type": "string" }
+      }
+    },
+    "screenshots": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths to chart screenshots"
+    }
+  }
+}

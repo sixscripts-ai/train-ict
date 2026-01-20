@@ -1,0 +1,250 @@
+# ICT Trading Ontology - Standard Vocabulary
+# All scripts/analysis must use these exact terms and definitions
+
+version: "1.0"
+updated: "2026-01-20"
+
+# =============================================================================
+# MARKET CONTEXT
+# =============================================================================
+market_context:
+  trend_state:
+    bullish: "HTF making higher highs and higher lows"
+    bearish: "HTF making lower highs and lower lows"
+    ranging: "Price consolidating between defined levels"
+  
+  session:
+    asia: "8:00 PM - 12:00 AM EST"
+    london: "2:00 AM - 5:00 AM EST (killzone)"
+    ny_am: "7:00 AM - 10:00 AM EST (killzone)"
+    ny_lunch: "12:00 PM - 1:00 PM EST (avoid)"
+    ny_pm: "1:30 PM - 4:00 PM EST"
+    london_close: "10:00 AM - 12:00 PM EST"
+  
+  htf_bias:
+    description: "Direction determined by Daily/4H structure"
+    values: ["bullish", "bearish", "neutral"]
+
+# =============================================================================
+# MARKET STRUCTURE
+# =============================================================================
+structures:
+  swing_high:
+    definition: "Local price peak with lower highs on both sides"
+    significance: "Potential resistance / BSL target"
+  
+  swing_low:
+    definition: "Local price trough with higher lows on both sides"
+    significance: "Potential support / SSL target"
+  
+  bos:
+    full_name: "Break of Structure"
+    definition: "Price closes beyond previous swing high/low"
+    rule: "Body must close beyond level, not just wick"
+  
+  choch:
+    full_name: "Change of Character"
+    definition: "First break of structure against prevailing trend"
+    significance: "Potential trend reversal signal"
+  
+  structure_break:
+    valid: "Body closes beyond level AND sustains"
+    invalid: "Flash wick beyond level = stop hunt, not real break"
+  
+  range_high:
+    definition: "Upper boundary of consolidation"
+    contains: "Buy-side liquidity (BSL)"
+  
+  range_low:
+    definition: "Lower boundary of consolidation"
+    contains: "Sell-side liquidity (SSL)"
+  
+  terminus:
+    definition: "Final objective of market maker model - PREDETERMINED"
+    rule: "Identified BEFORE price reaches it, not after"
+    location: "Discount PD arrays (buys) or premium PD arrays (sells)"
+  
+  prior_distribution:
+    definition: "Previous selling zone that becomes accumulation on reversal"
+    rule: "What buys will sell, what sells will buy"
+  
+  origination_displacement:
+    definition: "Zone where the move originated"
+    rule: "If price falls below this = thesis invalid, move is done"
+
+# =============================================================================
+# LIQUIDITY
+# =============================================================================
+liquidity:
+  bsl:
+    full_name: "Buy-Side Liquidity"
+    location: "Above swing highs, equal highs, range highs"
+    contains: "Stop losses from shorts, breakout buy orders"
+    status: ["unswept", "swept"]
+  
+  ssl:
+    full_name: "Sell-Side Liquidity"
+    location: "Below swing lows, equal lows, range lows"
+    contains: "Stop losses from longs, breakout sell orders"
+    status: ["unswept", "swept"]
+  
+  equal_highs:
+    definition: "2+ swing highs at approximately same level"
+    significance: "Liquidity pool - NOT resistance"
+    rule: "Functional similarity, not exact pip match"
+  
+  equal_lows:
+    definition: "2+ swing lows at approximately same level"
+    significance: "Liquidity pool - NOT support"
+    rule: "2-3 candles at same area = licking chops"
+  
+  irl:
+    full_name: "Internal Range Liquidity"
+    components: ["FVG", "liquidity_void", "order_block"]
+    use: "ENTRY points within current dealing range"
+  
+  erl:
+    full_name: "External Range Liquidity"
+    components: ["equal_highs", "equal_lows", "old_swing_highs", "old_swing_lows"]
+    use: "TARGET for internal range entries"
+  
+  sweep:
+    definition: "Price takes liquidity level then reverses"
+    nature: "Fluid process that is DESTINED, not violent"
+    confirmation: "20-30 pips through level, could be wick or body"
+
+# =============================================================================
+# PD ARRAYS (Price Delivery Arrays)
+# =============================================================================
+pd_arrays:
+  fvg:
+    full_name: "Fair Value Gap"
+    definition: "Gap between candle 1 high/low and candle 3 high/low"
+    measurement: "From WICKS, not bodies"
+    priority: "Higher than OB - algorithm returns to THE VOID"
+    entry_rule: "Just needs to touch 50% to continue"
+    status: ["unmitigated", "mitigated"]
+    mitigated_when: "Any candle after formation touches 50% level"
+  
+  order_block:
+    full_name: "Order Block"
+    bullish: "Last DOWN candle before displacement up"
+    bearish: "Last UP candle before displacement down"
+    entry: "50% of OB candle (midpoint)"
+    stop: "Below OB specifically, not entire FVG"
+  
+  imbalance:
+    definition: "Same as FVG - price moved too fast, needs rebalancing"
+    buy_side_imbalance: "= Sell side inefficiency"
+    sell_side_imbalance: "= Buy side inefficiency"
+  
+  premium:
+    definition: "Price above equilibrium (50%) of range"
+    action: "Look to SELL in premium zones"
+  
+  discount:
+    definition: "Price below equilibrium (50%) of range"
+    action: "Look to BUY in discount zones"
+  
+  mitigation_block:
+    definition: "Zone where prior orders need to be closed out"
+    forms: "After balanced price range interaction"
+
+# =============================================================================
+# TIMING
+# =============================================================================
+timing:
+  cbdr:
+    full_name: "Central Bank Dealers Range"
+    time: "2:00 PM - 8:00 PM EST"
+    ideal_range: "<40 pips (preferably 20-30)"
+    rule: "Track BEFORE session, don't trade DURING"
+    tight_cbdr: "Signals expansion coming"
+  
+  asia_range:
+    time: "8:00 PM - 12:00 AM EST"
+    significance: "More important than CBDR for expansion thesis"
+    rule: "SD levels predetermined before London/NY"
+  
+  killzone:
+    london: "2:00 AM - 5:00 AM EST"
+    ny_am: "7:00 AM - 10:00 AM EST"
+    significance: "Prime trading windows"
+  
+  judas_swing:
+    definition: "Fake move opposite to true direction"
+    timing: "100% time-based - happens at London open"
+    purpose: "Traps counter-trend traders, grabs liquidity"
+    rule: "Must occur during specific time window to qualify"
+  
+  session_open:
+    london: "2:00 AM EST"
+    ny: "8:00 AM EST"
+    cme: "8:20 AM EST (significant)"
+  
+  optimal_trade_days:
+    best: ["Tuesday", "Wednesday"]
+    good: ["Monday", "Thursday"]
+    avoid: ["Friday"]
+
+# =============================================================================
+# MODEL STAGES (AMD)
+# =============================================================================
+model_stages:
+  accumulation:
+    definition: "Smart money building positions in range"
+    appearance: "Consolidation, equal highs/lows forming"
+    action: "Wait - don't enter yet"
+  
+  manipulation:
+    definition: "False move to grab liquidity"
+    appearance: "Judas swing, sweep of levels"
+    action: "Prepare for entry after sweep completes"
+  
+  distribution:
+    definition: "Real move delivering to target"
+    appearance: "Displacement, strong directional move"
+    action: "Enter on retracement to FVG/OB"
+
+# =============================================================================
+# ENTRY MODELS
+# =============================================================================
+entry_models:
+  ob_fvg_retrace:
+    sequence: ["BOS", "displacement", "FVG+OB forms", "retrace to 50%", "continuation"]
+    entry: "50% of OB inside FVG"
+    stop: "Below OB"
+  
+  judas_into_ob:
+    sequence: ["session_open", "false_move", "sweep_liquidity", "displacement", "OB_tap"]
+    entry: "OB after Judas completes"
+    timing: "Must be during London open"
+  
+  ltf_refinement:
+    trigger: "Late on HTF entry"
+    action: "Drop to 5M, find next PDA that promotes HTF bias"
+    rule: "LTF PDA must align with HTF direction"
+  
+  cbdr_asia_sd:
+    name: "Ashton's Signature Model"
+    conditions: ["terminus_identified", "tight_cbdr", "asia_sd_confluence"]
+    entry: "At ASIA SD zone"
+    confirmation: "Tight CBDR signals expansion"
+
+# =============================================================================
+# VALIDATION RULES
+# =============================================================================
+validation:
+  re_entry_valid:
+    condition: "Price stays above origination displacement zone"
+    meaning: "Structure holding = thesis still valid"
+  
+  re_entry_invalid:
+    condition: "Price falls below origination displacement zone"
+    meaning: "Structure broken = move is done"
+  
+  fvg_valid:
+    condition: "Unmitigated - price has NOT returned since formation"
+  
+  fvg_invalid:
+    condition: "Mitigated - price already touched 50%"
