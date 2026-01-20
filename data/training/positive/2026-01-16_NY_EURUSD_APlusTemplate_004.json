@@ -15,6 +15,18 @@
     "spread_pips": 0.8
   },
 
+  "mm_model": {
+    "type": "MMSM",
+    "phase": "redistribution",
+    "dealing_range": {
+      "high": 1.16325,
+      "low": 1.15890,
+      "equilibrium": 1.16107
+    },
+    "entry_relative_to_eq": "above",
+    "target_liquidity": "asia_low_cbdr_extension_1.15890"
+  },
+
   "references": {
     "conversation_id": "",
     "transcript_timestamps": [],

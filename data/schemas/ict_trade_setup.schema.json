@@ -48,6 +48,46 @@
       }
     },
 
+    "mm_model": {
+      "type": "object",
+      "description": "Market Maker Model context - which cycle phase this trade is in",
+      "properties": {
+        "type": { 
+          "type": "string", 
+          "enum": ["MMSM", "MMBM"],
+          "description": "MMSM = Sell Model (shorts), MMBM = Buy Model (longs)"
+        },
+        "phase": { 
+          "type": "string", 
+          "enum": [
+            "accumulation_buyside",
+            "accumulation_sellside",
+            "liquidity_run_high",
+            "liquidity_run_low",
+            "smart_money_reversal",
+            "redistribution",
+            "reaccumulation",
+            "sellside_target",
+            "buyside_target"
+          ]
+        },
+        "dealing_range": {
+          "type": "object",
+          "properties": {
+            "high": { "type": "number" },
+            "low": { "type": "number" },
+            "equilibrium": { "type": "number" }
+          }
+        },
+        "entry_relative_to_eq": { 
+          "type": "string", 
+          "enum": ["above", "below", "at"],
+          "description": "MMSM entries above EQ, MMBM entries below EQ"
+        },
+        "target_liquidity": { "type": "string" }
+      }
+    },
+
     "references": {
       "type": "object",
       "description": "Links to source materials",
