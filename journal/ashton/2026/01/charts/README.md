@@ -1,10 +1,10 @@
 # Chart Screenshots - January 2026
 
-Save charts here with naming: `YYYY-MM-DD_PAIR_TIMEFRAME.png`
+Save charts here with naming: `PAIR_DIRECTION_MM_DD_YY.png`
 
 ---
 
-## 2026-01-20_EURUSD_1H.png
+## EURUSD_BUY_01_20_26.png
 **Trade:** EURUSD Long (CBDR + ASIA SD Method)  
 **Result:** +70 pips
 
@@ -31,7 +31,7 @@ Save charts here with naming: `YYYY-MM-DD_PAIR_TIMEFRAME.png`
 
 ---
 
-## 2026-01-20_GBPUSD_5M.png
+## GBPUSD_BUY_01_19_26.png
 **Trade:** GBPUSD Long (FVG + OB Confluence)  
 **Result:** +$277.45 (Best trade of the day)
 
