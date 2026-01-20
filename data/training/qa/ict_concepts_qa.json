@@ -219,5 +219,18 @@
     },
     "correct_answer": "b",
     "explanation": "Symmetric Market Triangle (SMT) Divergence. DXY weakness (Lower High) combined with relative strength in a pair (GBP Higher Low) indicates institutional accumulation preventing the drop."
+  },
+  {
+    "id": "QA_SCHEMATIC_001",
+    "category": "Stop Loss Placement",
+    "question": "In a Bullish 2022 Model (Sweep L -> LL -> Displacement UP), where is the STRUCTURAL invalidation point for the Stop Loss?",
+    "options": {
+      "a": "Below the FVG",
+      "b": "Below the First Low (L)",
+      "c": "Below the Liquidity Sweep Low (LL)",
+      "d": "Below the Breakout High"
+    },
+    "correct_answer": "c",
+    "explanation": "The Liquidity Sweep Low (LL) is the Protected Low. Price can revisit 100% of the FVG without breaking structure, but if it takes out the LL, the setup is invalidated."
   }
 ]
