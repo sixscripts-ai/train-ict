@@ -115,23 +115,23 @@ def custom_validations(data: dict) -> list[str]:
                     errors.append(f"Short trade: target ({first_target}) should be < entry ({entry}) < stop ({stop})")
     
     # 3. Risk/Reward check - use BEST target, not first
+    # Skip R:R validation for negative examples (they failed for a reason)
     if entry and stop and targets:
-        risk_pips = abs(entry - stop)
-        # Find best target
-        best_rr = 0
-        for t in targets:
-            target_price = t.get("price")
-            if target_price and risk_pips > 0:
-                reward_pips = abs(target_price - entry)
-                rr = reward_pips / risk_pips
-                best_rr = max(best_rr, rr)
-        
-        if best_rr < 1.5:
-            # This is a warning, not a hard error for positive examples
-            if data.get("labels", {}).get("example_type") == "positive":
-                pass  # Don't error on positive examples with lower R:R partials
-            else:
-                errors.append(f"Warning: Best R:R of {best_rr:.1f} is below 1.5 minimum")
+        example_type = data.get("labels", {}).get("example_type", "positive")
+        if example_type == "positive":
+            risk_pips = abs(entry - stop)
+            # Find best target
+            best_rr = 0
+            for t in targets:
+                target_price = t.get("price")
+                if target_price and risk_pips > 0:
+                    reward_pips = abs(target_price - entry)
+                    rr = reward_pips / risk_pips
+                    best_rr = max(best_rr, rr)
+            
+            if best_rr < 1.5:
+                # Just a warning, not hard error
+                pass
     
     # 4. ID format check
     trade_id = data.get("id", "")

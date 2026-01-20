@@ -1,0 +1,181 @@
+{
+  "id": "2026-01-16_NY_EURUSD_APlusTemplate_004",
+
+  "meta": {
+    "author": "Ashton",
+    "created_at": "2026-01-20T04:00:00Z",
+    "version": "1.0",
+    "tags": ["a_plus_template", "FTMO_pass", "multi_tf_confluence", "cbdr", "real_trade", "template_trade"]
+  },
+
+  "market": {
+    "pair": "EURUSD",
+    "instrument_type": "FX",
+    "broker_feed": "OANDA",
+    "spread_pips": 0.8
+  },
+
+  "references": {
+    "conversation_id": "",
+    "transcript_timestamps": [],
+    "image_ids": [],
+    "chart_link": "",
+    "session_video_clip": ""
+  },
+
+  "time": {
+    "date": "2026-01-16",
+    "session": "NewYork",
+    "killzone": "London_NY_Overlap",
+    "entry_timestamp": "2026-01-16T13:16:06Z",
+    "exit_timestamp": "2026-01-16T17:42:28Z",
+    "htf_tf": "H4",
+    "mtf_tf": "H1",
+    "ltf_tf": "M15",
+    "execution_tf": "M15"
+  },
+
+  "context": {
+    "day_type": "trend_day",
+    "vol_regime": "normal",
+    "news_context": "none",
+    "htf_bias": "bearish",
+    "environment_notes": "TEMPLATE TRADE - Maximum confluence. Prior day displacement bearish. 4H FVG + 15M OB + 15M FVG overlapping. Asia high swept. CBDR setup.",
+    
+    "range": {
+      "prior_day_high": 1.1640,
+      "prior_day_low": 1.1560,
+      "asia_high": 1.16195,
+      "asia_low": 1.15900,
+      "terminus_level": 1.15900,
+      "prior_distribution_zone": [1.16000, 1.16200],
+      "current_open": 1.16100
+    },
+    
+    "liquidity_map": {
+      "buy_side_levels": [
+        {"price": 1.16195, "type": "asia_high"}
+      ],
+      "sell_side_levels": [
+        {"price": 1.15900, "type": "asia_low_cbdr_extension"},
+        {"price": 1.15890, "type": "target"}
+      ]
+    }
+  },
+
+  "pd_arrays": {
+    "htf_order_blocks": [
+      {
+        "direction": "bearish",
+        "tf": "H4",
+        "price_zone": [1.16100, 1.16200],
+        "origin_description": "4H FVG zone"
+      }
+    ],
+    
+    "ltf_order_blocks": [
+      {
+        "direction": "bearish",
+        "tf": "M15",
+        "price_zone": [1.16195, 1.16325],
+        "midpoint": 1.16260,
+        "mitigation_type": "respected"
+      }
+    ],
+    
+    "fair_value_gaps": [
+      {
+        "tf": "H4",
+        "price_zone": [1.16100, 1.16200],
+        "direction": "down",
+        "origin_leg_strength": "strong"
+      },
+      {
+        "tf": "M15",
+        "price_zone": [1.16195, 1.16250],
+        "direction": "down",
+        "origin_leg_strength": "strong"
+      }
+    ],
+    
+    "extensions": {
+      "cbdr_range": [1.16000, 1.16200],
+      "cbdr_extensions": [1.15900, 1.15800, 1.15700]
+    },
+    
+    "discount_premium": {
+      "anchor_swing": [1.15900, 1.16200],
+      "entry_in_discount": false,
+      "entry_discount_pct": 0.98
+    }
+  },
+
+  "setup": {
+    "bias": "short",
+    "setup_type": "OB_FVG_confluence",
+    
+    "pattern_story": {
+      "structure": "displacement_follow_through",
+      "liquidity_objective": "asia_low_cbdr_extension",
+      "timing_model": "asia_sweep_then_continuation",
+      "session_model": "London_NY_overlap"
+    },
+    
+    "confirmation": {
+      "bos_or_choch": "M15_BOS_down",
+      "displacement": true,
+      "volume_spike": false,
+      "entry_model": "FVG_OB_confluence",
+      "extra_filters": ["prior_day_displacement_bearish", "asia_high_swept", "cbdr_setup", "multi_tf_alignment"]
+    }
+  },
+
+  "execution": {
+    "entry_price": 1.16195,
+    "stop_loss": 1.16325,
+    "risk_pips": 13.0,
+    "position_size_risk_pct": 2.6,
+    "max_adverse_excursion_pips": 8.0,
+    "max_favorable_excursion_pips": 30.6,
+    "targets": [
+      {
+        "label": "TP1_cbdr_extension",
+        "price": 1.15890,
+        "reason": "cbdr_extension_asia_low",
+        "expected_rr": 2.35
+      }
+    ]
+  },
+
+  "management": {
+    "partials": [
+      {"at": "TP1", "pct_close": 100}
+    ],
+    "breakeven_move": "after_1R",
+    "trail_method": "none_held_to_target",
+    "final_outcome": {
+      "result": "win",
+      "pnl_pips": 30.6,
+      "pnl_usd": 612.75,
+      "r_achieved": 2.35,
+      "exit_reason": "TP_hit_cbdr_extension"
+    }
+  },
+
+  "reasoning": {
+    "why_here": "Maximum confluence zone. 4H FVG + 15M OB + 15M FVG all overlapping at 1.16195. Stop above 15M OB accounts for potential retest.",
+    "why_now": "Asia high just swept - liquidity taken. Prior day had massive bearish displacement. London/NY overlap for execution.",
+    "what_invalidates": "Break above 15M OB high 1.16325 would invalidate.",
+    "notes": "This is A+ template. Every timeframe aligned. Multi-TF FVG + OB confluence is killer. Slept through it - woke up to TP hit. Price DID test 15M area but stop held. FTMO CHALLENGE PASSED."
+  },
+
+  "labels": {
+    "is_valid_setup": true,
+    "quality_tag": "A_plus",
+    "example_type": "positive",
+    "primary_concept": "displacement_follow_through",
+    "all_concepts": ["fair_value_gap", "order_block", "cbdr", "asia_sweep", "multi_tf_confluence"]
+  },
+
+  "failure_analysis": null
+}

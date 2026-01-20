@@ -204,7 +204,7 @@
               "midpoint": { "type": "number" },
               "mitigation_type": { 
                 "type": "string", 
-                "enum": ["full_body", "wick_only"] 
+                "enum": ["full_body", "wick_only", "failed_retest", "respected", "none"] 
               }
             }
           }
@@ -226,7 +226,7 @@
               "direction": { "type": "string", "enum": ["up", "down"] },
               "origin_leg_strength": { 
                 "type": "string", 
-                "enum": ["weak", "normal", "strong"] 
+                "enum": ["weak", "normal", "moderate", "strong"] 
               }
             }
           }
@@ -278,7 +278,15 @@
             "Judas_into_OB",
             "Liquidity_Sweep_Reversal",
             "LTF_refinement",
-            "CBDR_ASIA_SD"
+            "CBDR_ASIA_SD",
+            "weekly_sell_model",
+            "weekly_buy_model",
+            "structure_breakdown",
+            "FVG_entry",
+            "OB_FVG_confluence",
+            "correlation_trade",
+            "continuation_short",
+            "continuation_long"
           ]
         },
 
@@ -302,7 +310,7 @@
             "volume_spike": { "type": "boolean" },
             "entry_model": { 
               "type": "string", 
-              "enum": ["market", "limit", "mitigation", "limit_at_OB_50", "market_chase"] 
+              "enum": ["market", "limit", "mitigation", "limit_at_OB_50", "market_chase", "structure_break", "failed_OB_retest", "FVG_entry", "FVG_OB_confluence", "imbalance_entry"] 
             },
             "extra_filters": {
               "type": "array",
@@ -352,22 +360,27 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["tp_label", "taken_pct", "timestamp"],
             "properties": {
+              "at": { "type": "string" },
+              "pct_close": { "type": "number", "minimum": 0, "maximum": 100 },
               "tp_label": { "type": "string" },
               "taken_pct": { "type": "number", "minimum": 0, "maximum": 100 },
-              "timestamp": { "type": "string", "format": "date-time" }
+              "timestamp": { "type": "string" }
             }
           }
         },
 
         "breakeven_move": {
-          "type": "object",
-          "required": ["moved_to_be", "trigger_reason"],
-          "properties": {
-            "moved_to_be": { "type": "boolean" },
-            "trigger_reason": { "type": ["string", "null"] }
-          }
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "properties": {
+                "moved_to_be": { "type": "boolean" },
+                "trigger_reason": { "type": ["string", "null"] }
+              }
+            }
+          ]
         },
 
         "manual_interventions": {
@@ -384,13 +397,17 @@
 
         "final_outcome": {
           "type": "object",
-          "required": ["result", "rr_realized"],
+          "required": ["result"],
           "properties": {
             "result": {
               "type": "string",
-              "enum": ["win_full_tp", "win_partials", "be", "loss"]
+              "enum": ["win_full_tp", "win_partials", "win", "be", "loss", "early_exit"]
             },
-            "rr_realized": { "type": "number" }
+            "rr_realized": { "type": "number" },
+            "r_achieved": { "type": "number" },
+            "pnl_pips": { "type": "number" },
+            "pnl_usd": { "type": "number" },
+            "exit_reason": { "type": "string" }
           }
         }
       }
@@ -411,7 +428,7 @@
     },
 
     "failure_analysis": {
-      "type": "object",
+      "type": ["object", "null"],
       "description": "Required for negative examples - detailed breakdown of what went wrong",
       "properties": {
         "root_cause": {
@@ -449,7 +466,7 @@
       "properties": {
         "quality_tag": { 
           "type": "string", 
-          "enum": ["A_plus", "A", "B", "C"] 
+          "enum": ["A_plus", "A", "B_plus", "B", "C", "D", "F"] 
         },
         "example_type": { 
           "type": "string", 

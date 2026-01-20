@@ -1,0 +1,176 @@
+{
+  "id": "2026-01-15_NY_EURUSD_WeeklySellModel_001",
+
+  "meta": {
+    "author": "Ashton",
+    "created_at": "2026-01-20T04:00:00Z",
+    "version": "1.0",
+    "tags": ["weekly_sell_model", "real_trade", "big_winner", "11R", "FTMO"]
+  },
+
+  "market": {
+    "pair": "EURUSD",
+    "instrument_type": "FX",
+    "broker_feed": "OANDA",
+    "spread_pips": 0.8
+  },
+
+  "references": {
+    "conversation_id": "",
+    "transcript_timestamps": [],
+    "image_ids": [],
+    "chart_link": "",
+    "session_video_clip": ""
+  },
+
+  "time": {
+    "date": "2026-01-15",
+    "session": "NewYork",
+    "killzone": "NY_AM",
+    "entry_timestamp": "2026-01-15T13:44:08Z",
+    "exit_timestamp": "2026-01-15T15:40:03Z",
+    "htf_tf": "W1",
+    "mtf_tf": "H4",
+    "ltf_tf": "M15",
+    "execution_tf": "M15"
+  },
+
+  "context": {
+    "day_type": "trend_day",
+    "vol_regime": "normal",
+    "news_context": "none",
+    "htf_bias": "bearish",
+    "environment_notes": "Weekly sell model - high forms early in week (Tuesday). Equal lows below as targets. Premium zone entry.",
+    
+    "range": {
+      "prior_day_high": 1.1640,
+      "prior_day_low": 1.1580,
+      "asia_high": 1.1636,
+      "asia_low": 1.1610,
+      "terminus_level": 1.1590,
+      "prior_distribution_zone": [1.1630, 1.1640],
+      "current_open": 1.1625
+    },
+    
+    "liquidity_map": {
+      "buy_side_levels": [
+        {"price": 1.1640, "type": "weekly_high"},
+        {"price": 1.1636, "type": "tuesday_high"}
+      ],
+      "sell_side_levels": [
+        {"price": 1.1590, "type": "equal_lows_SSL"},
+        {"price": 1.1560, "type": "fib_extension"}
+      ]
+    }
+  },
+
+  "pd_arrays": {
+    "htf_order_blocks": [
+      {
+        "direction": "bearish",
+        "tf": "H4",
+        "price_zone": [1.1630, 1.1640],
+        "origin_description": "Last up candle before bearish impulse"
+      }
+    ],
+    
+    "ltf_order_blocks": [
+      {
+        "direction": "bearish",
+        "tf": "M15",
+        "price_zone": [1.1630, 1.1636],
+        "midpoint": 1.1633,
+        "mitigation_type": "failed_retest"
+      }
+    ],
+    
+    "fair_value_gaps": [],
+    
+    "extensions": {
+      "cbdr_range": [1.1610, 1.1625],
+      "cbdr_extensions": [1.1595, 1.1580, 1.1560]
+    },
+    
+    "discount_premium": {
+      "anchor_swing": [1.1560, 1.1640],
+      "entry_in_discount": false,
+      "entry_discount_pct": 0.85
+    }
+  },
+
+  "setup": {
+    "bias": "short",
+    "setup_type": "weekly_sell_model",
+    
+    "pattern_story": {
+      "structure": "weekly_high_formed_tuesday",
+      "liquidity_objective": "equal_lows_below",
+      "timing_model": "weekly_sell_model",
+      "session_model": "NY_AM_continuation"
+    },
+    
+    "confirmation": {
+      "bos_or_choch": "H4_BOS_down",
+      "displacement": true,
+      "volume_spike": false,
+      "entry_model": "failed_OB_retest",
+      "extra_filters": ["premium_zone", "DXY_correlation", "weekly_timing"]
+    }
+  },
+
+  "execution": {
+    "entry_price": 1.16326,
+    "stop_loss": 1.1635,
+    "risk_pips": 2.4,
+    "position_size_risk_pct": 2.5,
+    "max_adverse_excursion_pips": 1.5,
+    "max_favorable_excursion_pips": 27.2,
+    "targets": [
+      {
+        "label": "TP1_first_support",
+        "price": 1.1625,
+        "reason": "first_support",
+        "expected_rr": 3.1
+      },
+      {
+        "label": "TP2_fib_extension",
+        "price": 1.1590,
+        "reason": "minus_0.5_fib_extension",
+        "expected_rr": 11.3
+      }
+    ]
+  },
+
+  "management": {
+    "partials": [
+      {"at": "TP1", "pct_close": 50},
+      {"at": "TP2", "pct_close": 50}
+    ],
+    "breakeven_move": "after_TP1",
+    "trail_method": "none_held_to_target",
+    "final_outcome": {
+      "result": "win",
+      "pnl_pips": 27.2,
+      "pnl_usd": 544.00,
+      "r_achieved": 11.3,
+      "exit_reason": "TP_hit_fib_extension"
+    }
+  },
+
+  "reasoning": {
+    "why_here": "Failed OB retest at 4H level in premium zone. Weekly high already formed (Tuesday). Equal lows below acting as magnet.",
+    "why_now": "NY AM killzone. Price rejected failed OB retest. DXY showing equal highs correlation (dollar strength incoming).",
+    "what_invalidates": "Break above weekly high 1.1640 would invalidate bearish weekly thesis.",
+    "notes": "Weekly sell model is textbook here. High formed Tuesday, we're in premium, failed OB retest. All I need to do is hold through the chop and let the thesis play out. MASSIVE WIN."
+  },
+
+  "labels": {
+    "is_valid_setup": true,
+    "quality_tag": "A_plus",
+    "example_type": "positive",
+    "primary_concept": "weekly_sell_model",
+    "all_concepts": ["weekly_sell_model", "order_block", "premium_discount", "equal_lows", "fib_extension"]
+  },
+
+  "failure_analysis": null
+}

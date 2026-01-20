@@ -1,0 +1,181 @@
+{
+  "id": "2026-01-15_NY_GBPUSD_OverTraded_002",
+
+  "meta": {
+    "author": "Ashton",
+    "created_at": "2026-01-20T04:00:00Z",
+    "version": "1.0",
+    "tags": ["over_trading", "execution_failure", "thesis_correct", "negative_example", "real_trade"]
+  },
+
+  "market": {
+    "pair": "GBPUSD",
+    "instrument_type": "FX",
+    "broker_feed": "OANDA",
+    "spread_pips": 1.2
+  },
+
+  "references": {
+    "conversation_id": "",
+    "transcript_timestamps": [],
+    "image_ids": [],
+    "chart_link": "",
+    "session_video_clip": ""
+  },
+
+  "time": {
+    "date": "2026-01-15",
+    "session": "NewYork",
+    "killzone": "London_NY_Overlap",
+    "entry_timestamp": "2026-01-15T12:00:00Z",
+    "exit_timestamp": "2026-01-15T18:00:00Z",
+    "htf_tf": "D1",
+    "mtf_tf": "H1",
+    "ltf_tf": "M15",
+    "execution_tf": "M5"
+  },
+
+  "context": {
+    "day_type": "trend_day",
+    "vol_regime": "high",
+    "news_context": "none",
+    "htf_bias": "bearish",
+    "environment_notes": "HTF thesis was CORRECT - price reached 1.3385 by EOD. But execution was terrible with 8 attempts.",
+    
+    "range": {
+      "prior_day_high": 1.3450,
+      "prior_day_low": 1.3380,
+      "asia_high": 1.3440,
+      "asia_low": 1.3410,
+      "terminus_level": 1.3350,
+      "prior_distribution_zone": [1.3420, 1.3440],
+      "current_open": 1.3430
+    },
+    
+    "liquidity_map": {
+      "buy_side_levels": [
+        {"price": 1.3450, "type": "prior_day_high"}
+      ],
+      "sell_side_levels": [
+        {"price": 1.3385, "type": "target_1"},
+        {"price": 1.3350, "type": "terminus"}
+      ]
+    }
+  },
+
+  "pd_arrays": {
+    "htf_order_blocks": [
+      {
+        "direction": "bearish",
+        "tf": "H1",
+        "price_zone": [1.3420, 1.3433],
+        "origin_description": "1H bearish OB holding"
+      }
+    ],
+    
+    "ltf_order_blocks": [],
+    
+    "fair_value_gaps": [],
+    
+    "extensions": {
+      "cbdr_range": [1.3410, 1.3430],
+      "cbdr_extensions": [1.3390, 1.3370, 1.3350]
+    },
+    
+    "discount_premium": {
+      "anchor_swing": [1.3350, 1.3450],
+      "entry_in_discount": false,
+      "entry_discount_pct": 0.65
+    }
+  },
+
+  "setup": {
+    "bias": "short",
+    "setup_type": "structure_breakdown",
+    
+    "pattern_story": {
+      "structure": "HTF_bearish_continuation",
+      "liquidity_objective": "sellside_target",
+      "timing_model": "LTF_structure_break",
+      "session_model": "London_NY_overlap"
+    },
+    
+    "confirmation": {
+      "bos_or_choch": "M15_BOS_down",
+      "displacement": false,
+      "volume_spike": false,
+      "entry_model": "structure_break",
+      "extra_filters": ["DXY_correlation", "EU_correlation"]
+    }
+  },
+
+  "execution": {
+    "entry_price": 1.34285,
+    "stop_loss": 1.3433,
+    "risk_pips": 4.5,
+    "position_size_risk_pct": 2.5,
+    "max_adverse_excursion_pips": 15.3,
+    "max_favorable_excursion_pips": 10,
+    "targets": [
+      {
+        "label": "TP1_target",
+        "price": 1.3385,
+        "reason": "first_target",
+        "expected_rr": 4.4
+      },
+      {
+        "label": "TP2_extended",
+        "price": 1.3350,
+        "reason": "terminus",
+        "expected_rr": 8.0
+      }
+    ]
+  },
+
+  "management": {
+    "partials": [
+      {"at": "TP1", "pct_close": 100}
+    ],
+    "breakeven_move": "after_1R",
+    "trail_method": "none",
+    "final_outcome": {
+      "result": "loss",
+      "pnl_pips": -27.9,
+      "pnl_usd": -211.25,
+      "r_achieved": -0.85,
+      "exit_reason": "stopped_out_multiple_times"
+    }
+  },
+
+  "reasoning": {
+    "why_here": "HTF bearish structure intact. 1H bearish OB holding. LTF structure break gave entry signal.",
+    "why_now": "London/NY overlap - high volatility expected. DXY and EU correlation aligned.",
+    "what_invalidates": "Break above 1H OB high 1.3433.",
+    "notes": "I know it's going down but I keep getting chopped. Should have waited for cleaner entry instead of forcing it multiple times. Price DID reach 1.3385 by end of day - thesis was right, execution was wrong."
+  },
+
+  "labels": {
+    "is_valid_setup": false,
+    "quality_tag": "D",
+    "example_type": "negative",
+    "primary_concept": "over_trading",
+    "all_concepts": ["order_block", "structure_break", "correlation"]
+  },
+
+  "failure_analysis": {
+    "root_cause": ["over_trading", "revenge_trading", "stops_too_tight"],
+    "what_went_wrong": "Correct thesis but terrible execution. Over-traded with 8 attempts. Stops too tight for spread. Counter-trend BUY in middle of selloff.",
+    "was_thesis_correct": true,
+    "entry_problem": "Stop too tight for spread. Re-entered without new confirmation. No displacement before entries.",
+    "exit_problem": "Held too long on trade #4 (-15.3 pips). Panic counter-trend BUY lost more.",
+    "what_should_have_been_done": [
+      "Wait for displacement and cleaner entry",
+      "One entry with proper stop distance accounting for spread",
+      "If stopped, wait for new setup confirmation before re-entering",
+      "Never counter-trend trade when main thesis is intact"
+    ],
+    "psychological_factors": ["revenge_trading", "fomo", "frustration"],
+    "anti_pattern": "over_trading_same_thesis",
+    "lesson_summary": "Right thesis, wrong execution. Wait for displacement, use proper stop distance, and never re-enter without new confirmation."
+  }
+}
