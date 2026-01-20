@@ -6,6 +6,7 @@ Handles:
 - Entry/exit logging
 - Post-trade review workflow
 - Trade database management
+- Cloud sync to Turso database
 """
 
 import json
@@ -21,6 +22,16 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 MEMORY_DIR = PROJECT_ROOT / "data" / "memory"
 JOURNAL_DIR = PROJECT_ROOT / "journal" / "ashton"
 TRADES_DB = JOURNAL_DIR / "trades_database.json"
+
+
+def get_turso_db():
+    """Get Turso database connection (lazy import to avoid circular deps)."""
+    try:
+        from ict_agent.database import get_db
+        return get_db()
+    except Exception as e:
+        print(f"  ⚠️ Turso not available: {e}")
+        return None
 
 
 class TradeStatus(Enum):
@@ -166,12 +177,22 @@ class PostTradeReview:
 class JournalEngine:
     """
     Complete trade journaling system for ICT trading.
+    Syncs to both local JSON and Turso cloud database.
     """
     
-    def __init__(self):
+    def __init__(self, sync_to_cloud: bool = True):
         self.trades_db = self._load_trades_db()
         self.memory = self._load_memory()
+        self.sync_to_cloud = sync_to_cloud
+        self._turso = None
         JOURNAL_DIR.mkdir(parents=True, exist_ok=True)
+    
+    @property
+    def turso(self):
+        """Lazy load Turso connection."""
+        if self._turso is None and self.sync_to_cloud:
+            self._turso = get_turso_db()
+        return self._turso
     
     def _load_trades_db(self) -> Dict:
         """Load trades database."""
@@ -195,6 +216,62 @@ class JournalEngine:
         self.trades_db["last_updated"] = datetime.now().isoformat()
         with open(TRADES_DB, "w") as f:
             json.dump(self.trades_db, f, indent=2)
+    
+    def _sync_trade_to_cloud(self, trade: Dict):
+        """Sync a trade to Turso cloud database."""
+        if not self.turso:
+            return
+        
+        try:
+            pre = trade.get("pre_trade", {})
+            post = trade.get("post_trade", {})
+            
+            # Handle both old and new trade formats
+            # Old format: pair at top level
+            # New format: pair inside pre_trade
+            pair = trade.get("pair") or pre.get("pair")
+            direction = trade.get("direction") or pre.get("direction")
+            
+            if not pair or not direction:
+                print(f"  ⚠️ Skipping trade without pair/direction: {trade.get('id')}")
+                return
+            
+            # Convert to Turso format
+            turso_trade = {
+                "id": str(trade.get("id")),
+                "pair": pair,
+                "direction": direction,
+                "entry_price": trade.get("entry") or pre.get("entry_price"),
+                "stop_loss": trade.get("stop") or pre.get("stop_price"),
+                "take_profit": trade.get("target1") or trade.get("target") or pre.get("target_price"),
+                "position_size": trade.get("position_size"),
+                "status": trade.get("status", "closed").upper(),
+                "result": trade.get("outcome") or trade.get("result"),
+                "pnl_dollars": trade.get("net_pnl") or trade.get("realized_pnl") or trade.get("pnl_dollars"),
+                "pnl_pips": trade.get("realized_pips") or trade.get("pnl_pips"),
+                "daily_bias": trade.get("daily_bias") or pre.get("daily_bias"),
+                "killzone": trade.get("session") or pre.get("killzone"),
+                "setup_type": trade.get("model") or pre.get("setup_type", ""),
+                "setup_grade": trade.get("confidence") or pre.get("setup_grade"),
+                "confluence_score": trade.get("confluence_count") or pre.get("confidence_level"),
+                "emotional_state": pre.get("emotional_state"),
+                "confidence": trade.get("confluence_count") or pre.get("confidence_level"),
+                "reasoning": trade.get("notes") or pre.get("trade_thesis"),
+                "executed_as_planned": post.get("plan_followed") if post else None,
+                "lessons_learned": ", ".join(trade.get("lessons", [])) if trade.get("lessons") else (post.get("key_lesson") if post else None),
+                "what_worked": ", ".join(post.get("worked_well", [])) if post else None,
+                "what_didnt": ", ".join(trade.get("mistakes", [])) if trade.get("mistakes") else (", ".join(post.get("needs_improvement", [])) if post else None),
+                "overall_grade": post.get("overall_grade") if post else None,
+                "created_at": trade.get("date") or trade.get("created_at"),
+                "entry_time": trade.get("open_time") or trade.get("entry_time"),
+                "exit_time": trade.get("close_time") or trade.get("exit_time"),
+            }
+            
+            self.turso.save_trade(turso_trade)
+            print(f"  ☁️  Synced to cloud: {trade.get('id')}")
+            
+        except Exception as e:
+            print(f"  ⚠️ Cloud sync failed: {e}")
     
     def _load_memory(self) -> Dict:
         """Load memory files."""
@@ -263,8 +340,12 @@ class JournalEngine:
         )
         
         # Add to database
-        self.trades_db["trades"].append(asdict(trade))
+        trade_dict = asdict(trade)
+        self.trades_db["trades"].append(trade_dict)
         self._save_trades_db()
+        
+        # Sync to cloud
+        self._sync_trade_to_cloud(trade_dict)
         
         return trade
     
@@ -355,6 +436,10 @@ class JournalEngine:
                 trade["updated_at"] = datetime.now().isoformat()
                 
                 self._save_trades_db()
+                
+                # Sync to cloud
+                self._sync_trade_to_cloud(trade)
+                
                 return trade
         return None
     
@@ -378,6 +463,10 @@ class JournalEngine:
                     self._suggest_rule(review.add_to_rules, trade_id)
                 
                 self._save_trades_db()
+                
+                # Sync to cloud
+                self._sync_trade_to_cloud(trade)
+                
                 return True
         return False
     
@@ -466,6 +555,45 @@ class JournalEngine:
         stats["profit_factor"] = round(gross_profit / gross_loss, 2) if gross_loss > 0 else float('inf')
         
         return stats
+    
+    def sync_all_to_cloud(self) -> int:
+        """Sync all local trades to cloud database. Returns count synced."""
+        if not self.turso:
+            print("  ❌ Turso database not available")
+            return 0
+        
+        count = 0
+        for trade in self.trades_db["trades"]:
+            try:
+                self._sync_trade_to_cloud(trade)
+                count += 1
+            except Exception as e:
+                print(f"  ⚠️ Failed to sync {trade.get('id')}: {e}")
+        
+        print(f"\n  ✅ Synced {count} trades to cloud")
+        return count
+    
+    def get_cloud_trades(self, limit: int = 50) -> List[Dict]:
+        """Get trades from cloud database."""
+        if not self.turso:
+            return []
+        
+        try:
+            return self.turso.get_trades(limit=limit)
+        except Exception as e:
+            print(f"  ⚠️ Failed to fetch cloud trades: {e}")
+            return []
+    
+    def get_cloud_stats(self) -> Optional[Dict]:
+        """Get trade statistics from cloud database."""
+        if not self.turso:
+            return None
+        
+        try:
+            return self.turso.get_trade_stats()
+        except Exception as e:
+            print(f"  ⚠️ Failed to fetch cloud stats: {e}")
+            return None
     
     def interactive_pre_trade(self) -> TradeEntry:
         """Interactive pre-trade journal via CLI."""

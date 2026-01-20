@@ -711,7 +711,92 @@ def cmd_db(args):
                     print(f"     Total P&L: ${stats.get('total_pnl', 0):.2f}")
             print()
         
+        elif args.action == 'sync':
+            # Sync all local trades to cloud
+            from ict_agent.journal import JournalEngine
+            engine = JournalEngine()
+            
+            print(f"\n  🔄 Syncing local trades to cloud...")
+            count = engine.sync_all_to_cloud()
+            print(f"\n  ✅ Done! {count} trades synced to Turso cloud database")
+        
+        elif args.action == 'trades':
+            # Show trades from cloud
+            trades = db.get_trades(limit=20)
+            
+            if trades:
+                print(f"\n{'═' * 60}")
+                print(f"  CLOUD TRADES ({len(trades)} shown)")
+                print(f"{'═' * 60}")
+                
+                for t in trades:
+                    result_icon = "✅" if t.get('result') == 'WIN' else "❌" if t.get('result') == 'LOSS' else "⏳"
+                    pnl = t.get('pnl_dollars', 0) or 0
+                    print(f"\n  {result_icon} {t.get('id', 'Unknown')}")
+                    print(f"     {t.get('pair')} {t.get('direction')} | {t.get('status')}")
+                    print(f"     Entry: {t.get('entry_price')} → Exit: {t.get('exit_price', 'N/A')}")
+                    print(f"     P&L: ${pnl:.2f} | Grade: {t.get('setup_grade', 'N/A')}")
+            else:
+                print("\n  No trades in cloud database yet")
+                print("  Run: vex.py db sync  to upload local trades")
+            print()
+        
         db.close()
+        
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+
+
+def cmd_analyze(args):
+    """AI-powered chart analysis."""
+    try:
+        from ict_agent.analysis import ChartAnalyzer
+        
+        analyzer = ChartAnalyzer()
+        
+        if not analyzer.provider:
+            print("\n  ❌ No AI API key configured!")
+            print("  Set ANTHROPIC_API_KEY or OPENAI_API_KEY in .env")
+            return
+        
+        image_path = args.image
+        
+        # If no path given, try to find most recent screenshot
+        if not image_path:
+            screenshots_dir = Path(__file__).parent / "screenshots"
+            if screenshots_dir.exists():
+                pngs = sorted(screenshots_dir.glob("*.png"), key=lambda x: x.stat().st_mtime, reverse=True)
+                if pngs:
+                    image_path = str(pngs[0])
+                    print(f"\n  📸 Using most recent: {pngs[0].name}")
+        
+        if not image_path:
+            print("\n  ❌ No image specified and no screenshots found")
+            print("  Usage: vex.py analyze <path/to/chart.png>")
+            return
+        
+        if args.quick:
+            print(f"\n  🔍 Quick analysis of {Path(image_path).name}...")
+            result = analyzer.quick_bias(image_path)
+            print(f"\n  📈 Bias: {result.get('bias')} (Confidence: {result.get('confidence')}/10)")
+            print(f"  📍 Resistance: {result.get('key_resistance')}")
+            print(f"  📍 Support: {result.get('key_support')}")
+            print(f"  🎯 Trade Now: {'Yes' if result.get('trade_now') else 'No'}")
+            print(f"  💡 {result.get('reason')}")
+        else:
+            analysis = analyzer.analyze_and_print(image_path)
+            
+            # Save analysis
+            if not analysis.get("error"):
+                save_path = Path(__file__).parent / "analysis" / "charts"
+                save_path.mkdir(parents=True, exist_ok=True)
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"analysis_{timestamp}.json"
+                with open(save_path / filename, "w") as f:
+                    json.dump(analysis, f, indent=2)
+                print(f"\n  💾 Analysis saved to analysis/charts/{filename}")
         
     except Exception as e:
         print(f"\n❌ Error: {e}")
@@ -726,6 +811,8 @@ def main():
         epilog="""
 Commands:
   markup <PAIR>                  Generate chart markup
+  analyze <IMAGE>                AI analysis of chart screenshot
+  analyze --quick <IMAGE>        Quick bias check
   grade <PAIR> <LONG|SHORT>      Grade a setup (interactive)
   check <PAIR> <DIR> <E> <S> <T> Check rules before entry
   journal new                    Create new trade journal entry
@@ -739,7 +826,8 @@ Commands:
   dashboard open                 Open HTML dashboard in browser
   db concept <NAME>              Look up ICT concept
   db model <NAME>                Look up trading model
-  db search <QUERY>              Search knowledge base
+  db sync                        Sync trades to cloud
+  db trades                      View cloud trades
   db stats                       Show database statistics
   rules                          Show your trading rules
   lessons                        Show key lessons learned
@@ -758,6 +846,12 @@ Commands:
     markup_parser.add_argument('pair', help='Currency pair (e.g., EURUSD, GBP_JPY)')
     markup_parser.add_argument('-t', '--timeframe', help='Specific timeframe (D, 4H, 1H, 15M)')
     markup_parser.set_defaults(func=cmd_markup)
+    
+    # Analyze command (AI chart analysis)
+    analyze_parser = subparsers.add_parser('analyze', help='AI-powered chart analysis')
+    analyze_parser.add_argument('image', nargs='?', help='Path to chart image (or uses most recent screenshot)')
+    analyze_parser.add_argument('-q', '--quick', action='store_true', help='Quick bias check only')
+    analyze_parser.set_defaults(func=cmd_analyze)
     
     # Grade command
     grade_parser = subparsers.add_parser('grade', help='Grade a trading setup')
@@ -841,7 +935,7 @@ Commands:
     # Database command
     db_parser = subparsers.add_parser('db', help='Database - ICT knowledge & trades')
     db_parser.add_argument('action', nargs='?', default='stats',
-                          choices=['concept', 'model', 'search', 'stats'],
+                          choices=['concept', 'model', 'search', 'stats', 'sync', 'trades'],
                           help='Database action')
     db_parser.add_argument('query', nargs='?', help='Concept/model name or search query')
     db_parser.set_defaults(func=cmd_db)
@@ -859,15 +953,15 @@ Commands:
         print("=" * 70)
         print("\n  python vex.py session start          # Morning session workflow")
         print("  python vex.py markup EURUSD          # Chart markup")
+        print("  python vex.py analyze                # AI chart analysis (latest screenshot)")
+        print("  python vex.py analyze chart.png      # AI analyze specific chart")
         print("  python vex.py cbdr EURUSD            # CBDR & SD levels")
         print("  python vex.py grade EURUSD LONG      # Grade a setup")
-        print("  python vex.py check EURUSD LONG 1.08 1.075 1.09   # Rules check")
         print("  python vex.py journal new            # New trade journal")
         print("  python vex.py dashboard open         # Performance dashboard")
         print("  python vex.py db concept FVG         # Look up ICT concept")
-        print("  python vex.py db model Silver Bullet # Look up trading model")
-        print("  python vex.py db stats               # Database statistics")
-        print("  python vex.py stats                  # Show stats")
+        print("  python vex.py db sync                # Sync trades to cloud")
+        print("  python vex.py db trades              # View cloud trades")
         print()
 
 
