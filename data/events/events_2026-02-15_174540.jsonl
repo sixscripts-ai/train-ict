@@ -1,0 +1,3 @@
+{"event_type": "system_start", "timestamp": "2026-02-15T17:45:40.652734-05:00", "source": "controller", "data": {"message": "VEX Agent booted successfully", "level": "info", "component": "controller"}, "event_id": 1}
+{"event_type": "market_scan", "timestamp": "2026-02-15T17:45:40.977757-05:00", "source": "skill:scan", "data": {"symbol": "EUR_USD", "timeframe": "", "bid": 1.18687, "ask": 1.18747, "killzone": "none"}, "event_id": 2}
+{"event_type": "market_scan", "timestamp": "2026-02-15T17:45:41.199939-05:00", "source": "skill:scan", "data": {"symbol": "GBP_USD", "timeframe": "", "bid": 1.36436, "ask": 1.36526, "killzone": "none"}, "event_id": 3}

@@ -101,6 +101,10 @@ class AnalyzeSkill(Skill):
                 # ACCEPTED
                 direction = "SELL" if setup.bias.value == "bearish" else "BUY"
 
+                # Apply memory-based confidence adjustment
+                confidence_boost = context.get("confidence_boost", 0)
+                adjusted_confidence = max(0.0, min(1.0, setup.confidence + confidence_boost))
+
                 signal_event = SignalEvent(
                     event_type=EventType.SIGNAL_GENERATED,
                     source="skill:analyze",
@@ -111,13 +115,14 @@ class AnalyzeSkill(Skill):
                     entry_price=setup.entry_price,
                     stop_loss=setup.stop_loss,
                     take_profit=setup.target_1,
-                    confidence=setup.confidence,
+                    confidence=adjusted_confidence,
                     rr_ratio=setup.rr_ratio,
                     confluences=setup.confluences,
                     metadata={
                         "knowledge_score": validation["score"],
                         "knowledge_warnings": validation["warnings"],
-                        "learned_adjustment": validation.get("learned_adjustment", 0)
+                        "learned_adjustment": validation.get("learned_adjustment", 0),
+                        "memory_confidence_boost": confidence_boost,
                     }
                 )
                 events.append(signal_event)
@@ -137,7 +142,9 @@ class AnalyzeSkill(Skill):
                         "risk_pips": setup.risk_pips,
                         "reward_pips": setup.reward_pips,
                         "rr_ratio": setup.rr_ratio,
-                        "confidence": setup.confidence,
+                        "confidence": adjusted_confidence,
+                        "raw_confidence": setup.confidence,
+                        "confidence_boost": confidence_boost,
                         "confluences": setup.confluences,
                         "confluence_score": validation["score"],  # Use Knowledge Score!
                         "killzone": setup.killzone,

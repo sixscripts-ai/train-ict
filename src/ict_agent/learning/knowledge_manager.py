@@ -89,9 +89,9 @@ class KnowledgeManager:
     
     def __init__(self, project_root: Path = None):
         if project_root is None:
-            # Find project root
+            # Find project root by looking for knowledge_base directory
             current = Path(__file__).resolve()
-            while current.name != "ict_trainer" and current.parent != current:
+            while not (current / "knowledge_base").exists() and current.parent != current:
                 current = current.parent
             project_root = current
         
@@ -132,6 +132,7 @@ class KnowledgeManager:
         """Load all knowledge sources"""
         self._load_terminology()
         self._load_master_library()
+        self._load_advanced_concepts()  # NEW: Load advanced concepts
         self._load_extracted_models()
         self._load_relationships()  # NEW: Load concept relationships
         self._load_confluence_stats()  # NEW: Load learned stats
@@ -140,6 +141,42 @@ class KnowledgeManager:
         self._build_indexes()
         stats_count = len(self.confluence_stats.get("combinations", {}))
         print(f"📚 Knowledge loaded: {len(self.concepts)} concepts, {len(self.models)} models, {len(self.relationships.get('concept_requirements', {}))} relationships, {stats_count} learned combos")
+
+    def _load_advanced_concepts(self):
+        """Parse ICT_ADVANCED_CONCEPTS.md"""
+        lib_file = self.kb_path / "concepts" / "ICT_ADVANCED_CONCEPTS.md"
+        if not lib_file.exists():
+            return
+        
+        with open(lib_file) as f:
+            content = f.read()
+        
+        # Simple parser for headers like ## 1. Concept Name
+        import re
+        sections = re.split(r'\n## \d+\. ', content)
+        
+        for section in sections[1:]:
+            lines = section.strip().split('\n')
+            if not lines:
+                continue
+            
+            title = lines[0].strip()
+            # Clean title (remove numbering if mistakenly captured)
+            name_key = title.lower().split('(')[0].strip().replace(' ', '_')
+            
+            # Extract definition
+            definition = ""
+            for i, line in enumerate(lines):
+                if line.startswith("**Definition**"):
+                    definition = line.replace("**Definition**:", "").strip()
+                    break
+            
+            if name_key not in self.concepts:
+                self.concepts[name_key] = Concept(
+                    name=title,
+                    definition=definition,
+                    source="ICT_ADVANCED_CONCEPTS.md"
+                )
     
     def _load_terminology(self):
         """Load terminology.yaml into structured concepts"""

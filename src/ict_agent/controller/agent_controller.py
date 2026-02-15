@@ -215,6 +215,16 @@ class VexController:
                 self.core_engine = VexCoreEngine()
                 print("   ✅ VexCoreEngine (8-gate system)")
 
+            # 9b. Knowledge Manager (shared instance — avoid re-creation per analyze call)
+            try:
+                from ict_agent.learning.knowledge_manager import KnowledgeManager
+                self.knowledge_manager = KnowledgeManager()
+                concepts = len(self.knowledge_manager.concepts) if hasattr(self.knowledge_manager, 'concepts') else 0
+                print(f"   ✅ KnowledgeManager ({concepts} concepts)")
+            except Exception as e:
+                print(f"   ⚠️ KnowledgeManager failed: {e}")
+                self.knowledge_manager = None
+
             # 10. Killzone Manager
             from ict_agent.engine.killzone import KillzoneManager
             self.killzone_manager = KillzoneManager()
@@ -427,11 +437,34 @@ class VexController:
         best_confidence = 0
 
         for symbol in self.config.symbols:
-            analyze_result = self.skill_registry.execute("analyze", {
+            # Build rich analysis context with memory recall
+            analyze_context = {
                 "symbol": symbol,
                 "engine": self.core_engine,
                 "killzone_override": killzone_name,
-            })
+            }
+
+            # Inject shared KnowledgeManager (avoids re-creation each call)
+            if hasattr(self, 'knowledge_manager') and self.knowledge_manager:
+                analyze_context["knowledge_manager"] = self.knowledge_manager
+
+            # Inject memory recall — gives engine pre-trade intelligence
+            if hasattr(self, 'memory') and self.memory:
+                recall = self.memory.recall_for_analysis(
+                    symbol=symbol,
+                    session=killzone_name,
+                )
+                analyze_context["memory_recall"] = recall
+
+                # Apply confidence adjustment from memory
+                assessment = recall.get("should_trade", {})
+                analyze_context["confidence_boost"] = assessment.get("confidence_boost", 0)
+                if assessment.get("warnings"):
+                    for w in assessment["warnings"]:
+                        if self.config.verbose:
+                            print(f"   ⚠️ Memory: {w}")
+
+            analyze_result = self.skill_registry.execute("analyze", analyze_context)
 
             # Publish analysis events
             if analyze_result and analyze_result.events:

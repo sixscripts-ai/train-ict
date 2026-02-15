@@ -186,7 +186,7 @@ class LongTermMemory:
     # ─── User Teachings ───────────────────────────────────────────────────
 
     @property
-    def teachings(self) -> Dict:
+    def teachings(self) -> Any:
         """Get all user teachings."""
         return self._user_teachings
 
@@ -234,7 +234,7 @@ class LongTermMemory:
             "recent_lessons": lessons,
             "model_lessons": model_lessons,
             "relevant_rules": relevant_rules,
-            "teaching_count": sum(len(v) if isinstance(v, list) else 1 for v in self._user_teachings.values()),
+            "teaching_count": len(self._user_teachings) if isinstance(self._user_teachings, list) else sum(len(v) if isinstance(v, list) else 1 for v in self._user_teachings.values()),
         }
 
     def summary(self) -> Dict[str, Any]:

@@ -1,0 +1,175 @@
+# Concept Relationships (The "Wiring" of the Brain)
+# Defines dependencies, requirements, and causal links between ICT concepts.
+
+# ==============================================================================
+# 1. MODEL REQUIREMENTS
+# ==============================================================================
+models:
+  silver_bullet:
+    description: "Time-based liquidity run setup (10am-11am NY)"
+    required:
+      - liquidity_sweep
+      - displacement
+      - fvg
+      - market_structure_shift
+    time_windows:
+      - name: "AM Silver Bullet"
+        time: "10:00-11:00"
+      - name: "PM Silver Bullet"
+        time: "14:00-15:00"
+    anti_patterns:
+      - entry_before_liquidity_sweep
+      - counter_trend_without_htf_level
+
+  judas_swing:
+    description: "False move to trap traders before real move (London/NY Open)"
+    required:
+      - time_of_day_macro
+      - liquidity_sweep
+      - displacement
+    optional:
+      - order_block
+      - fvg
+    time_windows:
+      - name: "London Open"
+        time: "02:00-05:00" # Broad window, Judas usually 02:00-03:00
+      - name: "NY Open"
+        time: "07:00-10:00" # Judas usually 08:30-09:30
+
+  optimal_trade_entry:
+    description: "Retracement entry after displacement leg"
+    required:
+      - displacement
+      - fibonacci_retracement
+      - market_structure_break
+    confluence_zone: "62-79% retracement"
+
+  breaker_block_reversal:
+    description: "Failed Order Block becomes support/resistance"
+    required:
+      - liquidity_sweep_high_low
+      - displacement_through_ob
+    entry_rules:
+      - "Enter at the breaker body (highest up-close or lowest down-close)"
+
+# ==============================================================================
+# 2. CONCEPT DEPENDENCIES (If X exists, Y must exist)
+# ==============================================================================
+concept_requirements:
+  fair_value_gap:
+    requires:
+      - concept: displacement
+        why: "Without displacement, a gap is just weak price action, not an FVG."
+    entry_rules:
+      - "Enter at 50% consequent encroachment (CE)."
+      - "Stop loss must go beyond the candle that created the gap."
+
+  inversion_fair_value_gap:
+    requires:
+      - concept: candle_closure
+        why: "Price MUST close through the original FVG body to validate inversion."
+    entry_rules:
+      - "Wait for retest of the old FVG high/low from opposite side."
+
+  order_block:
+    requires:
+      - concept: displacement
+        why: "A block is only valid if it caused a strong move away."
+      - concept: liquidity_sweep
+        why: "High probability OBs sweep liquidity first."
+    entry_rules:
+      - "Entry at open or 50% mean threshold."
+      - "Invalidated if price closes beyond 50% of the block body."
+
+  market_structure_shift:
+    requires:
+      - concept: displacement
+        why: "A shift without energy is likely a fakeout (stop run)."
+      - concept: liquidity_sweep
+        why: "Real shifts happen after liquidity is taken."
+
+# ==============================================================================
+# 3. TIME RULES (Macros)
+# ==============================================================================
+time_rules:
+  macros:
+    - name: "09:50-10:10 Macro"
+      action: "Look for spooling or reversal"
+    - name: "10:50-11:10 Macro"
+      action: "Silver Bullet cleanup / reversal"
+    - name: "11:50-12:10 Macro"
+      action: "Lunch time injection"
+    - name: "13:10-13:40 Macro"
+      action: "PM Session injection"
+  
+  avoid_times:
+    - time: "12:00-13:00"
+      reason: "Noon Lunch Hour - Low probability / Chop"
+    - time: "16:30-18:00"
+      reason: "Market Close / Spreads widen"
+
+# ==============================================================================
+# 4. CONFLUENCE WEIGHTS (Scoring System)
+# ==============================================================================
+confluence_weights:
+  a_plus_setup: 9.0
+  minimum_for_trade: 5.0
+  
+  thresholds:
+    minimum_for_trade: 5.0
+    a_plus_setup: 9.0
+
+  critical:
+    displacement: 2.5
+    liquidity_sweep: 2.5
+    htf_bias_aligned: 2.0
+    killzone_aligned: 1.5
+
+  high:
+    fair_value_gap: 1.5
+    order_block: 1.5
+    market_structure_shift: 1.5
+    smt_divergence: 1.5
+    macro_active: 1.5   # Added weight for Macro Times
+
+  moderate:
+    optimal_trade_entry: 1.0
+    premium_discount_aligned: 1.0
+    breaker_block: 1.0
+    volume_imbalance: 1.0
+
+  bonuses:
+    inversion_fair_value_gap: 0.5
+    standard_deviation_projection: 0.5
+    weekly_profile_aligned: 0.5
+    consequent_encroachment_respect: 0.5
+
+  penalties:
+    counter_trend: -2.0
+    news_event_incoming: -3.0
+    asian_session_chop: -1.0
+    low_probability_time: -2.0
+
+# ==============================================================================
+# 5. ANTI-PATTERNS (Common Mistakes)
+# ==============================================================================
+anti_patterns:
+  fvg_without_displacement:
+    description: "Trading a gap that formed inside a range/chop."
+    why_fails: "No institutional sponsorship."
+    fix: "Wait for a candle that closes outside the range."
+  
+  entry_before_liquidity_sweep:
+    description: "Entering on the first move before a stop hunt."
+    why_fails: "You become the liquidity."
+    fix: "Wait for a raid of an old high/low first."
+
+  chasing_expansion:
+    description: "Entering after price has already moved > 3SD."
+    why_fails: "Buying the top / Selling the bottom."
+    fix: "Wait for retracement to OTE."
+
+  forcing_trades_in_lunch:
+    description: "Trading between 12:00-13:00 NY."
+    why_fails: "Algo is in seek-and-destroy mode."
+    fix: "Wait for 13:30 Macro."
