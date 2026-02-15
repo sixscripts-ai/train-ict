@@ -1,0 +1,11 @@
+{
+  "starting_balance": 10197.836,
+  "current_balance": 10197.836,
+  "high_water_mark": 10197.836,
+  "current_drawdown": 0.0,
+  "trades_today": 0,
+  "daily_pnl": 0.0,
+  "is_shutdown": false,
+  "shutdown_reason": "",
+  "last_updated": "2026-02-15T17:27:48.878820-05:00"
+}

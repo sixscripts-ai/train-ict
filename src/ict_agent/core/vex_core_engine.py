@@ -258,6 +258,7 @@ class VexCoreEngine:
         df: pd.DataFrame,
         htf_df: Optional[pd.DataFrame] = None,
         timeframe: str = "15m",
+        killzone_override: Optional[str] = None,
     ) -> EngineResult:
         """
         Main entry point - analyzes market and returns trade decision.
@@ -276,9 +277,13 @@ class VexCoreEngine:
         # ---------------------------------------------------------------------
         # GATE 1: KILLZONE CHECK
         # ---------------------------------------------------------------------
-        killzone = self.killzone_mgr.get_current_killzone(now)
-        killzone_active = killzone is not None
-        killzone_name = killzone.name if killzone else "none"
+        if killzone_override:
+            killzone_active = True
+            killzone_name = killzone_override
+        else:
+            killzone = self.killzone_mgr.get_current_killzone(now)
+            killzone_active = killzone is not None
+            killzone_name = killzone.name if killzone else "none"
 
         if not killzone_active:
             return EngineResult(
