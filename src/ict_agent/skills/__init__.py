@@ -5,6 +5,7 @@ from ict_agent.skills.analyze_skill import AnalyzeSkill
 from ict_agent.skills.execute_skill import ExecuteSkill
 from ict_agent.skills.learn_skill import LearnSkill
 from ict_agent.skills.news_skill import NewsSkill
+from ict_agent.skills.strategy_skill import StrategySkill
 
 __all__ = [
     "Skill",
@@ -15,4 +16,5 @@ __all__ = [
     "ExecuteSkill",
     "LearnSkill",
     "NewsSkill",
+    "StrategySkill",
 ]

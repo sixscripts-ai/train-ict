@@ -13,7 +13,7 @@ from pathlib import Path
 # Add src to path
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
-from ict_agent.core.vex_core import VexCoreEngine
+from ict_agent.core.vex_core_engine import VexCoreEngine
 from ict_agent.learning.knowledge_manager import KnowledgeManager
 from ict_agent.data.oanda_fetcher import get_oanda_data
 
@@ -59,14 +59,13 @@ def run_simulation(symbol: str, days: int = 5):
         current_candle = df_15m.iloc[i]
         curr_time = current_candle['dt']
         hour = curr_time.hour
-        minute = curr_time.minute
         
         # Optimization: Only analyze during potential killzones
         # London: 2-5, NY: 7-11, Lunch: 12-13 (to test rejection)
-        is_active_time = (2 <= hour < 5) or (7 <= hour < 12) or (12 <= hour < 14)
-        
-        if not is_active_time:
-            continue
+        # Uncomment for speed optimization
+        # is_active_time = (2 <= hour < 5) or (7 <= hour < 12) or (12 <= hour < 14)
+        # if not is_active_time:
+        #    continue
             
         # Create a "Live" slice (up to this candle)
         # We pass the full history up to 'i' as if it's the current state
@@ -80,7 +79,7 @@ def run_simulation(symbol: str, days: int = 5):
             
         # === THE BRAIN CHECK ===
         try:
-            result = engine.analyze(symbol, current_slice_15m, current_slice_1h)
+            result = engine.analyze(symbol, current_slice_15m, current_slice_1h, current_time=curr_time)
             
             if result.trade and result.setup:
                 setup = result.setup
@@ -110,6 +109,7 @@ def run_simulation(symbol: str, days: int = 5):
                         anti_patterns += 1
         
         except Exception as e:
+            # Print error but don't spam console if it's frequent
             # print(f"Error at {curr_time}: {e}")
             pass
 
@@ -122,5 +122,5 @@ def run_simulation(symbol: str, days: int = 5):
     print("=" * 60)
 
 if __name__ == "__main__":
-    # Test on EUR_USD for last 3 days
-    run_simulation("EUR_USD", days=3)
+    # Test on EUR_USD for last 5 days
+    run_simulation("EUR_USD", days=5)

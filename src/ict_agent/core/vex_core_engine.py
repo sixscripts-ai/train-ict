@@ -259,20 +259,12 @@ class VexCoreEngine:
         htf_df: Optional[pd.DataFrame] = None,
         timeframe: str = "15m",
         killzone_override: Optional[str] = None,
+        current_time: Optional[datetime] = None,
     ) -> EngineResult:
         """
         Main entry point - analyzes market and returns trade decision.
-
-        Args:
-            symbol: Trading pair (e.g., "EUR_USD")
-            df: OHLC DataFrame (LTF - 5m/15m)
-            htf_df: Higher timeframe DataFrame (1H/4H) for bias
-            timeframe: Timeframe of df
-
-        Returns:
-            EngineResult with trade decision and full analysis
         """
-        now = datetime.now(NY_TZ)
+        now = current_time if current_time else datetime.now(NY_TZ)
 
         # ---------------------------------------------------------------------
         # GATE 1: KILLZONE CHECK

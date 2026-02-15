@@ -236,12 +236,14 @@ class VexController:
             from ict_agent.skills.execute_skill import ExecuteSkill
             from ict_agent.skills.learn_skill import LearnSkill
             from ict_agent.skills.news_skill import NewsSkill
+            from ict_agent.skills.strategy_skill import StrategySkill
 
             self.skill_registry.register(ScanSkill())
             self.skill_registry.register(AnalyzeSkill())
             self.skill_registry.register(ExecuteSkill())
             self.skill_registry.register(LearnSkill())
             self.skill_registry.register(NewsSkill())
+            self.skill_registry.register(StrategySkill())
             print(f"   ✅ Skills: {self.skill_registry.list_skills()}")
 
             # 12. Memory System
@@ -330,6 +332,24 @@ class VexController:
     # MAIN LOOP
     # ═══════════════════════════════════════════════════════════════════════════
 
+    def _safe_execute(self, skill_name: str, context: Dict[str, Any]) -> Optional[Any]:
+        """Execute a skill with error handling — returns SkillResult or None on crash."""
+        try:
+            return self.skill_registry.execute(skill_name, context)
+        except Exception as e:
+            if self.config.verbose:
+                print(f"   ❌ Skill '{skill_name}' crashed: {e}")
+            from ict_agent.events.event_types import SystemEvent, EventType
+            if self.event_stream:
+                self.event_stream.publish(SystemEvent(
+                    event_type=EventType.SYSTEM_ERROR,
+                    source=f"skill:{skill_name}",
+                    message=f"Skill crash: {e}",
+                    level="error",
+                    component=skill_name,
+                ))
+            return None
+
     def run(self, duration_minutes: Optional[int] = None, max_cycles: Optional[int] = None) -> None:
         """
         Main trading loop. Runs until stopped, duration expires, or max cycles reached.
@@ -406,7 +426,7 @@ class VexController:
 
         # ─── PHASE 1: SCAN ───────────────────────────────────────────────
         self.state = VexState.SCANNING
-        scan_result = self.skill_registry.execute("scan", {
+        scan_result = self._safe_execute("scan", {
             "symbols": self.config.symbols,
             "killzone_manager": self.killzone_manager,
         })
@@ -464,7 +484,7 @@ class VexController:
                         if self.config.verbose:
                             print(f"   ⚠️ Memory: {w}")
 
-            analyze_result = self.skill_registry.execute("analyze", analyze_context)
+            analyze_result = self._safe_execute("analyze", analyze_context)
 
             # Publish analysis events
             if analyze_result and analyze_result.events:
@@ -484,6 +504,26 @@ class VexController:
             self._monitor_positions()
             return
 
+        # ─── PHASE 2b: STRATEGY ADJUSTMENT ───────────────────────────────
+        # Apply strategy-level confidence modifier based on historical performance
+        if hasattr(self, 'performance') and self.performance and self.performance.total_trades >= 5:
+            strategy_result = self._safe_execute("strategy", {
+                "mode": "recommend",
+                "performance": self.performance,
+                "symbol": best_setup["symbol"],
+                "model": best_setup.get("model", ""),
+                "session": killzone_name,
+                "base_confidence": best_setup["confidence"],
+            })
+            if strategy_result and strategy_result.success:
+                old_conf = best_setup["confidence"]
+                best_setup["confidence"] = strategy_result.data["adjusted_confidence"]
+                modifier = strategy_result.data["strategy_modifier"]
+                if modifier != 0 and self.config.verbose:
+                    print(f"   📈 Strategy: {modifier:+.3f} confidence "
+                          f"({old_conf*100:.0f}% → {best_setup['confidence']*100:.0f}%) "
+                          f"[{strategy_result.data.get('overall_grade', '?')}]")
+
         if self.config.verbose:
             print(f"   🎯 Best: {best_setup['model']} {best_setup['direction']} "
                   f"{best_setup['symbol']} | Conf: {best_setup['confidence']*100:.0f}% | "
@@ -494,7 +534,7 @@ class VexController:
 
         # Gate 1: News check
         if self.config.check_news:
-            news_result = self.skill_registry.execute("news", {
+            news_result = self._safe_execute("news", {
                 "symbol": best_setup["symbol"],
                 "news_filter": self.news_filter,
             })
@@ -531,7 +571,7 @@ class VexController:
 
         # ─── PHASE 4: EXECUTE ────────────────────────────────────────────
         self.state = VexState.EXECUTING
-        exec_result = self.skill_registry.execute("execute", {
+        exec_result = self._safe_execute("execute", {
             "setup": best_setup,
             "executor": self.executor,
             "risk_guardian": self.risk_guardian,
@@ -645,7 +685,7 @@ class VexController:
         rr_achieved = abs(pnl_pips / risk_pips) if risk_pips > 0 else 0
 
         # Learn
-        learn_result = self.skill_registry.execute("learn", {
+        learn_result = self._safe_execute("learn", {
             "trade_learner": self.trade_learner,
             "trade_data": {
                 "trade_id": trade_data.get("trade_id", ""),
