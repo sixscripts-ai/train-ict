@@ -1,0 +1,61 @@
+{
+  "best_setups": [
+    {
+      "description": "Displacement Follow-Through in NY Overlap",
+      "win_rate": 1.0,
+      "avg_rr": 1.875,
+      "sample_size": 6,
+      "source": "pattern_stats migration"
+    },
+    {
+      "description": "Silver Bullet in NY AM killzone",
+      "win_rate": 1.0,
+      "avg_rr": 2.15,
+      "sample_size": 6,
+      "source": "pattern_stats migration"
+    },
+    {
+      "description": "Model 11 in London killzone",
+      "win_rate": 1.0,
+      "avg_rr": 2.5,
+      "sample_size": 2,
+      "source": "pattern_stats migration"
+    }
+  ],
+  "worst_setups": [
+    {
+      "description": "Unknown model in Asian session",
+      "win_rate": 0.0,
+      "avg_rr": -1.0,
+      "sample_size": 3,
+      "lesson": "No trading in Asian session without clear model ID",
+      "source": "pattern_stats migration"
+    }
+  ],
+  "rules_learned": [
+    "Quality over quantity: 1 good EU trade > 6 forced GU trades",
+    "First loss is best loss \u2014 re-entries multiply losses",
+    "When stressed about 5M, zoom out. LTF is noise.",
+    "All ICT trades are IRL\u2192ERL or ERL\u2192IRL",
+    "Commissions ($2.50/lot) destroy profits from 'nimble' entries",
+    "FVG > OB \u2014 algorithm returns to the void (imbalance), 50% is key",
+    "Equal lows are NOT support \u2014 they are LIQUIDITY"
+  ],
+  "patterns_to_avoid": [
+    "Trading Asian session without model confluence",
+    "Multiple re-entries on same thesis (GBP/USD cost $234)",
+    "Stops too tight (4 pips \u2014 spread kills you)",
+    "Getting 'entranced' during trades \u2014 use checkpoints"
+  ],
+  "optimal_conditions": {
+    "best_killzone": "ny_am",
+    "best_models": [
+      "silver_bullet",
+      "Displacement_Follow_Through"
+    ],
+    "best_pair": "EUR_USD",
+    "min_confluences": 5,
+    "min_rr": 2.0
+  },
+  "last_updated": "2026-02-15T17:04:57.932653-05:00"
+}

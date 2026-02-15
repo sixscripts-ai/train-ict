@@ -1,0 +1,73 @@
+{
+  "combinations": {},
+  "individual_scores": {
+    "htf_fvg": {
+      "weight": 20,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "ltf_fvg": {
+      "weight": 15,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "order_block": {
+      "weight": 15,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "displacement": {
+      "weight": 10,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "structure_break": {
+      "weight": 15,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "liquidity_sweep": {
+      "weight": 20,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "killzone_active": {
+      "weight": 10,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "premium_discount": {
+      "weight": 10,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "smt_divergence": {
+      "weight": 15,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "model_detection": {
+      "weight": 25,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "fvg_50_touch": {
+      "weight": 18,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "equal_level_sweep": {
+      "weight": 20,
+      "appearances": 0,
+      "win_rate": 0.0
+    },
+    "amd_phase_confirmed": {
+      "weight": 12,
+      "appearances": 0,
+      "win_rate": 0.0
+    }
+  },
+  "total_trades_analyzed": 0,
+  "last_updated": "2026-02-15T17:04:57.932945-05:00",
+  "notes": "Initial weights from VEX_IDENTITY.md scoring system. Will auto-adjust as trades are recorded."
+}

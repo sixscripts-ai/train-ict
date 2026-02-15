@@ -1,0 +1,90 @@
+{
+  "trades": [
+    {
+      "id": 1,
+      "date": "2026-01-15",
+      "pair": "EURUSD",
+      "direction": "SHORT",
+      "model": "Weekly Sell Model",
+      "session": "Pre-London",
+      "entry": 1.1650,
+      "stop": 1.1670,
+      "target1": 1.1625,
+      "target2": 1.1560,
+      "position_size": 1.25,
+      "risk_dollars": 250,
+      "risk_percent": 2.5,
+      "confluences": [
+        "Weekly high likely in (Tuesday)",
+        "Equal lows/SSL below",
+        "Failed OB retest",
+        "Premium zone",
+        "-0.5 fib extension target",
+        "DXY equal highs correlation"
+      ],
+      "confluence_count": 6,
+      "confidence": "HIGH",
+      "status": "OPEN",
+      "current_price": 1.1630,
+      "unrealized_pnl_pips": 200,
+      "outcome": null,
+      "realized_pnl": null,
+      "r_achieved": null,
+      "notes": "Thesis confirmed with displacement. Approaching T1.",
+      "mistakes": [],
+      "lessons": []
+    },
+    {
+      "id": 2,
+      "date": "2026-01-15",
+      "pair": "GBPUSD",
+      "direction": "SHORT",
+      "model": "LTF Structure Breakdown + Correlation",
+      "session": "Pre-London",
+      "entry": 1.34310,
+      "stop": 1.3431,
+      "target1": 1.3385,
+      "target2": 1.3220,
+      "position_size": 0.75,
+      "risk_dollars": 7.50,
+      "risk_percent": 0.075,
+      "confluences": [
+        "HTF bearish structure",
+        "1H bearish OB holding",
+        "LTF structure break",
+        "DXY correlation",
+        "EU correlation"
+      ],
+      "confluence_count": 5,
+      "confidence": "MEDIUM-HIGH",
+      "status": "OPEN",
+      "current_price": 1.3424,
+      "unrealized_pnl_pips": 7,
+      "outcome": null,
+      "realized_pnl": null,
+      "r_achieved": null,
+      "notes": "Re-entry after spread stop. Tight stop protecting position.",
+      "mistakes": ["Original stop too tight for spread"],
+      "lessons": ["Account for spread on tight stops"],
+      "re_entries": [
+        {
+          "original_entry": 1.34285,
+          "original_stop": 1.3433,
+          "stopped_by": "spread",
+          "re_entry_price": 1.34310,
+          "new_stop": 1.3431
+        }
+      ]
+    }
+  ],
+  "statistics": {
+    "total_trades": 2,
+    "open_trades": 2,
+    "closed_trades": 0,
+    "win_rate": null,
+    "avg_r_achieved": null,
+    "best_model": null,
+    "best_session": null,
+    "total_pnl": 0
+  }
+}

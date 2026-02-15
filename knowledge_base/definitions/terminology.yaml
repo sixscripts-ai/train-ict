@@ -1,0 +1,511 @@
+# ICT Terminology Dictionary
+# File: knowledge_base/terminology.yaml
+# Purpose: Comprehensive glossary for AI training and NLP entity extraction
+
+version: "1.0.0"
+last_updated: "2026-02-15"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#                        CORE ICT CONCEPTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+terms:
+
+  # Fair Value Gap (FVG)
+  FVG:
+    full_name: "Fair Value Gap"
+    category: "Price Imbalance"
+    definition: "A three-candle pattern where candle 2's body creates a gap between candles 1 and 3, representing an inefficiency where price moved too fast"
+    aliases:
+      - "imbalance"
+      - "inefficiency"
+      - "price void"
+    related_concepts:
+      - "BISI"
+      - "SIBI"
+      - "Liquidity Void"
+      - "Order Block"
+      - "Consequent Encroachment"
+    detection_rules:
+      bullish: "candle[i-2].high < candle[i].low"
+      bearish: "candle[i-2].low > candle[i].high"
+    key_levels:
+      - "50% midpoint (CE)"
+      - "62% level"
+      - "70.5% sweet spot"
+    trading_application: "Entry zone after confirmed BOS/SMS and directional bias"
+
+  # Order Block (OB)
+  OB:
+    full_name: "Order Block"
+    category: "Institutional Footprint"
+    definition: "The last opposite-colored candle before a strong displacement move, representing where institutions placed orders"
+    aliases:
+      - "institutional candle"
+      - "origin candle"
+    related_concepts:
+      - "Displacement"
+      - "FVG"
+      - "Breaker Block"
+      - "Mitigation Block"
+    types:
+      bullish: "Last DOWN candle before bullish displacement"
+      bearish: "Last UP candle before bearish displacement"
+    key_levels:
+      mean_threshold: "(open + close) / 2"
+    validation: "Must precede displacement - no displacement = no OB"
+    trading_application: "Re-entry zone on retracements, target 50% of OB candle"
+
+  # Breaker Block
+  BB:
+    full_name: "Breaker Block"
+    category: "PD Array"
+    definition: "A failed Order Block that causes a shift in market structure and acts as support/resistance"
+    aliases:
+      - "Breaker"
+      - "Failed OB"
+    related_concepts:
+      - "Order Block"
+      - "MSS"
+      - "Liquidity Sweep"
+    formation:
+      1: "Price creates an Order Block"
+      2: "Price fails to continue in expected direction"
+      3: "Structure breaks THROUGH the OB"
+      4: "Failed OB becomes Breaker Block"
+    distinction: "Must take liquidity (make HH/LL) before breaking structure"
+    trading_application: "Entry on retest of broken level"
+
+  # Mitigation Block
+  MB:
+    full_name: "Mitigation Block"
+    category: "PD Array"
+    definition: "A candle that caused a false move or liquidity raid, then was revisited and respected later"
+    aliases:
+      - "Mitigation"
+    related_concepts:
+      - "Order Block"
+      - "Breaker Block"
+    key_difference: "Formed by FAILED breakouts/liquidity raids, lower hierarchy than Breaker"
+    trading_application: "Use only after SMS or liquidity raid"
+
+  # Displacement
+  DISP:
+    full_name: "Displacement"
+    category: "Order Flow"
+    definition: "Strong, impulsive price move that breaks significant levels with authority - the footprint of institutional order flow"
+    aliases:
+      - "impulsive move"
+      - "aggressive candle"
+    characteristics:
+      - "Long-bodied candle(s)"
+      - "Little to no wick on opposite end"
+      - "Body > 1.5x ATR"
+      - ">60% body ratio"
+    validates:
+      - "BOS"
+      - "SMS"
+      - "FVG"
+      - "OB"
+    critical_rule: "WITHOUT displacement, any break or setup should be IGNORED"
+
+  # Market Structure Shift (SMS/MSS)
+  SMS:
+    full_name: "Shift in Market Structure"
+    category: "Market Structure"
+    definition: "Price breaks a swing point AGAINST the current trend with clear displacement - reversal signal"
+    aliases:
+      - "MSS"
+      - "Market Structure Shift"
+      - "Smart Money Shift"
+    related_concepts:
+      - "BOS"
+      - "CHoCH"
+      - "Displacement"
+    signal_type: "Reversal"
+    validation: "Must have displacement through a protected swing low/high"
+    trading_application: "NOT an entry signal alone - wait for new structure to form"
+
+  # Break of Structure (BOS)
+  BOS:
+    full_name: "Break of Structure"
+    category: "Market Structure"
+    definition: "Price breaks a previous swing point IN THE SAME DIRECTION as the prevailing trend with visible displacement"
+    aliases:
+      - "Structure Break"
+    related_concepts:
+      - "SMS"
+      - "CHoCH"
+      - "Displacement"
+    signal_type: "Continuation"
+    example: "In bullish trend, price forms new HH that breaks previous HH with strength"
+    trading_application: "Confirms trend continuation - enter on retracements (OTE, FVG)"
+
+  # Change of Character (CHoCH)
+  CHoCH:
+    full_name: "Change of Character"
+    category: "Market Structure"
+    definition: "Long-term reversal signal at key structure points - weaker than SMS but alerts to weakening trend"
+    aliases:
+      - "CHOCH"
+    related_concepts:
+      - "BOS"
+      - "SMS"
+    timing: "Early warning"
+    trading_application: "Prepare for reversal but don't trade until SMS confirms"
+
+  # Buy-Side Liquidity (BSL)
+  BSL:
+    full_name: "Buy-Side Liquidity"
+    category: "Liquidity"
+    definition: "Resting buy stop orders above swing highs where short sellers have stops"
+    aliases:
+      - "Buy Stops"
+      - "Buy-side"
+    location: "Above swing highs, equal highs, old highs"
+    related_concepts:
+      - "SSL"
+      - "Liquidity Sweep"
+      - "Stop Hunt"
+    trading_application: "Target for bearish moves, price is 'drawn' to sweep these levels"
+
+  # Sell-Side Liquidity (SSL)
+  SSL:
+    full_name: "Sell-Side Liquidity"
+    category: "Liquidity"
+    definition: "Resting sell stop orders below swing lows where long traders have stops"
+    aliases:
+      - "Sell Stops"
+      - "Sell-side"
+    location: "Below swing lows, equal lows, old lows"
+    related_concepts:
+      - "BSL"
+      - "Liquidity Sweep"
+      - "Stop Hunt"
+    trading_application: "Target for bullish moves, price is 'drawn' to sweep these levels"
+
+  # Optimal Trade Entry (OTE)
+  OTE:
+    full_name: "Optimal Trade Entry"
+    category: "Entry Zone"
+    definition: "The 61.8% to 79% Fibonacci retracement range where Smart Money often re-engages after displacement"
+    aliases:
+      - "OTE Zone"
+      - "Golden Zone"
+    key_levels:
+      - level: 0.618
+        name: "Standard"
+      - level: 0.705
+        name: "Sweet Spot"
+      - level: 0.790
+        name: "Deep OTE"
+    application_rules:
+      - "Only use after confirmed displacement and BOS/SMS"
+      - "Measure from swing low to swing high (bullish) or vice versa"
+      - "Most effective during Killzones"
+    trading_application: "Entry zone with optimal risk-reward ratio"
+
+  # Premium/Discount
+  PREMIUM:
+    full_name: "Premium Zone"
+    category: "Valuation"
+    definition: "Price range above the 50% equilibrium - mathematically 'expensive'"
+    formula: "Price > (Swing High + Swing Low) / 2"
+    trading_rule: "ONLY sell in Premium zone, DO NOT buy"
+    related_concepts:
+      - "Discount"
+      - "Equilibrium"
+      - "Dealing Range"
+
+  DISCOUNT:
+    full_name: "Discount Zone"
+    category: "Valuation"
+    definition: "Price range below the 50% equilibrium - mathematically 'cheap'"
+    formula: "Price < (Swing High + Swing Low) / 2"
+    trading_rule: "ONLY buy in Discount zone, DO NOT sell"
+    related_concepts:
+      - "Premium"
+      - "Equilibrium"
+      - "Dealing Range"
+
+  EQUILIBRIUM:
+    full_name: "Equilibrium"
+    category: "Valuation"
+    definition: "The 50% midpoint of any swing high-low range"
+    formula: "(Swing High + Swing Low) / 2"
+    aliases:
+      - "EQ"
+      - "50% level"
+    trading_application: "Divides Premium from Discount zones"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#                        ICT TRADING MODELS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+  # Silver Bullet
+  SILVER_BULLET:
+    full_name: "Silver Bullet"
+    category: "Trading Model"
+    definition: "Precision intraday entry framework operating exclusively during specific time windows"
+    time_windows:
+      primary: "10:00-11:00 AM EST"
+      secondary: "14:00-15:00 PM EST"
+      london: "03:00-04:00 AM EST"
+    sequence:
+      - "Liquidity Sweep at/before window start"
+      - "SMS with displacement"
+      - "Execute on FVG/OB retracement"
+      - "Target opposite intraday liquidity"
+    trading_rule: "Time is the filter - no setup outside window counts"
+
+  # Judas Swing
+  JUDAS_SWING:
+    full_name: "Judas Swing"
+    category: "Trading Model"
+    definition: "Early-session false move that lures traders in wrong direction before the real move"
+    aliases:
+      - "Judas"
+      - "False Move"
+      - "Manipulation Phase"
+    timing: "Before 10:00 AM EST typically"
+    purpose:
+      - "Trap liquidity"
+      - "Induce retail participation"
+      - "Fuel institutional positions"
+    trading_rule: "Never chase early Killzone breakouts - assume Judas Swing until displacement confirms"
+
+  # Power of Three (AMD)
+  PO3:
+    full_name: "Power of Three"
+    category: "Trading Model"
+    definition: "The three phases of daily price action: Accumulation, Manipulation, Distribution"
+    aliases:
+      - "AMD"
+      - "AMD Cycle"
+    phases:
+      accumulation: "Range/consolidation during Asian Session"
+      manipulation: "False move (Judas Swing) during London Open"
+      distribution: "True move during NY Session"
+    trading_application: "Identify phase, enter distribution after manipulation"
+
+  # Turtle Soup
+  TURTLE_SOUP:
+    full_name: "Turtle Soup"
+    category: "Trading Model"
+    definition: "Liquidity sweep reversal pattern where price runs through a level then immediately reverses"
+    variants:
+      standard: "Same-day reversal"
+      plus_one: "Next-day confirmation"
+    best_conditions:
+      - "Obvious level being run"
+      - "Impulsive move fails to follow through"
+      - "No displacement confirming breakout"
+
+  # Market Maker Models
+  MMBM:
+    full_name: "Market Maker Buy Model"
+    category: "Trading Model"
+    definition: "Institutional accumulation pattern with consolidation, sellside curve, and smart money reversal"
+    phases:
+      - "Original Consolidation"
+      - "Accumulation of Shorts (Sell Side)"
+      - "Smart Money Reversal"
+      - "Expansion (Buy Side)"
+      - "Target Original Consolidation"
+
+  MMSM:
+    full_name: "Market Maker Sell Model"
+    category: "Trading Model"
+    definition: "Institutional distribution pattern - the inverse of MMBM"
+    phases:
+      - "Original Consolidation"
+      - "Accumulation of Longs (Buy Side)"
+      - "Smart Money Reversal"
+      - "Distribution (Sell Side)"
+      - "Target Original Consolidation"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#                        TIME-BASED CONCEPTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+  # Killzones
+  KILLZONE:
+    full_name: "Killzone"
+    category: "Time"
+    definition: "Specific time windows where high-probability setups occur"
+    types:
+      london: "02:00-05:00 EST"
+      ny_am: "07:00-10:00 EST"
+      ny_pm: "13:00-15:00 EST"
+      asian: "19:00-22:00 EST"
+    dead_zone: "11:00-12:30 EST (NY Lunch - avoid)"
+    trading_rule: "Do not take entries outside Killzones"
+
+  # Macro Times
+  MACRO:
+    full_name: "Macro Time"
+    category: "Time"
+    definition: "Specific 20-minute intervals where the algorithm seeks liquidity or reprices FVGs"
+    key_macros:
+      - "09:50-10:10 EST (Silver Bullet Macro)"
+      - "02:33-03:00 EST (London)"
+      - "13:10-13:40 EST (PM Session)"
+    trading_application: "PD Array tapped during Macro = higher reliability"
+
+  # IPDA
+  IPDA:
+    full_name: "Interbank Price Delivery Algorithm"
+    category: "Algorithmic Theory"
+    definition: "The concept that price movements are algorithmically driven to seek liquidity and balance imbalances"
+    core_principle: "Price is engineered and delivered, not random"
+    directives:
+      - "Seek liquidity (resting orders)"
+      - "Rebalance inefficiencies (FVGs)"
+    lookback_periods:
+      short_term: 20
+      intermediate: 40
+      long_term: 60
+
+  # CBDR
+  CBDR:
+    full_name: "Central Bank Dealers Range"
+    category: "Time/Range"
+    definition: "The price range during Asian session hours used to project next session's expansion"
+    ideal_size: "< 40 pips (preferably 20-30 pips)"
+    trading_application: "Small CBDR suggests directional move; use for SD projections"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#                        CONFIRMATION TOOLS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+  # SMT Divergence
+  SMT:
+    full_name: "Smart Money Tool / SMT Divergence"
+    category: "Confirmation"
+    definition: "Divergence between correlated instruments where one makes new swing high/low and the other fails"
+    pairs:
+      forex: ["EUR/USD vs GBP/USD", "EUR/USD vs DXY"]
+      indices: ["NQ vs ES", "ES vs YM"]
+    signals:
+      bullish: "Asset A makes Lower Low, Asset B makes Higher Low"
+      bearish: "Asset A makes Higher High, Asset B makes Lower High"
+    trading_application: "Confirmation of SMS, filter during Killzones, NOT entry signal alone"
+
+  # Institutional Order Flow
+  IOF:
+    full_name: "Institutional Order Flow"
+    category: "Confirmation"
+    definition: "Dominant direction Smart Money pushes price - the underlying bias driving structure"
+    building_blocks:
+      - "Market structure (HH/HL or LL/LH)"
+      - "Shifts in structure (SMS)"
+      - "Liquidity targets (BSL/SSL)"
+      - "Displacement events"
+      - "Time of day/delivery windows"
+    trading_rule: "Do not counter flow unless confirmed SMS and divergence"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#                        ADVANCED CONCEPTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+  # Liquidity Void
+  LV:
+    full_name: "Liquidity Void"
+    category: "Price Imbalance"
+    definition: "A long-bodied candle with minimal wick overlap - represents extreme imbalance"
+    characteristics:
+      - "No opposing transaction volume"
+      - "Often appears during major institutional legs"
+    key_level: "Midpoint often acts as reaction point"
+    trading_application: "Displacement confirmation, not entry signal"
+
+  # Balanced Price Range (BPR)
+  BPR:
+    full_name: "Balanced Price Range"
+    category: "PD Array"
+    definition: "Forms after price aggressively moves through a high/low then returns inside the range"
+    formation:
+      - "Liquidity sweep occurs"
+      - "Structure breaks"
+      - "Price retraces into range"
+    key_level: "Midpoint acts as reaction level"
+    trading_application: "Re-entries when missed initial moves"
+
+  # Consequent Encroachment
+  CE:
+    full_name: "Consequent Encroachment"
+    category: "Entry Level"
+    definition: "The exact 50% midpoint of a Fair Value Gap"
+    formula: "(Gap High + Gap Low) / 2"
+    trading_application: "Precise entry point within FVG"
+    failure_signal: "Candle body close beyond CE"
+
+  # Inversion FVG
+  IFVG:
+    full_name: "Inversion Fair Value Gap"
+    category: "PD Array"
+    definition: "A failed FVG that undergoes state change - becomes resistance/support on the other side"
+    logic: "Failed Bullish FVG (support) becomes Bearish IFVG (resistance)"
+    trading_application: "Retest entry from opposite side"
+
+  # Unicorn
+  UNICORN:
+    full_name: "ICT Unicorn"
+    category: "High-Confluence Setup"
+    definition: "Confluence of a Breaker Block and Fair Value Gap in the same price area"
+    synergy: "Breaker provides structure, FVG provides algorithmic draw"
+    trading_application: "High-conviction entry zone - expect violent reaction"
+
+  # Standard Deviation Projections
+  SD:
+    full_name: "Standard Deviation"
+    category: "Target Projection"
+    definition: "Mathematical multiples of a manipulation leg used to project profit targets"
+    levels:
+      - "-2.0 SD (Target 1)"
+      - "-2.5 SD (Primary Target)"
+      - "-4.0 SD (Extended Target)"
+    formula: "Target = Leg Low - (Leg Range × SD Multiple)"
+    trading_application: "-2.5 SD is statistically significant termination point"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#                        ABBREVIATIONS QUICK REFERENCE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+abbreviations:
+  FVG: "Fair Value Gap"
+  OB: "Order Block"
+  BB: "Breaker Block"
+  MB: "Mitigation Block"
+  BOS: "Break of Structure"
+  SMS: "Shift in Market Structure"
+  MSS: "Market Structure Shift"
+  CHoCH: "Change of Character"
+  BSL: "Buy-Side Liquidity"
+  SSL: "Sell-Side Liquidity"
+  OTE: "Optimal Trade Entry"
+  EQ: "Equilibrium"
+  PO3: "Power of Three"
+  AMD: "Accumulation Manipulation Distribution"
+  IPDA: "Interbank Price Delivery Algorithm"
+  CBDR: "Central Bank Dealers Range"
+  SMT: "Smart Money Tool/Divergence"
+  IOF: "Institutional Order Flow"
+  LV: "Liquidity Void"
+  BPR: "Balanced Price Range"
+  CE: "Consequent Encroachment"
+  IFVG: "Inversion Fair Value Gap"
+  SD: "Standard Deviation"
+  MMBM: "Market Maker Buy Model"
+  MMSM: "Market Maker Sell Model"
+  PDH: "Previous Day High"
+  PDL: "Previous Day Low"
+  PWH: "Previous Week High"
+  PWL: "Previous Week Low"
+  HTF: "Higher Timeframe"
+  ITF: "Intermediate Timeframe"
+  LTF: "Lower Timeframe"
+  DOL: "Draw on Liquidity"
+  PD: "Premium/Discount"
+  BISI: "Buy Side Imbalance Sell Side Inefficiency (Bullish FVG)"
+  SIBI: "Sell Side Imbalance Buy Side Inefficiency (Bearish FVG)"

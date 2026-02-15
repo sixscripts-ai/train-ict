@@ -1,0 +1,563 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-02-15",
+  "description": "ICT Concept Relationship Graph - Shows dependencies and relationships between ICT trading concepts",
+
+  "nodes": {
+    "liquidity": {
+      "id": "liquidity",
+      "name": "Liquidity",
+      "category": "foundation",
+      "level": 1,
+      "description": "The foundation of ICT - all price movement seeks liquidity",
+      "importance": "critical"
+    },
+    "bsl": {
+      "id": "bsl",
+      "name": "Buy-Side Liquidity (BSL)",
+      "category": "liquidity_type",
+      "level": 2,
+      "description": "Stop orders above swing highs",
+      "importance": "high"
+    },
+    "ssl": {
+      "id": "ssl",
+      "name": "Sell-Side Liquidity (SSL)",
+      "category": "liquidity_type",
+      "level": 2,
+      "description": "Stop orders below swing lows",
+      "importance": "high"
+    },
+    "equal_highs": {
+      "id": "equal_highs",
+      "name": "Equal Highs",
+      "category": "liquidity_pool",
+      "level": 3,
+      "description": "Double/triple tops where liquidity clusters",
+      "importance": "medium"
+    },
+    "equal_lows": {
+      "id": "equal_lows",
+      "name": "Equal Lows",
+      "category": "liquidity_pool",
+      "level": 3,
+      "description": "Double/triple bottoms where liquidity clusters",
+      "importance": "medium"
+    },
+    "liquidity_sweep": {
+      "id": "liquidity_sweep",
+      "name": "Liquidity Sweep",
+      "category": "price_action",
+      "level": 2,
+      "description": "Price taking out liquidity pools",
+      "importance": "critical"
+    },
+    "displacement": {
+      "id": "displacement",
+      "name": "Displacement",
+      "category": "price_action",
+      "level": 2,
+      "description": "Strong impulsive move - institutional footprint",
+      "importance": "critical"
+    },
+    "market_structure": {
+      "id": "market_structure",
+      "name": "Market Structure",
+      "category": "structure",
+      "level": 2,
+      "description": "HH/HL or LL/LH patterns",
+      "importance": "critical"
+    },
+    "bos": {
+      "id": "bos",
+      "name": "Break of Structure (BOS)",
+      "category": "structure",
+      "level": 3,
+      "description": "Continuation signal - break with trend",
+      "importance": "high"
+    },
+    "sms": {
+      "id": "sms",
+      "name": "Shift in Market Structure (SMS)",
+      "category": "structure",
+      "level": 3,
+      "description": "Reversal signal - break against trend",
+      "importance": "critical"
+    },
+    "choch": {
+      "id": "choch",
+      "name": "Change of Character (CHoCH)",
+      "category": "structure",
+      "level": 3,
+      "description": "Early reversal warning",
+      "importance": "medium"
+    },
+    "fvg": {
+      "id": "fvg",
+      "name": "Fair Value Gap (FVG)",
+      "category": "pd_array",
+      "level": 3,
+      "description": "Price imbalance - 3 candle pattern",
+      "importance": "critical"
+    },
+    "order_block": {
+      "id": "order_block",
+      "name": "Order Block (OB)",
+      "category": "pd_array",
+      "level": 3,
+      "description": "Last opposing candle before displacement",
+      "importance": "high"
+    },
+    "breaker_block": {
+      "id": "breaker_block",
+      "name": "Breaker Block",
+      "category": "pd_array",
+      "level": 4,
+      "description": "Failed OB that trapped traders",
+      "importance": "high"
+    },
+    "mitigation_block": {
+      "id": "mitigation_block",
+      "name": "Mitigation Block",
+      "category": "pd_array",
+      "level": 4,
+      "description": "Failed swing without liquidity grab",
+      "importance": "medium"
+    },
+    "premium_discount": {
+      "id": "premium_discount",
+      "name": "Premium/Discount Zones",
+      "category": "valuation",
+      "level": 2,
+      "description": "Price relative to 50% equilibrium",
+      "importance": "high"
+    },
+    "ote": {
+      "id": "ote",
+      "name": "Optimal Trade Entry (OTE)",
+      "category": "entry",
+      "level": 4,
+      "description": "61.8%-79% retracement zone",
+      "importance": "high"
+    },
+    "ce": {
+      "id": "ce",
+      "name": "Consequent Encroachment (CE)",
+      "category": "entry",
+      "level": 5,
+      "description": "50% of FVG",
+      "importance": "medium"
+    },
+    "killzone": {
+      "id": "killzone",
+      "name": "Killzones",
+      "category": "time",
+      "level": 2,
+      "description": "High-probability trading windows",
+      "importance": "high"
+    },
+    "macro_time": {
+      "id": "macro_time",
+      "name": "Macro Times",
+      "category": "time",
+      "level": 3,
+      "description": "20-minute algorithm windows",
+      "importance": "medium"
+    },
+    "silver_bullet": {
+      "id": "silver_bullet",
+      "name": "Silver Bullet",
+      "category": "trading_model",
+      "level": 5,
+      "description": "10-11 AM precision setup",
+      "importance": "high"
+    },
+    "judas_swing": {
+      "id": "judas_swing",
+      "name": "Judas Swing",
+      "category": "trading_model",
+      "level": 4,
+      "description": "False move before real direction",
+      "importance": "high"
+    },
+    "power_of_three": {
+      "id": "power_of_three",
+      "name": "Power of Three (AMD)",
+      "category": "trading_model",
+      "level": 4,
+      "description": "Accumulation-Manipulation-Distribution",
+      "importance": "critical"
+    },
+    "turtle_soup": {
+      "id": "turtle_soup",
+      "name": "Turtle Soup",
+      "category": "trading_model",
+      "level": 5,
+      "description": "Liquidity sweep reversal",
+      "importance": "medium"
+    },
+    "mmbm": {
+      "id": "mmbm",
+      "name": "Market Maker Buy Model",
+      "category": "trading_model",
+      "level": 5,
+      "description": "Full bullish reversal roadmap",
+      "importance": "high"
+    },
+    "mmsm": {
+      "id": "mmsm",
+      "name": "Market Maker Sell Model",
+      "category": "trading_model",
+      "level": 5,
+      "description": "Full bearish reversal roadmap",
+      "importance": "high"
+    },
+    "smt_divergence": {
+      "id": "smt_divergence",
+      "name": "SMT Divergence",
+      "category": "confirmation",
+      "level": 4,
+      "description": "Correlated pair divergence",
+      "importance": "high"
+    },
+    "ipda": {
+      "id": "ipda",
+      "name": "IPDA",
+      "category": "algorithmic_theory",
+      "level": 1,
+      "description": "Interbank Price Delivery Algorithm",
+      "importance": "critical"
+    },
+    "draw_on_liquidity": {
+      "id": "draw_on_liquidity",
+      "name": "Draw on Liquidity",
+      "category": "target",
+      "level": 3,
+      "description": "Where price is being delivered",
+      "importance": "critical"
+    },
+    "daily_bias": {
+      "id": "daily_bias",
+      "name": "Daily Bias",
+      "category": "analysis",
+      "level": 4,
+      "description": "Pre-session buy/sell determination",
+      "importance": "critical"
+    },
+    "unicorn": {
+      "id": "unicorn",
+      "name": "Unicorn Setup",
+      "category": "setup",
+      "level": 6,
+      "description": "Breaker + FVG confluence",
+      "importance": "high"
+    }
+  },
+
+  "edges": [
+    {
+      "from": "ipda",
+      "to": "liquidity",
+      "relationship": "seeks",
+      "description": "IPDA's primary directive is to seek liquidity"
+    },
+    {
+      "from": "liquidity",
+      "to": "bsl",
+      "relationship": "has_type",
+      "description": "BSL is a type of liquidity"
+    },
+    {
+      "from": "liquidity",
+      "to": "ssl",
+      "relationship": "has_type",
+      "description": "SSL is a type of liquidity"
+    },
+    {
+      "from": "bsl",
+      "to": "equal_highs",
+      "relationship": "located_at",
+      "description": "BSL found at equal highs"
+    },
+    {
+      "from": "ssl",
+      "to": "equal_lows",
+      "relationship": "located_at",
+      "description": "SSL found at equal lows"
+    },
+    {
+      "from": "liquidity",
+      "to": "liquidity_sweep",
+      "relationship": "triggers",
+      "description": "Liquidity pools trigger sweeps"
+    },
+    {
+      "from": "liquidity_sweep",
+      "to": "displacement",
+      "relationship": "followed_by",
+      "description": "Valid sweeps are followed by displacement"
+    },
+    {
+      "from": "displacement",
+      "to": "market_structure",
+      "relationship": "validates",
+      "description": "Displacement validates structure changes"
+    },
+    {
+      "from": "displacement",
+      "to": "fvg",
+      "relationship": "creates",
+      "description": "Displacement creates FVGs"
+    },
+    {
+      "from": "displacement",
+      "to": "order_block",
+      "relationship": "validates",
+      "description": "Displacement validates Order Blocks"
+    },
+    {
+      "from": "market_structure",
+      "to": "bos",
+      "relationship": "has_type",
+      "description": "BOS is a type of structure event"
+    },
+    {
+      "from": "market_structure",
+      "to": "sms",
+      "relationship": "has_type",
+      "description": "SMS is a type of structure event"
+    },
+    {
+      "from": "market_structure",
+      "to": "choch",
+      "relationship": "has_type",
+      "description": "CHoCH is a type of structure event"
+    },
+    {
+      "from": "sms",
+      "to": "fvg",
+      "relationship": "requires",
+      "description": "SMS validation requires FVG"
+    },
+    {
+      "from": "bos",
+      "to": "fvg",
+      "relationship": "requires",
+      "description": "BOS validation requires FVG"
+    },
+    {
+      "from": "order_block",
+      "to": "breaker_block",
+      "relationship": "becomes",
+      "description": "Failed OB becomes Breaker"
+    },
+    {
+      "from": "liquidity_sweep",
+      "to": "breaker_block",
+      "relationship": "precedes",
+      "description": "Breaker requires prior liquidity sweep"
+    },
+    {
+      "from": "fvg",
+      "to": "ce",
+      "relationship": "has_level",
+      "description": "CE is the 50% of FVG"
+    },
+    {
+      "from": "fvg",
+      "to": "ote",
+      "relationship": "aligns_with",
+      "description": "FVG often aligns with OTE"
+    },
+    {
+      "from": "order_block",
+      "to": "ote",
+      "relationship": "aligns_with",
+      "description": "OB often aligns with OTE"
+    },
+    {
+      "from": "premium_discount",
+      "to": "ote",
+      "relationship": "contextualizes",
+      "description": "Premium/Discount zones contextualize OTE"
+    },
+    {
+      "from": "killzone",
+      "to": "macro_time",
+      "relationship": "contains",
+      "description": "Killzones contain macro times"
+    },
+    {
+      "from": "killzone",
+      "to": "silver_bullet",
+      "relationship": "enables",
+      "description": "Killzone timing enables Silver Bullet"
+    },
+    {
+      "from": "liquidity_sweep",
+      "to": "judas_swing",
+      "relationship": "component_of",
+      "description": "Judas Swing involves liquidity sweep"
+    },
+    {
+      "from": "power_of_three",
+      "to": "judas_swing",
+      "relationship": "contains",
+      "description": "AMD manipulation phase = Judas Swing"
+    },
+    {
+      "from": "liquidity_sweep",
+      "to": "turtle_soup",
+      "relationship": "triggers",
+      "description": "Turtle Soup triggered by sweep"
+    },
+    {
+      "from": "sms",
+      "to": "turtle_soup",
+      "relationship": "confirms",
+      "description": "SMS confirms Turtle Soup reversal"
+    },
+    {
+      "from": "sms",
+      "to": "silver_bullet",
+      "relationship": "component_of",
+      "description": "Silver Bullet requires SMS"
+    },
+    {
+      "from": "fvg",
+      "to": "silver_bullet",
+      "relationship": "component_of",
+      "description": "Silver Bullet entry at FVG"
+    },
+    {
+      "from": "breaker_block",
+      "to": "unicorn",
+      "relationship": "component_of",
+      "description": "Unicorn = Breaker + FVG"
+    },
+    {
+      "from": "fvg",
+      "to": "unicorn",
+      "relationship": "component_of",
+      "description": "Unicorn = Breaker + FVG"
+    },
+    {
+      "from": "market_structure",
+      "to": "daily_bias",
+      "relationship": "determines",
+      "description": "HTF structure determines daily bias"
+    },
+    {
+      "from": "liquidity",
+      "to": "draw_on_liquidity",
+      "relationship": "identifies",
+      "description": "Identifying liquidity reveals DOL"
+    },
+    {
+      "from": "draw_on_liquidity",
+      "to": "daily_bias",
+      "relationship": "confirms",
+      "description": "DOL confirms daily bias direction"
+    },
+    {
+      "from": "smt_divergence",
+      "to": "sms",
+      "relationship": "confirms",
+      "description": "SMT confirms SMS validity"
+    },
+    {
+      "from": "smt_divergence",
+      "to": "turtle_soup",
+      "relationship": "confirms",
+      "description": "SMT confirms Turtle Soup"
+    },
+    {
+      "from": "power_of_three",
+      "to": "mmbm",
+      "relationship": "scales_to",
+      "description": "AMD scales to Market Maker Models"
+    },
+    {
+      "from": "power_of_three",
+      "to": "mmsm",
+      "relationship": "scales_to",
+      "description": "AMD scales to Market Maker Models"
+    }
+  ],
+
+  "learning_paths": {
+    "beginner": {
+      "description": "Foundation concepts - learn in this order",
+      "sequence": [
+        "liquidity",
+        "bsl",
+        "ssl",
+        "market_structure",
+        "displacement",
+        "fvg",
+        "premium_discount",
+        "killzone"
+      ]
+    },
+    "intermediate": {
+      "description": "Build on foundations",
+      "prerequisites": ["beginner"],
+      "sequence": [
+        "bos",
+        "sms",
+        "order_block",
+        "ote",
+        "liquidity_sweep",
+        "judas_swing",
+        "power_of_three",
+        "daily_bias"
+      ]
+    },
+    "advanced": {
+      "description": "Master setups and models",
+      "prerequisites": ["intermediate"],
+      "sequence": [
+        "breaker_block",
+        "mitigation_block",
+        "silver_bullet",
+        "turtle_soup",
+        "smt_divergence",
+        "macro_time",
+        "unicorn"
+      ]
+    },
+    "mastery": {
+      "description": "Algorithmic understanding",
+      "prerequisites": ["advanced"],
+      "sequence": [
+        "ipda",
+        "mmbm",
+        "mmsm",
+        "draw_on_liquidity"
+      ]
+    }
+  },
+
+  "query_helpers": {
+    "what_must_happen_before": {
+      "description": "Query: What must happen before X?",
+      "example_query": "What must happen before a valid SMS?",
+      "logic": "Walk edges backward from node to find prerequisites"
+    },
+    "what_validates": {
+      "description": "Query: What validates X?",
+      "example_query": "What validates an Order Block?",
+      "logic": "Find nodes with 'validates' relationship to target"
+    },
+    "what_can_become": {
+      "description": "Query: What can X become?",
+      "example_query": "What can an Order Block become?",
+      "logic": "Find nodes with 'becomes' relationship from source"
+    },
+    "what_contains": {
+      "description": "Query: What components make up X?",
+      "example_query": "What components make up Silver Bullet?",
+      "logic": "Find nodes with 'component_of' relationship to target"
+    }
+  }
+}

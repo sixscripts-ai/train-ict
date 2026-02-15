@@ -1,0 +1,66 @@
+[
+  {
+    "timestamp": "2026-01-15T22:45:00-05:00",
+    "topic": "Sell Model - Liquidity Sweep Sequence",
+    "content": "Equal lows are NOT support, they are LIQUIDITY. 2-3 candles at same area = liquidity pool. Sweep is fluid/destined, not violent. FVG more important than OB - algorithm returning to the void. 50% of FVG imbalance is key level.",
+    "category": "insight",
+    "applied_to": [
+      "fvg",
+      "liquidity",
+      "sell_model",
+      "order_block"
+    ]
+  },
+  {
+    "timestamp": "2026-01-15T22:30:00-05:00",
+    "topic": "Chart Annotation Standards",
+    "content": "Be SPECIFIC and SURGICAL. Thin lines, small boxes on exact levels. Tell the story \u2014 show the sequence of how patterns connect. Don't use vague circles.",
+    "category": "preference",
+    "applied_to": [
+      "visualization",
+      "analysis"
+    ]
+  },
+  {
+    "timestamp": "2026-01-15T10:00:00-05:00",
+    "topic": "Quality Over Quantity",
+    "content": "EU with ONE entry = +$534. GU with 6 entries = -$234. One good trade beats many forced trades. Commissions ($2.50/lot) destroy profits from being 'nimble'.",
+    "category": "rule",
+    "applied_to": [
+      "risk_management",
+      "entry_discipline"
+    ]
+  },
+  {
+    "timestamp": "2026-01-15T10:00:00-05:00",
+    "topic": "First Loss Best Loss",
+    "content": "Take the first loss and move on. Re-entries on same thesis multiply losses. Check HTF before re-entering \u2014 is structure different or am I emotional?",
+    "category": "rule",
+    "applied_to": [
+      "psychology",
+      "risk_management"
+    ]
+  },
+  {
+    "timestamp": "2026-01-15T10:00:00-05:00",
+    "topic": "IRL/ERL Framework",
+    "content": "ALL ICT trades are either IRL\u2192ERL (enter at FVG/OB, target liquidity) or ERL\u2192IRL (turtle soup, target FVG/equilibrium). This is the decoder ring for everything.",
+    "category": "insight",
+    "applied_to": [
+      "irl_erl",
+      "trade_models",
+      "entry_rules",
+      "exit_rules"
+    ]
+  },
+  {
+    "timestamp": "2026-01-15T10:00:00-05:00",
+    "topic": "Stop Distance",
+    "content": "4-pip stops get killed by spread. Give the trade room to breathe. Use structure-based stops, not arbitrary pip counts.",
+    "category": "correction",
+    "applied_to": [
+      "risk_management",
+      "stop_loss"
+    ]
+  }
+]
