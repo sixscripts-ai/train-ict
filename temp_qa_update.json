@@ -1,0 +1,28 @@
+[
+  {
+    "id": "QA_PSYCHOLOGY_001",
+    "category": "Psychology & Risk",
+    "question": "You've just hit a 3-trade losing streak and your entries have been 'sloppy'. What is the most effective immediate adjustment?",
+    "options": {
+      "a": "Increase risk to recover fast",
+      "b": "Pause & Reset (stop trading for 24-48h)",
+      "c": "Halve risk immediately",
+      "d": "Switch trading models"
+    },
+    "correct_answer": "b",
+    "explanation": "Sloppy entries indicate psychological degradation. Mathematical solutions (reducing size) don't fix psychological problems. You must stop the bleeding and preserve Mental Capital first."
+  },
+  {
+    "id": "QA_EXECUTION_002",
+    "category": "Market Structure (Fractals)",
+    "question": "Price is approaching a perfect H4 Order Block, but the M15 structure is still bearish. What must you wait for?",
+    "options": {
+      "a": "H4 candle close",
+      "b": "M15 Market Structure Shift (MSS) bullishly confirming the H4 level",
+      "c": "M15 RSI oversold",
+      "d": "Place limit immediately"
+    },
+    "correct_answer": "b",
+    "explanation": "HTF provides location (POI), LTF provides timing. You must wait for the LTF to align with the HTF view via a Market Structure Shift. Entering before this is catching a falling knife."
+  }
+]
