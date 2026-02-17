@@ -1,1 +1,0 @@
-{"event_type": "system_start", "timestamp": "2026-02-15T17:42:20.196647-05:00", "source": "controller", "data": {"message": "VEX Agent booted successfully", "level": "info", "component": "controller"}, "event_id": 1}

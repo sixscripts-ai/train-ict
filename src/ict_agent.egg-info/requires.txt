@@ -1,9 +1,0 @@
-
-[dev]
-pytest
-black
-mypy
-
-[ml]
-torch
-scikit-learn

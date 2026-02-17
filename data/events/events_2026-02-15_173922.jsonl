@@ -1,4 +1,0 @@
-{"event_type": "system_start", "timestamp": "2026-02-15T17:39:23.172596-05:00", "source": "controller", "data": {"message": "VEX Agent booted successfully", "level": "info", "component": "controller"}, "event_id": 1}
-{"event_type": "market_scan", "timestamp": "2026-02-15T17:39:23.481530-05:00", "source": "skill:scan", "data": {"symbol": "EUR_USD", "timeframe": "", "bid": 1.18697, "ask": 1.18743, "killzone": "none"}, "event_id": 2}
-{"event_type": "market_scan", "timestamp": "2026-02-15T17:39:23.697847-05:00", "source": "skill:scan", "data": {"symbol": "GBP_USD", "timeframe": "", "bid": 1.36425, "ask": 1.36522, "killzone": "none"}, "event_id": 3}
-{"event_type": "signal_rejected", "timestamp": "2026-02-15T17:39:24.570164-05:00", "source": "skill:analyze", "data": {"symbol": "EUR_USD", "direction": "", "model": "", "entry_price": 0.0, "stop_loss": 0.0, "take_profit": 0.0, "confidence": 0.0, "rr_ratio": 0.0, "confluences": []}, "event_id": 4}

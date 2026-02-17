@@ -44,6 +44,7 @@ from .vex_core_engine import (
     Bias,
     LiquidityLevel,
     PDArray,
+    GateLog,
 )
 from .graph_reasoner import VexGraphReasoner, EnhancedResult
 
@@ -55,7 +56,6 @@ __all__ = [
     "RejectionQuality",
     "LiquidityTarget",
     "detect_stop_hunts",
-
     # Structure Breaks
     "EnhancedStructureAnalyzer",
     "StructureBreakSignal",
@@ -63,7 +63,6 @@ __all__ = [
     "Trend",
     "SwingPoint",
     "analyze_structure",
-
     # AMD
     "AMDEngine",
     "AMDState",
@@ -73,7 +72,6 @@ __all__ = [
     "AccumulationRange",
     "ManipulationEvent",
     "analyze_amd",
-
     # VEX Core Engine
     "VexCoreEngine",
     "EngineResult",
@@ -84,7 +82,7 @@ __all__ = [
     "Bias",
     "LiquidityLevel",
     "PDArray",
-
+    "GateLog",
     # Graph Reasoner Bridge
     "VexGraphReasoner",
     "EnhancedResult",

@@ -35,13 +35,15 @@ NY_TZ = ZoneInfo("America/New_York")
 # STATE & CONFIG
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 class VexState(Enum):
     """Agent state machine states."""
+
     BOOT = "boot"
     IDLE = "idle"
     SCANNING = "scanning"
     ANALYZING = "analyzing"
-    GATING = "gating"          # News + Risk checks before execution
+    GATING = "gating"  # News + Risk checks before execution
     EXECUTING = "executing"
     MONITORING = "monitoring"
     LEARNING = "learning"
@@ -52,10 +54,18 @@ class VexState(Enum):
 @dataclass
 class VexConfig:
     """Configuration for the VEX agent."""
+
     # Trading
-    symbols: List[str] = field(default_factory=lambda: [
-        "EUR_USD", "GBP_USD", "XAU_USD", "USD_JPY", "AUD_USD", "EUR_GBP"
-    ])
+    symbols: List[str] = field(
+        default_factory=lambda: [
+            "EUR_USD",
+            "GBP_USD",
+            "XAU_USD",
+            "USD_JPY",
+            "AUD_USD",
+            "EUR_GBP",
+        ]
+    )
     scan_interval_seconds: int = 300  # 5 minutes between scan cycles
     max_trades_per_day: int = 8
     dry_run: bool = False  # If True, no real trades placed
@@ -66,8 +76,14 @@ class VexConfig:
     environment: str = "practice"
 
     # Paths
-    data_dir: Path = field(default_factory=lambda: Path(__file__).parent.parent.parent.parent / "data")
-    learning_dir: Path = field(default_factory=lambda: Path(__file__).parent.parent.parent.parent / "data" / "learning")
+    data_dir: Path = field(
+        default_factory=lambda: Path(__file__).parent.parent.parent.parent / "data"
+    )
+    learning_dir: Path = field(
+        default_factory=lambda: (
+            Path(__file__).parent.parent.parent.parent / "data" / "learning"
+        )
+    )
 
     # Behavior
     learn_from_trades: bool = True
@@ -90,13 +106,14 @@ class VexConfig:
 # CONTROLLER
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 class VexController:
     """
     The VEX Agent Controller.
-    
+
     Drives the autonomous trading loop through a state machine.
     Each cycle: scan → analyze → gate (news+risk) → execute → monitor → learn
-    
+
     All components are wired through the SkillRegistry and EventStream.
     The controller doesn't DO the work — it orchestrates skills that do.
     """
@@ -154,17 +171,18 @@ class VexController:
 
             # 2. Event Stream
             from ict_agent.events.event_stream import EventStream
-            self.event_stream = EventStream(
-                log_dir=self.config.data_dir / "events"
-            )
+
+            self.event_stream = EventStream(log_dir=self.config.data_dir / "events")
             print("   ✅ EventStream online")
 
             # 3. Skill Registry
             from ict_agent.skills.base import SkillRegistry
+
             self.skill_registry = SkillRegistry()
 
             # 4. OANDA Executor
             from ict_agent.execution.oanda_executor import OANDAExecutor
+
             self.executor = OANDAExecutor(
                 api_key=self.config.api_key,
                 account_id=self.config.account_id,
@@ -174,6 +192,7 @@ class VexController:
 
             # 5. Risk Guardian
             from ict_agent.execution.risk_guardian import RiskGuardian, RiskConfig
+
             risk_config = RiskConfig(
                 max_risk_percent=2.5,
                 max_trades_per_day=self.config.max_trades_per_day,
@@ -189,20 +208,33 @@ class VexController:
 
             # 6. Journal
             from ict_agent.execution.agent_journal import AgentJournal
+
             self.journal = AgentJournal()
             print("   ✅ AgentJournal ready")
 
             # 7. Trade Learner
             from ict_agent.learning.trade_learner import TradeLearner
+
             self.trade_learner = TradeLearner(data_dir=self.config.learning_dir)
-            lessons_count = len(self.trade_learner.lessons) if hasattr(self.trade_learner, "lessons") else 0
-            patterns_count = len(self.trade_learner.patterns) if hasattr(self.trade_learner, "patterns") else 0
-            print(f"   ✅ TradeLearner ({lessons_count} lessons, {patterns_count} patterns)")
+            lessons_count = (
+                len(self.trade_learner.lessons)
+                if hasattr(self.trade_learner, "lessons")
+                else 0
+            )
+            patterns_count = (
+                len(self.trade_learner.patterns)
+                if hasattr(self.trade_learner, "patterns")
+                else 0
+            )
+            print(
+                f"   ✅ TradeLearner ({lessons_count} lessons, {patterns_count} patterns)"
+            )
 
             # 8. News Filter
             if self.config.check_news:
                 try:
                     from ict_agent.engine.news_filter import NewsFilter
+
                     self.news_filter = NewsFilter()
                     print("   ✅ NewsFilter (ForexFactory)")
                 except Exception as e:
@@ -212,6 +244,7 @@ class VexController:
             # 9. VEX Core Engine
             if self.config.use_core_engine:
                 from ict_agent.core.vex_core_engine import VexCoreEngine
+
                 self.core_engine = VexCoreEngine()
                 print("   ✅ VexCoreEngine (8-gate system)")
 
@@ -226,15 +259,22 @@ class VexController:
                             e = store.G.number_of_edges() if store else 0
                             print(f"   ✅ GraphReasoner ({n:,} nodes, {e:,} edges)")
                         else:
-                            print("   ⚠️ GraphReasoner unavailable (graph_rag not found)")
+                            print(
+                                "   ⚠️ GraphReasoner unavailable (graph_rag not found)"
+                            )
                     except Exception as gr_err:
                         print(f"   ⚠️ GraphReasoner failed: {gr_err}")
 
             # 9b. Knowledge Manager (shared instance — avoid re-creation per analyze call)
             try:
                 from ict_agent.learning.knowledge_manager import KnowledgeManager
+
                 self.knowledge_manager = KnowledgeManager()
-                concepts = len(self.knowledge_manager.concepts) if hasattr(self.knowledge_manager, 'concepts') else 0
+                concepts = (
+                    len(self.knowledge_manager.concepts)
+                    if hasattr(self.knowledge_manager, "concepts")
+                    else 0
+                )
                 print(f"   ✅ KnowledgeManager ({concepts} concepts)")
             except Exception as e:
                 print(f"   ⚠️ KnowledgeManager failed: {e}")
@@ -242,6 +282,7 @@ class VexController:
 
             # 10. Killzone Manager
             from ict_agent.engine.killzone import KillzoneManager
+
             self.killzone_manager = KillzoneManager()
             print("   ✅ KillzoneManager")
 
@@ -263,14 +304,20 @@ class VexController:
 
             # 12. Memory System
             from ict_agent.memory.memory_manager import MemoryManager
+
             self.memory = MemoryManager(data_dir=self.config.learning_dir)
             mem_status = self.memory.boot()
-            print(f"   ✅ MemorySystem ({mem_status['knowledge_files']} knowledge files)")
+            print(
+                f"   ✅ MemorySystem ({mem_status['knowledge_files']} knowledge files)"
+            )
 
             # 12b. Performance Tracker
             from ict_agent.memory.performance import PerformanceTracker
+
             account = self.executor.get_account_info()
-            starting_bal = account.balance if account and hasattr(account, 'balance') else 10000.0
+            starting_bal = (
+                account.balance if account and hasattr(account, "balance") else 10000.0
+            )
             self.performance = PerformanceTracker(starting_balance=starting_bal)
             print(f"   ✅ PerformanceTracker (${starting_bal:,.2f})")
 
@@ -279,7 +326,7 @@ class VexController:
 
             # 14. Verify OANDA connection (reuse account from above)
             if account:
-                balance = account.balance if hasattr(account, 'balance') else 0
+                balance = account.balance if hasattr(account, "balance") else 0
                 print(f"   ✅ OANDA verified — Balance: ${balance:,.2f}")
             else:
                 print("   ⚠️ Could not verify OANDA (will retry)")
@@ -292,13 +339,16 @@ class VexController:
 
             # Publish boot event
             from ict_agent.events.event_types import SystemEvent, EventType
-            self.event_stream.publish(SystemEvent(
-                event_type=EventType.SYSTEM_START,
-                source="controller",
-                message="VEX Agent booted successfully",
-                level="info",
-                component="controller",
-            ))
+
+            self.event_stream.publish(
+                SystemEvent(
+                    event_type=EventType.SYSTEM_START,
+                    source="controller",
+                    message="VEX Agent booted successfully",
+                    level="info",
+                    component="controller",
+                )
+            )
 
             self.state = VexState.IDLE
             return True
@@ -324,8 +374,12 @@ class VexController:
                         os.environ[key.strip()] = value.strip()
                 # Update config from loaded env
                 self.config.api_key = os.getenv("OANDA_API_KEY", self.config.api_key)
-                self.config.account_id = os.getenv("OANDA_ACCOUNT_ID", self.config.account_id)
-                self.config.environment = os.getenv("OANDA_ENV", self.config.environment)
+                self.config.account_id = os.getenv(
+                    "OANDA_ACCOUNT_ID", self.config.account_id
+                )
+                self.config.environment = os.getenv(
+                    "OANDA_ENV", self.config.environment
+                )
                 return
 
     def _wire_event_handlers(self) -> None:
@@ -333,14 +387,17 @@ class VexController:
         from ict_agent.events.event_types import EventType
 
         if self.config.verbose:
+
             def log_event(event):
                 ts = event.timestamp.strftime("%H:%M:%S")
-                print(f"   [{ts}] 📡 {event.event_type.value} | {event.source} | {event.data.get('symbol', '')}")
+                print(
+                    f"   [{ts}] 📡 {event.event_type.value} | {event.source} | {event.data.get('symbol', '')}"
+                )
 
             self.event_stream.subscribe_all(log_event)
 
         # Wire memory manager into event stream
-        if hasattr(self, 'memory') and self.memory:
+        if hasattr(self, "memory") and self.memory:
             self.event_stream.subscribe_all(self.memory.on_event)
 
     # ═══════════════════════════════════════════════════════════════════════════
@@ -355,20 +412,25 @@ class VexController:
             if self.config.verbose:
                 print(f"   ❌ Skill '{skill_name}' crashed: {e}")
             from ict_agent.events.event_types import SystemEvent, EventType
+
             if self.event_stream:
-                self.event_stream.publish(SystemEvent(
-                    event_type=EventType.SYSTEM_ERROR,
-                    source=f"skill:{skill_name}",
-                    message=f"Skill crash: {e}",
-                    level="error",
-                    component=skill_name,
-                ))
+                self.event_stream.publish(
+                    SystemEvent(
+                        event_type=EventType.SYSTEM_ERROR,
+                        source=f"skill:{skill_name}",
+                        message=f"Skill crash: {e}",
+                        level="error",
+                        component=skill_name,
+                    )
+                )
             return None
 
-    def run(self, duration_minutes: Optional[int] = None, max_cycles: Optional[int] = None) -> None:
+    def run(
+        self, duration_minutes: Optional[int] = None, max_cycles: Optional[int] = None
+    ) -> None:
         """
         Main trading loop. Runs until stopped, duration expires, or max cycles reached.
-        
+
         Args:
             duration_minutes: Run for this many minutes, then stop
             max_cycles: Run this many cycles, then stop
@@ -379,7 +441,11 @@ class VexController:
 
         self.running = True
         start_time = datetime.now(NY_TZ)
-        end_time = start_time + timedelta(minutes=duration_minutes) if duration_minutes else None
+        end_time = (
+            start_time + timedelta(minutes=duration_minutes)
+            if duration_minutes
+            else None
+        )
 
         print(f"\n🚀 VEX starting at {start_time.strftime('%H:%M:%S ET')}")
         if duration_minutes:
@@ -425,7 +491,7 @@ class VexController:
     def step(self) -> None:
         """
         Execute one complete trading cycle.
-        
+
         IDLE → SCAN → ANALYZE (per symbol) → GATE → EXECUTE → MONITOR → LEARN → IDLE
         """
         self.cycle_count += 1
@@ -433,18 +499,27 @@ class VexController:
         now = self.last_cycle_time
 
         if self.config.verbose:
-            kz = self.killzone_manager.get_current_killzone(now) if self.killzone_manager else None
+            kz = (
+                self.killzone_manager.get_current_killzone(now)
+                if self.killzone_manager
+                else None
+            )
             kz_name = kz.value if kz else "No Session"
             print(f"\n{'─' * 50}")
-            print(f"🔄 Cycle #{self.cycle_count} | {now.strftime('%H:%M:%S ET')} | {kz_name}")
+            print(
+                f"🔄 Cycle #{self.cycle_count} | {now.strftime('%H:%M:%S ET')} | {kz_name}"
+            )
             print(f"{'─' * 50}")
 
         # ─── PHASE 1: SCAN ───────────────────────────────────────────────
         self.state = VexState.SCANNING
-        scan_result = self._safe_execute("scan", {
-            "symbols": self.config.symbols,
-            "killzone_manager": self.killzone_manager,
-        })
+        scan_result = self._safe_execute(
+            "scan",
+            {
+                "symbols": self.config.symbols,
+                "killzone_manager": self.killzone_manager,
+            },
+        )
 
         # Publish scan events
         if scan_result and scan_result.events:
@@ -480,11 +555,11 @@ class VexController:
             }
 
             # Inject shared KnowledgeManager (avoids re-creation each call)
-            if hasattr(self, 'knowledge_manager') and self.knowledge_manager:
+            if hasattr(self, "knowledge_manager") and self.knowledge_manager:
                 analyze_context["knowledge_manager"] = self.knowledge_manager
 
             # Inject memory recall — gives engine pre-trade intelligence
-            if hasattr(self, 'memory') and self.memory:
+            if hasattr(self, "memory") and self.memory:
                 recall = self.memory.recall_for_analysis(
                     symbol=symbol,
                     session=killzone_name,
@@ -493,13 +568,29 @@ class VexController:
 
                 # Apply confidence adjustment from memory
                 assessment = recall.get("should_trade", {})
-                analyze_context["confidence_boost"] = assessment.get("confidence_boost", 0)
+                analyze_context["confidence_boost"] = assessment.get(
+                    "confidence_boost", 0
+                )
                 if assessment.get("warnings"):
                     for w in assessment["warnings"]:
                         if self.config.verbose:
                             print(f"   ⚠️ Memory: {w}")
 
             analyze_result = self._safe_execute("analyze", analyze_context)
+
+            # Print gate trace if verbose
+            if self.config.verbose and analyze_result and analyze_result.data:
+                trace = analyze_result.data.get("gate_trace", [])
+                if trace:
+                    print(f"   ┌── {symbol} Gate Trace ──")
+                    for g in trace:
+                        icon = "✅" if g["passed"] else "❌"
+                        print(f"   │ {icon} {g['gate']:<22s} {g['summary']}")
+                    has_trade = analyze_result.data.get("trade", False)
+                    decision = "🟢 TRADE" if has_trade else "🔴 NO TRADE"
+                    reason = analyze_result.data.get("rejection_reason", "")
+                    suffix = f" — {reason}" if reason and not has_trade else ""
+                    print(f"   └── Decision: {decision}{suffix}")
 
             # Publish analysis events
             if analyze_result and analyze_result.events:
@@ -521,46 +612,62 @@ class VexController:
 
         # ─── PHASE 2b: STRATEGY ADJUSTMENT ───────────────────────────────
         # Apply strategy-level confidence modifier based on historical performance
-        if hasattr(self, 'performance') and self.performance and self.performance.total_trades >= 5:
-            strategy_result = self._safe_execute("strategy", {
-                "mode": "recommend",
-                "performance": self.performance,
-                "symbol": best_setup["symbol"],
-                "model": best_setup.get("model", ""),
-                "session": killzone_name,
-                "base_confidence": best_setup["confidence"],
-            })
+        if (
+            hasattr(self, "performance")
+            and self.performance
+            and self.performance.total_trades >= 5
+        ):
+            strategy_result = self._safe_execute(
+                "strategy",
+                {
+                    "mode": "recommend",
+                    "performance": self.performance,
+                    "symbol": best_setup["symbol"],
+                    "model": best_setup.get("model", ""),
+                    "session": killzone_name,
+                    "base_confidence": best_setup["confidence"],
+                },
+            )
             if strategy_result and strategy_result.success:
                 old_conf = best_setup["confidence"]
                 best_setup["confidence"] = strategy_result.data["adjusted_confidence"]
                 modifier = strategy_result.data["strategy_modifier"]
                 if modifier != 0 and self.config.verbose:
-                    print(f"   📈 Strategy: {modifier:+.3f} confidence "
-                          f"({old_conf*100:.0f}% → {best_setup['confidence']*100:.0f}%) "
-                          f"[{strategy_result.data.get('overall_grade', '?')}]")
+                    print(
+                        f"   📈 Strategy: {modifier:+.3f} confidence "
+                        f"({old_conf * 100:.0f}% → {best_setup['confidence'] * 100:.0f}%) "
+                        f"[{strategy_result.data.get('overall_grade', '?')}]"
+                    )
 
         if self.config.verbose:
-            print(f"   🎯 Best: {best_setup['model']} {best_setup['direction']} "
-                  f"{best_setup['symbol']} | Conf: {best_setup['confidence']*100:.0f}% | "
-                  f"R:R: {best_setup['rr_ratio']:.1f}")
+            print(
+                f"   🎯 Best: {best_setup['model']} {best_setup['direction']} "
+                f"{best_setup['symbol']} | Conf: {best_setup['confidence'] * 100:.0f}% | "
+                f"R:R: {best_setup['rr_ratio']:.1f}"
+            )
 
         # ─── PHASE 3: GATE (News + Risk) ─────────────────────────────────
         self.state = VexState.GATING
 
         # Gate 1: News check
         if self.config.check_news:
-            news_result = self._safe_execute("news", {
-                "symbol": best_setup["symbol"],
-                "news_filter": self.news_filter,
-            })
+            news_result = self._safe_execute(
+                "news",
+                {
+                    "symbol": best_setup["symbol"],
+                    "news_filter": self.news_filter,
+                },
+            )
             if news_result and news_result.events:
                 for event in news_result.events:
                     self.event_stream.publish(event)
 
             if news_result and not news_result.data.get("safe_to_trade", True):
                 danger = news_result.data.get("next_danger", {})
-                print(f"   🚫 NEWS GATE: Blocked — {danger.get('title', 'High impact event')} "
-                      f"in {danger.get('minutes_away', '?')} min")
+                print(
+                    f"   🚫 NEWS GATE: Blocked — {danger.get('title', 'High impact event')} "
+                    f"in {danger.get('minutes_away', '?')} min"
+                )
                 self.state = VexState.IDLE
                 return
 
@@ -568,12 +675,14 @@ class VexController:
         if self.config.learn_from_trades and self.trade_learner:
             learn_skill = self.skill_registry.get("learn")
             if learn_skill and hasattr(learn_skill, "pre_trade_check"):
-                recall_result = learn_skill.pre_trade_check({
-                    "trade_learner": self.trade_learner,
-                    "symbol": best_setup["symbol"],
-                    "model": best_setup.get("model", ""),
-                    "killzone": killzone_name,
-                })
+                recall_result = learn_skill.pre_trade_check(
+                    {
+                        "trade_learner": self.trade_learner,
+                        "symbol": best_setup["symbol"],
+                        "model": best_setup.get("model", ""),
+                        "killzone": killzone_name,
+                    }
+                )
                 if recall_result and recall_result.data.get("warnings"):
                     for warning in recall_result.data["warnings"]:
                         print(f"   {warning}")
@@ -586,13 +695,16 @@ class VexController:
 
         # ─── PHASE 4: EXECUTE ────────────────────────────────────────────
         self.state = VexState.EXECUTING
-        exec_result = self._safe_execute("execute", {
-            "setup": best_setup,
-            "executor": self.executor,
-            "risk_guardian": self.risk_guardian,
-            "journal": self.journal,
-            "dry_run": self.config.dry_run,
-        })
+        exec_result = self._safe_execute(
+            "execute",
+            {
+                "setup": best_setup,
+                "executor": self.executor,
+                "risk_guardian": self.risk_guardian,
+                "journal": self.journal,
+                "dry_run": self.config.dry_run,
+            },
+        )
 
         if exec_result and exec_result.events:
             for event in exec_result.events:
@@ -604,14 +716,18 @@ class VexController:
             self._active_trades.append(trade_data)
 
             if trade_data.get("dry_run"):
-                print(f"   🏷️ DRY RUN: Would {trade_data['direction']} "
-                      f"{trade_data['units']} {trade_data['symbol']} "
-                      f"@ {trade_data['entry_price']:.5f}")
+                print(
+                    f"   🏷️ DRY RUN: Would {trade_data['direction']} "
+                    f"{trade_data['units']} {trade_data['symbol']} "
+                    f"@ {trade_data['entry_price']:.5f}"
+                )
             else:
-                print(f"   ✅ FILLED: {trade_data['direction']} "
-                      f"{trade_data['units']} {trade_data['symbol']} "
-                      f"@ {trade_data.get('fill_price', trade_data.get('entry_price', 0)):.5f} "
-                      f"(Trade #{trade_data.get('trade_id', 'N/A')})")
+                print(
+                    f"   ✅ FILLED: {trade_data['direction']} "
+                    f"{trade_data['units']} {trade_data['symbol']} "
+                    f"@ {trade_data.get('fill_price', trade_data.get('entry_price', 0)):.5f} "
+                    f"(Trade #{trade_data.get('trade_id', 'N/A')})"
+                )
         elif exec_result:
             print(f"   ❌ Execution failed: {exec_result.error}")
 
@@ -700,30 +816,33 @@ class VexController:
         rr_achieved = abs(pnl_pips / risk_pips) if risk_pips > 0 else 0
 
         # Learn
-        learn_result = self._safe_execute("learn", {
-            "trade_learner": self.trade_learner,
-            "trade_data": {
-                "trade_id": trade_data.get("trade_id", ""),
-                "symbol": symbol,
-                "model": trade_data.get("model", "unknown"),
-                "outcome": outcome,
-                "pnl": pnl_pips,
-                "rr_achieved": rr_achieved,
-                "killzone": trade_data.get("killzone", ""),
-                "confluences": trade_data.get("confluences", []),
-                "entry_price": entry_price,
-                "exit_price": exit_price,
-                "stop_loss": stop_loss,
-                "take_profit": take_profit,
+        learn_result = self._safe_execute(
+            "learn",
+            {
+                "trade_learner": self.trade_learner,
+                "trade_data": {
+                    "trade_id": trade_data.get("trade_id", ""),
+                    "symbol": symbol,
+                    "model": trade_data.get("model", "unknown"),
+                    "outcome": outcome,
+                    "pnl": pnl_pips,
+                    "rr_achieved": rr_achieved,
+                    "killzone": trade_data.get("killzone", ""),
+                    "confluences": trade_data.get("confluences", []),
+                    "entry_price": entry_price,
+                    "exit_price": exit_price,
+                    "stop_loss": stop_loss,
+                    "take_profit": take_profit,
+                },
             },
-        })
+        )
 
         if learn_result and learn_result.events:
             for event in learn_result.events:
                 self.event_stream.publish(event)
 
         # Also record to memory manager for long-term storage
-        if hasattr(self, 'memory') and self.memory:
+        if hasattr(self, "memory") and self.memory:
             self.memory.record_trade_outcome(
                 symbol=symbol,
                 model=trade_data.get("model", "unknown"),
@@ -735,9 +854,13 @@ class VexController:
             )
 
         # Record to performance tracker
-        if hasattr(self, 'performance') and self.performance:
+        if hasattr(self, "performance") and self.performance:
             units = trade_data.get("units", 0)
-            pnl_usd = pnl_pips * (0.1 if "JPY" in symbol.upper() else 10.0) * (units / 100000) if units else pnl_pips
+            pnl_usd = (
+                pnl_pips * (0.1 if "JPY" in symbol.upper() else 10.0) * (units / 100000)
+                if units
+                else pnl_pips
+            )
             self.performance.record_trade(
                 trade_id=trade_data.get("trade_id", ""),
                 symbol=symbol,
@@ -753,13 +876,18 @@ class VexController:
 
         if self.config.verbose:
             emoji = "✅" if outcome == "win" else ("❌" if outcome == "loss" else "➖")
-            print(f"   {emoji} Closed trade {symbol} | {outcome.upper()} | "
-                  f"{pnl_pips:+.1f} pips | R:R {rr_achieved:.1f}")
+            print(
+                f"   {emoji} Closed trade {symbol} | {outcome.upper()} | "
+                f"{pnl_pips:+.1f} pips | R:R {rr_achieved:.1f}"
+            )
 
         if learn_result and learn_result.success:
             lesson = learn_result.data.get("lesson", "")
-            print(f"   🧠 Learned from {outcome}: {lesson[:80]}" if lesson else
-                  f"   🧠 Learned: {outcome} on {symbol}")
+            print(
+                f"   🧠 Learned from {outcome}: {lesson[:80]}"
+                if lesson
+                else f"   🧠 Learned: {outcome} on {symbol}"
+            )
 
     # ═══════════════════════════════════════════════════════════════════════════
     # SESSION MANAGEMENT
@@ -803,14 +931,17 @@ class VexController:
         self.state = VexState.SHUTDOWN
 
         from ict_agent.events.event_types import SystemEvent, EventType
+
         if self.event_stream:
-            self.event_stream.publish(SystemEvent(
-                event_type=EventType.SYSTEM_STOP,
-                source="controller",
-                message="VEX Agent stopped",
-                level="info",
-                component="controller",
-            ))
+            self.event_stream.publish(
+                SystemEvent(
+                    event_type=EventType.SYSTEM_STOP,
+                    source="controller",
+                    message="VEX Agent stopped",
+                    level="info",
+                    component="controller",
+                )
+            )
 
     def reset_daily(self) -> None:
         """Reset daily counters (call at start of new trading day)."""
@@ -832,11 +963,15 @@ class VexController:
             "symbols": self.config.symbols,
             "skills": self.skill_registry.list_skills() if self.skill_registry else [],
             "events_total": self.event_stream.event_count if self.event_stream else 0,
-            "session_start": self.session_start.isoformat() if self.session_start else None,
-            "last_cycle": self.last_cycle_time.isoformat() if self.last_cycle_time else None,
+            "session_start": self.session_start.isoformat()
+            if self.session_start
+            else None,
+            "last_cycle": self.last_cycle_time.isoformat()
+            if self.last_cycle_time
+            else None,
         }
-        if hasattr(self, 'memory') and self.memory:
+        if hasattr(self, "memory") and self.memory:
             status["memory"] = self.memory.get_status()
-        if hasattr(self, 'performance') and self.performance:
+        if hasattr(self, "performance") and self.performance:
             status["performance"] = self.performance.status()
         return status

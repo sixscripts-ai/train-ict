@@ -46,22 +46,26 @@ NY_TZ = ZoneInfo("America/New_York")
 # ENUMS & DATA CLASSES
 # =============================================================================
 
+
 class TradeType(Enum):
     """The two types of ICT trades - The Decoder Key"""
+
     IRL_TO_ERL = "irl_to_erl"  # Internal → External (standard)
     ERL_TO_IRL = "erl_to_irl"  # External → Internal (turtle soup)
 
 
 class SessionPhase(Enum):
     """Power of Three session phases"""
-    ACCUMULATION = "accumulation"    # Asia - range building
-    MANIPULATION = "manipulation"    # London - Judas swing
-    DISTRIBUTION = "distribution"    # NY - true move
+
+    ACCUMULATION = "accumulation"  # Asia - range building
+    MANIPULATION = "manipulation"  # London - Judas swing
+    DISTRIBUTION = "distribution"  # NY - true move
     UNKNOWN = "unknown"
 
 
 class ModelType(Enum):
     """ICT Model being executed"""
+
     MODEL_11 = "model_11"  # 30 pip bread & butter
     MODEL_12 = "model_12"  # 20 pip OB+FVG scalp
     TURTLE_SOUP = "turtle_soup"  # Fade the sweep
@@ -77,6 +81,7 @@ class Bias(Enum):
 @dataclass
 class LiquidityLevel:
     """Represents a liquidity pool"""
+
     price: float
     type: str  # "bsl" (buy-side) or "ssl" (sell-side)
     source: str  # "equal_highs", "equal_lows", "pdh", "pdl", "asia_high", etc.
@@ -88,6 +93,7 @@ class LiquidityLevel:
 @dataclass
 class PDArray:
     """Premium/Discount Array (entry zone)"""
+
     type: str  # "fvg", "ob", "breaker", "void"
     direction: str  # "bullish" or "bearish"
     top: float
@@ -102,6 +108,7 @@ class PDArray:
 @dataclass
 class SessionState:
     """Current PO3 session state"""
+
     phase: SessionPhase
     asia_high: Optional[float] = None
     asia_low: Optional[float] = None
@@ -111,8 +118,19 @@ class SessionState:
 
 
 @dataclass
+class GateLog:
+    """Structured log entry for a single gate in the analysis pipeline."""
+
+    gate: str  # e.g. "G1_KILLZONE"
+    passed: bool  # Did analysis continue past this gate?
+    summary: str  # One-line human summary
+    details: Dict[str, Any] = field(default_factory=dict)  # Structured data
+
+
+@dataclass
 class TradeSetup:
     """A complete trade setup from VEX Core Engine"""
+
     # Classification
     trade_type: TradeType
     model: ModelType
@@ -178,6 +196,7 @@ class TradeSetup:
 @dataclass
 class EngineResult:
     """Result from VEX Core Engine analysis"""
+
     # Decision
     trade: bool
     setup: Optional[TradeSetup]
@@ -195,6 +214,9 @@ class EngineResult:
     # Rejection Reason (if no trade)
     rejection_reason: Optional[str] = None
 
+    # Gate trace — structured log of every gate decision
+    gate_trace: List[GateLog] = field(default_factory=list)
+
     # Raw Data
     analysis_time: datetime = field(default_factory=lambda: datetime.now(NY_TZ))
 
@@ -202,6 +224,7 @@ class EngineResult:
 # =============================================================================
 # VEX CORE ENGINE
 # =============================================================================
+
 
 class VexCoreEngine:
     """
@@ -227,7 +250,7 @@ class VexCoreEngine:
         self,
         model_11_target: float = 30.0,  # pips
         model_12_target: float = 20.0,  # pips
-        default_stop: float = 20.0,     # pips
+        default_stop: float = 20.0,  # pips
         min_rr: float = 1.5,
         pip_size: float = 0.0001,
     ):
@@ -248,6 +271,7 @@ class VexCoreEngine:
         # Graph-driven reasoning (lazy-loaded, graceful fallback)
         try:
             from ict_agent.core.graph_reasoner import VexGraphReasoner
+
             self.graph_reasoner = VexGraphReasoner()
         except Exception:
             self.graph_reasoner = None
@@ -272,6 +296,8 @@ class VexCoreEngine:
         Main entry point - analyzes market and returns trade decision.
         """
         now = current_time if current_time else datetime.now(NY_TZ)
+        trace: List[GateLog] = []
+        current_price = float(df["close"].iloc[-1])
 
         # ---------------------------------------------------------------------
         # GATE 1: KILLZONE CHECK
@@ -284,6 +310,19 @@ class VexCoreEngine:
             killzone_active = killzone is not None
             killzone_name = killzone.name if killzone else "none"
 
+        trace.append(
+            GateLog(
+                gate="G1_KILLZONE",
+                passed=killzone_active,
+                summary=f"{killzone_name}" if killzone_active else "Outside killzone",
+                details={
+                    "killzone": killzone_name,
+                    "time": now.strftime("%H:%M ET"),
+                    "override": killzone_override is not None,
+                },
+            )
+        )
+
         if not killzone_active:
             return EngineResult(
                 trade=False,
@@ -295,6 +334,7 @@ class VexCoreEngine:
                 pd_arrays=[],
                 session_state=self.session_state,
                 rejection_reason="Outside killzone - no trades allowed",
+                gate_trace=trace,
             )
 
         # ---------------------------------------------------------------------
@@ -303,10 +343,37 @@ class VexCoreEngine:
         session_phase = self._get_session_phase(now)
         self._update_session_state(df, session_phase, now)
 
+        trace.append(
+            GateLog(
+                gate="G2_SESSION",
+                passed=True,
+                summary=f"{session_phase.value} (PO3)",
+                details={
+                    "phase": session_phase.value,
+                    "asia_high": self.session_state.asia_high,
+                    "asia_low": self.session_state.asia_low,
+                    "asia_swept": self.session_state.asia_swept,
+                    "judas_dir": self.session_state.judas_direction,
+                    "true_dir": self.session_state.true_direction,
+                },
+            )
+        )
+
         # ---------------------------------------------------------------------
         # GATE 3: BIAS DETERMINATION
         # ---------------------------------------------------------------------
         bias = self._determine_bias(df, htf_df)
+
+        trace.append(
+            GateLog(
+                gate="G3_BIAS",
+                passed=bias != Bias.NEUTRAL,
+                summary=f"{bias.value}"
+                if bias != Bias.NEUTRAL
+                else "Neutral — no clear structure",
+                details={"bias": bias.value, "price": current_price},
+            )
+        )
 
         if bias == Bias.NEUTRAL:
             return EngineResult(
@@ -319,6 +386,7 @@ class VexCoreEngine:
                 pd_arrays=[],
                 session_state=self.session_state,
                 rejection_reason="No clear bias - structure is neutral",
+                gate_trace=trace,
             )
 
         # ---------------------------------------------------------------------
@@ -327,6 +395,21 @@ class VexCoreEngine:
         liquidity_levels = self._map_liquidity(df, symbol)
         erl_levels = [l for l in liquidity_levels if l.external]
         irl_levels = [l for l in liquidity_levels if not l.external]
+
+        trace.append(
+            GateLog(
+                gate="G4_LIQUIDITY",
+                passed=len(erl_levels) > 0,
+                summary=f"{len(erl_levels)} ERL + {len(irl_levels)} IRL = {len(liquidity_levels)} total",
+                details={
+                    "total": len(liquidity_levels),
+                    "erl_count": len(erl_levels),
+                    "irl_count": len(irl_levels),
+                    "erl_types": {l.source: round(l.price, 5) for l in erl_levels[:8]},
+                    "irl_types": {l.source: round(l.price, 5) for l in irl_levels[:8]},
+                },
+            )
+        )
 
         if not erl_levels:
             return EngineResult(
@@ -339,6 +422,7 @@ class VexCoreEngine:
                 pd_arrays=[],
                 session_state=self.session_state,
                 rejection_reason="No external liquidity target identified",
+                gate_trace=trace,
             )
 
         # ---------------------------------------------------------------------
@@ -346,11 +430,55 @@ class VexCoreEngine:
         # ---------------------------------------------------------------------
         sweep_info = self._check_liquidity_sweep(df, liquidity_levels)
 
+        trace.append(
+            GateLog(
+                gate="G5_SWEEP",
+                passed=True,  # informational — sweep is not required
+                summary=f"Sweep {sweep_info['direction']} @ {sweep_info['level'].price:.5f} ({sweep_info['candles_ago']} bars ago)"
+                if sweep_info.get("occurred")
+                else "No recent sweep",
+                details=sweep_info
+                if not sweep_info.get("occurred")
+                else {
+                    "occurred": True,
+                    "direction": sweep_info["direction"],
+                    "price": round(sweep_info["level"].price, 5),
+                    "source": sweep_info["level"].source,
+                    "candles_ago": sweep_info["candles_ago"],
+                },
+            )
+        )
+
         # ---------------------------------------------------------------------
         # GATE 6: PD ARRAY ENTRY ZONES
         # ---------------------------------------------------------------------
         pd_arrays = self._find_pd_arrays(df, bias, timeframe)
         valid_entries = [p for p in pd_arrays if p.valid and not p.mitigated]
+
+        trace.append(
+            GateLog(
+                gate="G6_PD_ARRAYS",
+                passed=len(valid_entries) > 0,
+                summary=f"{len(valid_entries)} valid entries ({len(pd_arrays)} total)"
+                if valid_entries
+                else f"0 valid ({len(pd_arrays)} found, all mitigated/invalid)",
+                details={
+                    "total_found": len(pd_arrays),
+                    "valid_count": len(valid_entries),
+                    "entries": [
+                        {
+                            "type": p.type,
+                            "dir": p.direction,
+                            "top": round(p.top, 5),
+                            "bot": round(p.bottom, 5),
+                            "ote": round(p.ote_level, 5),
+                            "mitigated": p.mitigated,
+                        }
+                        for p in pd_arrays[:6]
+                    ],
+                },
+            )
+        )
 
         if not valid_entries:
             return EngineResult(
@@ -363,14 +491,28 @@ class VexCoreEngine:
                 pd_arrays=pd_arrays,
                 session_state=self.session_state,
                 rejection_reason="No valid PD array entry zones",
+                gate_trace=trace,
             )
 
         # ---------------------------------------------------------------------
         # GATE 7: TRADE CLASSIFICATION (Type A or B)
         # ---------------------------------------------------------------------
-        current_price = float(df['close'].iloc[-1])
         trade_type, target_liquidity = self._classify_trade(
             current_price, bias, sweep_info, erl_levels, irl_levels
+        )
+
+        trace.append(
+            GateLog(
+                gate="G7_CLASSIFY",
+                passed=True,
+                summary=f"{trade_type.value} → target {target_liquidity.source} @ {target_liquidity.price:.5f}",
+                details={
+                    "trade_type": trade_type.value,
+                    "target_price": round(target_liquidity.price, 5),
+                    "target_source": target_liquidity.source,
+                    "target_type": target_liquidity.type,
+                },
+            )
         )
 
         # ---------------------------------------------------------------------
@@ -389,6 +531,17 @@ class VexCoreEngine:
         except Exception:
             pass  # detector may fail on insufficient data
 
+        trace.append(
+            GateLog(
+                gate="G7b_DISPLACEMENT",
+                passed=True,  # informational
+                summary="Displacement confirmed"
+                if displacement_detected
+                else "No displacement",
+                details={"detected": displacement_detected},
+            )
+        )
+
         # ---------------------------------------------------------------------
         # GATE 7c: GRAPH-DRIVEN REASONING
         # ---------------------------------------------------------------------
@@ -405,17 +558,55 @@ class VexCoreEngine:
                     displacement_detected=bool(displacement_detected),
                     current_time=now.strftime("%H:%M") if now else "",
                 )
-            except Exception:
+                trace.append(
+                    GateLog(
+                        gate="G7c_GRAPH",
+                        passed=True,
+                        summary=f"{'GO' if graph_result.go_no_go else 'NO-GO'} "
+                        f"score={graph_result.score_raw:.1f} "
+                        f"model={graph_result.recommended_model_name} "
+                        f"conf={graph_result.confidence:.0%}",
+                        details={
+                            "go_no_go": graph_result.go_no_go,
+                            "score": graph_result.score_raw,
+                            "model": graph_result.recommended_model_name,
+                            "confidence": round(graph_result.confidence, 2),
+                            "confluences": graph_result.confluences[:6],
+                            "red_flags": graph_result.red_flags,
+                            "missing": graph_result.missing,
+                        },
+                    )
+                )
+            except Exception as e:
+                trace.append(
+                    GateLog(
+                        gate="G7c_GRAPH",
+                        passed=True,
+                        summary=f"Error: {e}",
+                        details={"error": str(e)},
+                    )
+                )
                 graph_result = None
+        else:
+            trace.append(
+                GateLog(
+                    gate="G7c_GRAPH",
+                    passed=True,
+                    summary="GraphReasoner not loaded",
+                    details={},
+                )
+            )
 
         # ---------------------------------------------------------------------
         # GATE 8: MODEL SELECTION
         # (Graph reasoner recommendation takes priority when available and
         #  the graph signals GO; otherwise fall back to original heuristic)
         # ---------------------------------------------------------------------
-        if (graph_result is not None
-                and graph_result.go_no_go
-                and graph_result.model is not None):
+        if (
+            graph_result is not None
+            and graph_result.go_no_go
+            and graph_result.model is not None
+        ):
             model = graph_result.model
             # Pick entry zone matching the model's preferred PD array type
             entry_zone = self._pick_entry_for_model(model, valid_entries)
@@ -423,6 +614,22 @@ class VexCoreEngine:
             model, entry_zone = self._select_model(
                 valid_entries, trade_type, session_phase, sweep_info
             )
+
+        trace.append(
+            GateLog(
+                gate="G8_MODEL",
+                passed=True,
+                summary=f"{model.value} via {'graph' if (graph_result and graph_result.go_no_go) else 'heuristic'}",
+                details={
+                    "model": model.value,
+                    "source": "graph"
+                    if (graph_result and graph_result.go_no_go)
+                    else "heuristic",
+                    "entry_type": entry_zone.type if entry_zone else None,
+                    "entry_mid": round(entry_zone.midpoint, 5) if entry_zone else None,
+                },
+            )
+        )
 
         # ---------------------------------------------------------------------
         # BUILD TRADE SETUP
@@ -444,7 +651,32 @@ class VexCoreEngine:
         )
 
         # Check minimum R:R
-        if setup.rr_ratio < self.min_rr:
+        rr_ok = setup.rr_ratio >= self.min_rr
+
+        trace.append(
+            GateLog(
+                gate="G9_RR_CHECK",
+                passed=rr_ok,
+                summary=f"R:R {setup.rr_ratio:.1f} {'≥' if rr_ok else '<'} min {self.min_rr} | "
+                f"entry={setup.entry_price:.5f} SL={setup.stop_loss:.5f} "
+                f"TP1={setup.target_1:.5f}",
+                details={
+                    "rr_ratio": round(setup.rr_ratio, 2),
+                    "min_rr": self.min_rr,
+                    "entry": round(setup.entry_price, 5),
+                    "stop_loss": round(setup.stop_loss, 5),
+                    "target_1": round(setup.target_1, 5),
+                    "target_2": round(setup.target_2, 5) if setup.target_2 else None,
+                    "risk_pips": round(setup.risk_pips, 1),
+                    "reward_pips": round(setup.reward_pips, 1),
+                    "confluences": setup.confluences,
+                    "confluence_score": setup.confluence_score,
+                    "confidence": round(setup.confidence, 2),
+                },
+            )
+        )
+
+        if not rr_ok:
             return EngineResult(
                 trade=False,
                 setup=setup,
@@ -455,6 +687,7 @@ class VexCoreEngine:
                 pd_arrays=pd_arrays,
                 session_state=self.session_state,
                 rejection_reason=f"R:R {setup.rr_ratio:.1f} below minimum {self.min_rr}",
+                gate_trace=trace,
             )
 
         # ALL GATES PASSED
@@ -467,6 +700,7 @@ class VexCoreEngine:
             liquidity_levels=liquidity_levels,
             pd_arrays=pd_arrays,
             session_state=self.session_state,
+            gate_trace=trace,
         )
 
     # =========================================================================
@@ -492,10 +726,7 @@ class VexCoreEngine:
         return SessionPhase.UNKNOWN
 
     def _update_session_state(
-        self,
-        df: pd.DataFrame,
-        phase: SessionPhase,
-        now: datetime
+        self, df: pd.DataFrame, phase: SessionPhase, now: datetime
     ) -> None:
         """Update session state tracking for PO3."""
 
@@ -514,8 +745,8 @@ class VexCoreEngine:
         elif phase == SessionPhase.MANIPULATION:
             # Check if Asia was swept
             if self.session_state.asia_high and self.session_state.asia_low:
-                current_high = df['high'].iloc[-20:].max()
-                current_low = df['low'].iloc[-20:].min()
+                current_high = df["high"].iloc[-20:].max()
+                current_low = df["low"].iloc[-20:].min()
 
                 if current_high > self.session_state.asia_high:
                     self.session_state.asia_swept = "high"
@@ -531,11 +762,7 @@ class VexCoreEngine:
         elif phase == SessionPhase.DISTRIBUTION:
             self.session_state.phase = phase
 
-    def _determine_bias(
-        self,
-        df: pd.DataFrame,
-        htf_df: Optional[pd.DataFrame]
-    ) -> Bias:
+    def _determine_bias(self, df: pd.DataFrame, htf_df: Optional[pd.DataFrame]) -> Bias:
         """Determine directional bias from structure."""
         from ict_agent.detectors.market_structure import StructureType
 
@@ -568,14 +795,10 @@ class VexCoreEngine:
 
         return Bias.NEUTRAL
 
-    def _map_liquidity(
-        self,
-        df: pd.DataFrame,
-        symbol: str
-    ) -> List[LiquidityLevel]:
+    def _map_liquidity(self, df: pd.DataFrame, symbol: str) -> List[LiquidityLevel]:
         """Map all liquidity levels - both IRL and ERL."""
         levels = []
-        current_price = float(df['close'].iloc[-1])
+        current_price = float(df["close"].iloc[-1])
 
         # Get swings for reference
         swing_highs = []
@@ -583,11 +806,11 @@ class VexCoreEngine:
 
         for i in range(5, len(df) - 5):
             # Swing high
-            if df['high'].iloc[i] == df['high'].iloc[i-5:i+6].max():
-                swing_highs.append(df['high'].iloc[i])
+            if df["high"].iloc[i] == df["high"].iloc[i - 5 : i + 6].max():
+                swing_highs.append(df["high"].iloc[i])
             # Swing low
-            if df['low'].iloc[i] == df['low'].iloc[i-5:i+6].min():
-                swing_lows.append(df['low'].iloc[i])
+            if df["low"].iloc[i] == df["low"].iloc[i - 5 : i + 6].min():
+                swing_lows.append(df["low"].iloc[i])
 
         # EXTERNAL RANGE LIQUIDITY (ERL)
         # Equal highs (BSL)
@@ -597,12 +820,14 @@ class VexCoreEngine:
                     diff = abs(swing_highs[i] - swing_highs[j])
                     if diff < 0.0005:  # Within 5 pips
                         avg = (swing_highs[i] + swing_highs[j]) / 2
-                        levels.append(LiquidityLevel(
-                            price=avg,
-                            type="bsl",
-                            source="equal_highs",
-                            external=True,
-                        ))
+                        levels.append(
+                            LiquidityLevel(
+                                price=avg,
+                                type="bsl",
+                                source="equal_highs",
+                                external=True,
+                            )
+                        )
 
         # Equal lows (SSL)
         if len(swing_lows) >= 2:
@@ -611,26 +836,40 @@ class VexCoreEngine:
                     diff = abs(swing_lows[i] - swing_lows[j])
                     if diff < 0.0005:
                         avg = (swing_lows[i] + swing_lows[j]) / 2
-                        levels.append(LiquidityLevel(
-                            price=avg,
-                            type="ssl",
-                            source="equal_lows",
-                            external=True,
-                        ))
+                        levels.append(
+                            LiquidityLevel(
+                                price=avg,
+                                type="ssl",
+                                source="equal_lows",
+                                external=True,
+                            )
+                        )
 
         # Previous day high/low (ERL)
         if len(df) > 96:  # At least 1 day of 15m data
-            pdh = df['high'].iloc[-96:-1].max()
-            pdl = df['low'].iloc[-96:-1].min()
-            levels.append(LiquidityLevel(price=pdh, type="bsl", source="pdh", external=True))
-            levels.append(LiquidityLevel(price=pdl, type="ssl", source="pdl", external=True))
+            pdh = df["high"].iloc[-96:-1].max()
+            pdl = df["low"].iloc[-96:-1].min()
+            levels.append(
+                LiquidityLevel(price=pdh, type="bsl", source="pdh", external=True)
+            )
+            levels.append(
+                LiquidityLevel(price=pdl, type="ssl", source="pdl", external=True)
+            )
 
         # Session highs/lows (ERL)
         if len(df) > 20:
-            session_high = df['high'].iloc[-20:].max()
-            session_low = df['low'].iloc[-20:].min()
-            levels.append(LiquidityLevel(price=session_high, type="bsl", source="session_high", external=True))
-            levels.append(LiquidityLevel(price=session_low, type="ssl", source="session_low", external=True))
+            session_high = df["high"].iloc[-20:].max()
+            session_low = df["low"].iloc[-20:].min()
+            levels.append(
+                LiquidityLevel(
+                    price=session_high, type="bsl", source="session_high", external=True
+                )
+            )
+            levels.append(
+                LiquidityLevel(
+                    price=session_low, type="ssl", source="session_low", external=True
+                )
+            )
 
         # INTERNAL RANGE LIQUIDITY (IRL)
         # FVGs are IRL - use get_active_fvgs() which returns FVG objects
@@ -638,39 +877,41 @@ class VexCoreEngine:
         active_fvgs = self.fvg_detector.get_active_fvgs()
         for fvg in active_fvgs:
             fvg_type = "bsl" if fvg.direction.value == 1 else "ssl"
-            levels.append(LiquidityLevel(
-                price=fvg.midpoint,
-                type=fvg_type,
-                source="fvg_midpoint",
-                external=False,  # IRL
-            ))
+            levels.append(
+                LiquidityLevel(
+                    price=fvg.midpoint,
+                    type=fvg_type,
+                    source="fvg_midpoint",
+                    external=False,  # IRL
+                )
+            )
 
         # OBs are IRL - use get_active_obs() if available, else parse DataFrame
         ob_df = self.ob_detector.detect(df)
         if ob_df is not None and len(ob_df) > 0:
             # Check for rows with actual OB data (non-zero direction)
-            ob_mask = ob_df['ob_direction'] != 0
+            ob_mask = ob_df["ob_direction"] != 0
             for idx in ob_df[ob_mask].index:
                 row = ob_df.loc[idx]
-                if not row.get('ob_mitigated', False):
-                    top = row.get('ob_top', 0)
-                    bottom = row.get('ob_bottom', 0)
+                if not row.get("ob_mitigated", False):
+                    top = row.get("ob_top", 0)
+                    bottom = row.get("ob_bottom", 0)
                     if top > 0 and bottom > 0:
                         mid = (top + bottom) / 2
-                        ob_type = "bsl" if row['ob_direction'] == 1 else "ssl"
-                        levels.append(LiquidityLevel(
-                            price=mid,
-                            type=ob_type,
-                            source="order_block",
-                            external=False,  # IRL
-                        ))
+                        ob_type = "bsl" if row["ob_direction"] == 1 else "ssl"
+                        levels.append(
+                            LiquidityLevel(
+                                price=mid,
+                                type=ob_type,
+                                source="order_block",
+                                external=False,  # IRL
+                            )
+                        )
 
         return levels
 
     def _check_liquidity_sweep(
-        self,
-        df: pd.DataFrame,
-        levels: List[LiquidityLevel]
+        self, df: pd.DataFrame, levels: List[LiquidityLevel]
     ) -> Dict[str, Any]:
         """Check for recent liquidity sweeps."""
         sweep_info = {
@@ -680,13 +921,13 @@ class VexCoreEngine:
             "candles_ago": None,
         }
 
-        current_price = float(df['close'].iloc[-1])
+        current_price = float(df["close"].iloc[-1])
 
         # Check last 10 candles for sweep
         for i in range(1, min(11, len(df))):
-            candle_high = df['high'].iloc[-i]
-            candle_low = df['low'].iloc[-i]
-            candle_close = df['close'].iloc[-i]
+            candle_high = df["high"].iloc[-i]
+            candle_low = df["low"].iloc[-i]
+            candle_close = df["close"].iloc[-i]
 
             for level in levels:
                 if level.external and not level.swept:
@@ -717,10 +958,7 @@ class VexCoreEngine:
         return sweep_info
 
     def _find_pd_arrays(
-        self,
-        df: pd.DataFrame,
-        bias: Bias,
-        timeframe: str
+        self, df: pd.DataFrame, bias: Bias, timeframe: str
     ) -> List[PDArray]:
         """Find all PD arrays (FVGs, OBs) aligned with bias."""
         from ict_agent.detectors.fvg import FVGDirection
@@ -732,47 +970,57 @@ class VexCoreEngine:
         active_fvgs = self.fvg_detector.get_active_fvgs()
 
         for fvg in active_fvgs:
-            direction = "bullish" if fvg.direction == FVGDirection.BULLISH else "bearish"
+            direction = (
+                "bullish" if fvg.direction == FVGDirection.BULLISH else "bearish"
+            )
 
             # Only include FVGs aligned with bias
-            if (bias == Bias.BULLISH and direction == "bullish") or \
-               (bias == Bias.BEARISH and direction == "bearish"):
-                arrays.append(PDArray(
-                    type="fvg",
-                    direction=direction,
-                    top=fvg.top,
-                    bottom=fvg.bottom,
-                    midpoint=fvg.midpoint,
-                    ote_level=fvg.ote_705,  # Use pre-calculated OTE
-                    timeframe=timeframe,
-                    valid=True,
-                    mitigated=fvg.mitigated,
-                ))
+            if (bias == Bias.BULLISH and direction == "bullish") or (
+                bias == Bias.BEARISH and direction == "bearish"
+            ):
+                arrays.append(
+                    PDArray(
+                        type="fvg",
+                        direction=direction,
+                        top=fvg.top,
+                        bottom=fvg.bottom,
+                        midpoint=fvg.midpoint,
+                        ote_level=fvg.ote_705,  # Use pre-calculated OTE
+                        timeframe=timeframe,
+                        valid=True,
+                        mitigated=fvg.mitigated,
+                    )
+                )
 
         # Order Blocks - parse from DataFrame with correct column names
         ob_df = self.ob_detector.detect(df)
         if ob_df is not None and len(ob_df) > 0:
-            ob_mask = ob_df['ob_direction'] != 0
+            ob_mask = ob_df["ob_direction"] != 0
             for idx in ob_df[ob_mask].index:
                 row = ob_df.loc[idx]
-                direction = "bullish" if row['ob_direction'] == 1 else "bearish"
+                direction = "bullish" if row["ob_direction"] == 1 else "bearish"
 
-                if (bias == Bias.BULLISH and direction == "bullish") or \
-                   (bias == Bias.BEARISH and direction == "bearish"):
-                    top = row.get('ob_top', 0)
-                    bottom = row.get('ob_bottom', 0)
+                if (bias == Bias.BULLISH and direction == "bullish") or (
+                    bias == Bias.BEARISH and direction == "bearish"
+                ):
+                    top = row.get("ob_top", 0)
+                    bottom = row.get("ob_bottom", 0)
                     if top > 0 and bottom > 0:
-                        arrays.append(PDArray(
-                            type="ob",
-                            direction=direction,
-                            top=top,
-                            bottom=bottom,
-                            midpoint=(top + bottom) / 2,
-                            ote_level=bottom + (top - bottom) * 0.705 if direction == "bullish" else top - (top - bottom) * 0.705,
-                            timeframe=timeframe,
-                            valid=True,
-                            mitigated=row.get('ob_mitigated', False),
-                        ))
+                        arrays.append(
+                            PDArray(
+                                type="ob",
+                                direction=direction,
+                                top=top,
+                                bottom=bottom,
+                                midpoint=(top + bottom) / 2,
+                                ote_level=bottom + (top - bottom) * 0.705
+                                if direction == "bullish"
+                                else top - (top - bottom) * 0.705,
+                                timeframe=timeframe,
+                                valid=True,
+                                mitigated=row.get("ob_mitigated", False),
+                            )
+                        )
 
         return arrays
 
@@ -798,12 +1046,17 @@ class VexCoreEngine:
             if irl_levels:
                 if bias == Bias.BEARISH:
                     # Swept highs, targeting IRL below
-                    targets = sorted([l for l in irl_levels if l.price < current_price],
-                                    key=lambda x: x.price, reverse=True)
+                    targets = sorted(
+                        [l for l in irl_levels if l.price < current_price],
+                        key=lambda x: x.price,
+                        reverse=True,
+                    )
                 else:
                     # Swept lows, targeting IRL above
-                    targets = sorted([l for l in irl_levels if l.price > current_price],
-                                    key=lambda x: x.price)
+                    targets = sorted(
+                        [l for l in irl_levels if l.price > current_price],
+                        key=lambda x: x.price,
+                    )
 
                 if targets:
                     return TradeType.ERL_TO_IRL, targets[0]
@@ -811,12 +1064,17 @@ class VexCoreEngine:
         # Standard IRL → ERL trade (Type A)
         if bias == Bias.BEARISH:
             # Target SSL (sell-side liquidity below)
-            targets = sorted([l for l in erl_levels if l.type == "ssl" and l.price < current_price],
-                           key=lambda x: x.price, reverse=True)
+            targets = sorted(
+                [l for l in erl_levels if l.type == "ssl" and l.price < current_price],
+                key=lambda x: x.price,
+                reverse=True,
+            )
         else:
             # Target BSL (buy-side liquidity above)
-            targets = sorted([l for l in erl_levels if l.type == "bsl" and l.price > current_price],
-                           key=lambda x: x.price)
+            targets = sorted(
+                [l for l in erl_levels if l.type == "bsl" and l.price > current_price],
+                key=lambda x: x.price,
+            )
 
         if targets:
             return TradeType.IRL_TO_ERL, targets[0]
@@ -923,18 +1181,28 @@ class VexCoreEngine:
         if model == ModelType.MODEL_12:
             # Fixed 20 pip target
             if bias == Bias.BEARISH:
-                target_1 = min(target_1, entry_price - (self.model_12_target * self.pip_size))
+                target_1 = min(
+                    target_1, entry_price - (self.model_12_target * self.pip_size)
+                )
             else:
-                target_1 = max(target_1, entry_price + (self.model_12_target * self.pip_size))
+                target_1 = max(
+                    target_1, entry_price + (self.model_12_target * self.pip_size)
+                )
         elif model == ModelType.MODEL_11:
             # Fixed 30 pip target
             if bias == Bias.BEARISH:
-                target_1 = min(target_1, entry_price - (self.model_11_target * self.pip_size))
+                target_1 = min(
+                    target_1, entry_price - (self.model_11_target * self.pip_size)
+                )
             else:
-                target_1 = max(target_1, entry_price + (self.model_11_target * self.pip_size))
+                target_1 = max(
+                    target_1, entry_price + (self.model_11_target * self.pip_size)
+                )
 
         # Target 2 is the full liquidity target
-        target_2 = target_liquidity.price if target_liquidity.price != target_1 else None
+        target_2 = (
+            target_liquidity.price if target_liquidity.price != target_1 else None
+        )
 
         # Calculate pips and R:R
         risk_pips = abs(entry_price - stop_loss) / self.pip_size
@@ -957,17 +1225,23 @@ class VexCoreEngine:
         confluences.append(f"✅ Bias: {bias.value.upper()}")
 
         # Entry zone
-        confluences.append(f"✅ Entry: {entry_zone.type.upper()} @ {entry_zone.midpoint:.5f}")
+        confluences.append(
+            f"✅ Entry: {entry_zone.type.upper()} @ {entry_zone.midpoint:.5f}"
+        )
 
         # Trade type
         if trade_type == TradeType.IRL_TO_ERL:
-            confluences.append(f"✅ Type A: IRL→ERL (target: {target_liquidity.source})")
+            confluences.append(
+                f"✅ Type A: IRL→ERL (target: {target_liquidity.source})"
+            )
         else:
             confluences.append(f"✅ Type B: ERL→IRL (turtle soup)")
 
         # Sweep
         if sweep_info.get("occurred"):
-            confluences.append(f"✅ Sweep: {sweep_info['level'].source} swept {sweep_info['candles_ago']} candles ago")
+            confluences.append(
+                f"✅ Sweep: {sweep_info['level'].source} swept {sweep_info['candles_ago']} candles ago"
+            )
 
         # Model
         confluences.append(f"✅ Model: {model.value.upper()}")
@@ -1050,7 +1324,9 @@ class VexCoreEngine:
         # Context
         lines.append(f"📊 Bias: {result.bias.value.upper()}")
         lines.append(f"⏰ Session: {result.session_phase.value.upper()}")
-        lines.append(f"🎯 Killzone: {'ACTIVE ✅' if result.killzone_active else 'INACTIVE ❌'}")
+        lines.append(
+            f"🎯 Killzone: {'ACTIVE ✅' if result.killzone_active else 'INACTIVE ❌'}"
+        )
         lines.append("")
 
         # Liquidity
@@ -1070,12 +1346,16 @@ class VexCoreEngine:
             lines.append("=" * 60)
             lines.append(f"  Type: {setup.trade_type.value}")
             lines.append(f"  Model: {setup.model.value.upper()}")
-            lines.append(f"  Direction: {'SHORT' if setup.bias == Bias.BEARISH else 'LONG'}")
+            lines.append(
+                f"  Direction: {'SHORT' if setup.bias == Bias.BEARISH else 'LONG'}"
+            )
             lines.append(f"  Entry: {setup.entry_price:.5f}")
             lines.append(f"  Stop: {setup.stop_loss:.5f} ({setup.risk_pips:.1f} pips)")
-            lines.append(f"  Target: {setup.target_1:.5f} ({setup.reward_pips:.1f} pips)")
+            lines.append(
+                f"  Target: {setup.target_1:.5f} ({setup.reward_pips:.1f} pips)"
+            )
             lines.append(f"  R:R: {setup.rr_ratio:.1f}")
-            lines.append(f"  Confidence: {setup.confidence*100:.0f}%")
+            lines.append(f"  Confidence: {setup.confidence * 100:.0f}%")
             lines.append("")
             lines.append("  Confluences:")
             for c in setup.confluences:
@@ -1098,6 +1378,7 @@ class VexCoreEngine:
 
 if __name__ == "__main__":
     import sys
+
     sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
     from ict_agent.data.oanda_fetcher import get_oanda_data

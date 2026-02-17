@@ -34,6 +34,7 @@ Thumbs.db
 
 # Data files (large/personal)
 data/memory/
+data/events/
 data/vex_unified_data.json
 data/learning/vex_memory.json
 data/learning/pattern_stats.json

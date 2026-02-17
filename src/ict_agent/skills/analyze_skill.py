@@ -22,11 +22,11 @@ class AnalyzeSkill(Skill):
     def execute(self, context: Dict[str, Any]) -> SkillResult:
         """
         Analyze a symbol through VexCoreEngine's 8-gate system.
-        
+
         Context:
             symbol: str — pair to analyze
             engine: VexCoreEngine instance
-            
+
         Returns:
             SkillResult with EngineResult data and signal events.
         """
@@ -60,42 +60,58 @@ class AnalyzeSkill(Skill):
 
             # Run the 8-gate analysis — pass killzone_override if controller already validated
             result = engine.analyze(
-                symbol, df_15m, df_1h,
+                symbol,
+                df_15m,
+                df_1h,
                 timeframe="15m",
                 killzone_override=killzone_override,
             )
 
+            # Serialize gate trace for downstream consumers (controller, dashboard)
+            gate_trace_data = [
+                {
+                    "gate": g.gate,
+                    "passed": g.passed,
+                    "summary": g.summary,
+                    "details": g.details,
+                }
+                for g in (result.gate_trace or [])
+            ]
+
             if result.trade and result.setup:
                 setup = result.setup
-                
+
                 # === KNOWLEDGE GRAPH VALIDATION ===
                 # Ask the brain if this setup makes sense
                 validation = km.validate_setup(
                     confluences=setup.confluences,
                     model=setup.model.value,
-                    session=setup.killzone
+                    session=setup.killzone,
                 )
 
                 if not validation["valid"]:
                     # REJECTED BY BRAIN
                     rejection_reason = f"Knowledge Check Failed: {', '.join(validation['missing'] + validation['anti_patterns'])}"
-                    events.append(SignalEvent(
-                        event_type=EventType.SIGNAL_REJECTED,
-                        source="skill:analyze",
-                        symbol=symbol,
-                        rejection_reason=rejection_reason,
-                        metadata={"warnings": validation["warnings"]}
-                    ))
+                    events.append(
+                        SignalEvent(
+                            event_type=EventType.SIGNAL_REJECTED,
+                            source="skill:analyze",
+                            symbol=symbol,
+                            rejection_reason=rejection_reason,
+                            metadata={"warnings": validation["warnings"]},
+                        )
+                    )
                     return SkillResult(
                         success=True,
                         data={
                             "trade": False,
                             "symbol": symbol,
                             "rejection_reason": rejection_reason,
-                            "knowledge_validation": validation
+                            "knowledge_validation": validation,
+                            "gate_trace": gate_trace_data,
                         },
                         events=events,
-                        execution_time_ms=(time.time() - start) * 1000
+                        execution_time_ms=(time.time() - start) * 1000,
                     )
 
                 # ACCEPTED
@@ -103,7 +119,9 @@ class AnalyzeSkill(Skill):
 
                 # Apply memory-based confidence adjustment
                 confidence_boost = context.get("confidence_boost", 0)
-                adjusted_confidence = max(0.0, min(1.0, setup.confidence + confidence_boost))
+                adjusted_confidence = max(
+                    0.0, min(1.0, setup.confidence + confidence_boost)
+                )
 
                 signal_event = SignalEvent(
                     event_type=EventType.SIGNAL_GENERATED,
@@ -123,7 +141,7 @@ class AnalyzeSkill(Skill):
                         "knowledge_warnings": validation["warnings"],
                         "learned_adjustment": validation.get("learned_adjustment", 0),
                         "memory_confidence_boost": confidence_boost,
-                    }
+                    },
                 )
                 events.append(signal_event)
 
@@ -152,19 +170,22 @@ class AnalyzeSkill(Skill):
                         "bias": setup.bias.value,
                         "entry_reason": setup.entry_reason,
                         "setup_dict": setup.to_dict(),
-                        "knowledge_validation": validation
+                        "knowledge_validation": validation,
+                        "gate_trace": gate_trace_data,
                     },
                     events=events,
                     execution_time_ms=(time.time() - start) * 1000,
                 )
             else:
                 # No trade — record rejection
-                events.append(SignalEvent(
-                    event_type=EventType.SIGNAL_REJECTED,
-                    source="skill:analyze",
-                    symbol=symbol,
-                    rejection_reason=result.rejection_reason or "No setup found",
-                ))
+                events.append(
+                    SignalEvent(
+                        event_type=EventType.SIGNAL_REJECTED,
+                        source="skill:analyze",
+                        symbol=symbol,
+                        rejection_reason=result.rejection_reason or "No setup found",
+                    )
+                )
 
                 return SkillResult(
                     success=True,  # Analysis succeeded, just no trade
@@ -177,6 +198,7 @@ class AnalyzeSkill(Skill):
                         "rejection_reason": result.rejection_reason,
                         "liquidity_count": len(result.liquidity_levels),
                         "pd_array_count": len(result.pd_arrays),
+                        "gate_trace": gate_trace_data,
                     },
                     events=events,
                     execution_time_ms=(time.time() - start) * 1000,

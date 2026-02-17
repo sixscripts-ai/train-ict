@@ -1,7 +1,0 @@
-{"event_type": "system_start", "timestamp": "2026-02-15T17:28:19.609773-05:00", "source": "controller", "data": {"message": "VEX Agent booted successfully", "level": "info", "component": "controller"}, "event_id": 1}
-{"event_type": "market_scan", "timestamp": "2026-02-15T17:28:19.925286-05:00", "source": "skill:scan", "data": {"symbol": "EUR_USD", "timeframe": "", "bid": 1.18681, "ask": 1.1876, "killzone": "none"}, "event_id": 2}
-{"event_type": "market_scan", "timestamp": "2026-02-15T17:28:20.175447-05:00", "source": "skill:scan", "data": {"symbol": "GBP_USD", "timeframe": "", "bid": 1.36403, "ask": 1.36547, "killzone": "none"}, "event_id": 3}
-{"event_type": "market_scan", "timestamp": "2026-02-15T17:28:20.471431-05:00", "source": "skill:scan", "data": {"symbol": "XAU_USD", "timeframe": "", "bid": 5041.09, "ask": 5044.39, "killzone": "none"}, "event_id": 4}
-{"event_type": "market_scan", "timestamp": "2026-02-15T17:28:20.786243-05:00", "source": "skill:scan", "data": {"symbol": "USD_JPY", "timeframe": "", "bid": 152.594, "ask": 152.694, "killzone": "none"}, "event_id": 5}
-{"event_type": "market_scan", "timestamp": "2026-02-15T17:28:21.023900-05:00", "source": "skill:scan", "data": {"symbol": "AUD_USD", "timeframe": "", "bid": 0.70632, "ask": 0.70653, "killzone": "none"}, "event_id": 6}
-{"event_type": "market_scan", "timestamp": "2026-02-15T17:28:21.357553-05:00", "source": "skill:scan", "data": {"symbol": "EUR_GBP", "timeframe": "", "bid": 0.86957, "ask": 0.8703, "killzone": "none"}, "event_id": 7}
