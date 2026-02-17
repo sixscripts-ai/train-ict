@@ -245,6 +245,13 @@ class VexCoreEngine:
         self.liquidity_detector = LiquidityDetector()
         self.displacement_detector = DisplacementDetector()
 
+        # Graph-driven reasoning (lazy-loaded, graceful fallback)
+        try:
+            from ict_agent.core.graph_reasoner import VexGraphReasoner
+            self.graph_reasoner = VexGraphReasoner()
+        except Exception:
+            self.graph_reasoner = None
+
         # Session state tracking
         self.session_state = SessionState(phase=SessionPhase.UNKNOWN)
 
@@ -367,11 +374,55 @@ class VexCoreEngine:
         )
 
         # ---------------------------------------------------------------------
-        # GATE 8: MODEL SELECTION
+        # GATE 7b: DISPLACEMENT CHECK
         # ---------------------------------------------------------------------
-        model, entry_zone = self._select_model(
-            valid_entries, trade_type, session_phase, sweep_info
-        )
+        displacement_detected = False
+        try:
+            disp_result = self.displacement_detector.detect(df)
+            if disp_result is not None and not disp_result.empty:
+                # Check last few candles for displacement
+                recent = disp_result.tail(5)
+                if "displacement" in recent.columns:
+                    displacement_detected = bool(recent["displacement"].any())
+                elif len(recent) > 0:
+                    displacement_detected = True
+        except Exception:
+            pass  # detector may fail on insufficient data
+
+        # ---------------------------------------------------------------------
+        # GATE 7c: GRAPH-DRIVEN REASONING
+        # ---------------------------------------------------------------------
+        graph_result = None
+        if self.graph_reasoner is not None:
+            try:
+                graph_result = self.graph_reasoner.enhance_setup(
+                    bias=bias,
+                    session_phase=session_phase,
+                    trade_type=trade_type,
+                    sweep_info=sweep_info,
+                    pd_arrays=valid_entries,
+                    killzone_name=killzone_name,
+                    displacement_detected=bool(displacement_detected),
+                    current_time=now.strftime("%H:%M") if now else "",
+                )
+            except Exception:
+                graph_result = None
+
+        # ---------------------------------------------------------------------
+        # GATE 8: MODEL SELECTION
+        # (Graph reasoner recommendation takes priority when available and
+        #  the graph signals GO; otherwise fall back to original heuristic)
+        # ---------------------------------------------------------------------
+        if (graph_result is not None
+                and graph_result.go_no_go
+                and graph_result.model is not None):
+            model = graph_result.model
+            # Pick entry zone matching the model's preferred PD array type
+            entry_zone = self._pick_entry_for_model(model, valid_entries)
+        else:
+            model, entry_zone = self._select_model(
+                valid_entries, trade_type, session_phase, sweep_info
+            )
 
         # ---------------------------------------------------------------------
         # BUILD TRADE SETUP
@@ -389,6 +440,7 @@ class VexCoreEngine:
             current_price=current_price,
             sweep_info=sweep_info,
             now=now,
+            graph_result=graph_result,
         )
 
         # Check minimum R:R
@@ -815,6 +867,23 @@ class VexCoreEngine:
 
         return ModelType.STANDARD, pd_arrays[0] if pd_arrays else None
 
+    def _pick_entry_for_model(
+        self, model: ModelType, pd_arrays: List[PDArray]
+    ) -> PDArray:
+        """Pick the best entry zone for a graph-recommended model."""
+        fvgs = [p for p in pd_arrays if p.type == "fvg"]
+        obs = [p for p in pd_arrays if p.type == "ob"]
+
+        if model == ModelType.TURTLE_SOUP:
+            return fvgs[0] if fvgs else pd_arrays[0]
+        elif model == ModelType.MODEL_12:
+            # Model 12 prefers FVG formed after OB
+            return fvgs[0] if fvgs else pd_arrays[0]
+        elif model == ModelType.MODEL_11:
+            return fvgs[0] if fvgs else (obs[0] if obs else pd_arrays[0])
+        else:
+            return pd_arrays[0]
+
     def _build_setup(
         self,
         symbol: str,
@@ -829,6 +898,7 @@ class VexCoreEngine:
         current_price: float,
         sweep_info: Dict,
         now: datetime,
+        graph_result: Optional[Any] = None,
     ) -> TradeSetup:
         """Build the complete trade setup."""
 
@@ -912,6 +982,23 @@ class VexCoreEngine:
 
         confluence_score = len([c for c in confluences if c.startswith("✅")])
         confidence = min(1.0, confluence_score / 8.0)
+
+        # ── Merge graph-derived confluences ──────────────────────────────
+        if graph_result is not None and graph_result.confluences:
+            confluences.append("")  # visual separator
+            confluences.append("── Graph Reasoning ──")
+            confluences.extend(graph_result.confluences)
+
+            # Upgrade score: blend VEX count-based score with graph score
+            graph_positive = graph_result.confluence_score
+            confluence_score += graph_positive
+            # Weighted confidence: 60% graph (weighted scoring) + 40% VEX (count)
+            if graph_result.confidence > 0:
+                confidence = 0.4 * confidence + 0.6 * graph_result.confidence
+            # Attach red flags
+            if graph_result.red_flags:
+                for flag in graph_result.red_flags:
+                    confluences.append(f"🚫 Graph: {flag}")
 
         # Entry reason
         entry_reason = f"{model.value.upper()} entry at {entry_zone.type.upper()} "

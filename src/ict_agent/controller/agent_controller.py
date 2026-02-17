@@ -215,6 +215,21 @@ class VexController:
                 self.core_engine = VexCoreEngine()
                 print("   ✅ VexCoreEngine (8-gate system)")
 
+                # 9a. Graph-Driven Reasoner (enhances Gate 8)
+                if self.core_engine.graph_reasoner is not None:
+                    # Trigger lazy load during boot so any errors show up early
+                    try:
+                        loaded = self.core_engine.graph_reasoner._ensure_loaded()
+                        if loaded:
+                            store = self.core_engine.graph_reasoner._store
+                            n = store.G.number_of_nodes() if store else 0
+                            e = store.G.number_of_edges() if store else 0
+                            print(f"   ✅ GraphReasoner ({n:,} nodes, {e:,} edges)")
+                        else:
+                            print("   ⚠️ GraphReasoner unavailable (graph_rag not found)")
+                    except Exception as gr_err:
+                        print(f"   ⚠️ GraphReasoner failed: {gr_err}")
+
             # 9b. Knowledge Manager (shared instance — avoid re-creation per analyze call)
             try:
                 from ict_agent.learning.knowledge_manager import KnowledgeManager
@@ -298,7 +313,7 @@ class VexController:
         """Load .env file."""
         env_locations = [
             Path(__file__).parent.parent.parent.parent / ".env",
-            Path.home() / "Documents" / "trae_projects" / "vexbrain" / "Antigravity" / ".env",
+            Path.home() / "Documents" / "train-ict" / ".env",
         ]
         for env_path in env_locations:
             if env_path.exists():

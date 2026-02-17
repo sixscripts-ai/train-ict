@@ -45,6 +45,7 @@ from .vex_core_engine import (
     LiquidityLevel,
     PDArray,
 )
+from .graph_reasoner import VexGraphReasoner, EnhancedResult
 
 __all__ = [
     # Stop Hunt
@@ -83,4 +84,8 @@ __all__ = [
     "Bias",
     "LiquidityLevel",
     "PDArray",
+
+    # Graph Reasoner Bridge
+    "VexGraphReasoner",
+    "EnhancedResult",
 ]
