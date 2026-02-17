@@ -139,6 +139,7 @@ class VexController:
         self.news_filter = None
         self.core_engine = None
         self.killzone_manager = None
+        self.dashboard = None  # VexLiveDashboard (optional)
 
         # State data
         self._pending_setups: List[Dict] = []
@@ -331,6 +332,13 @@ class VexController:
             else:
                 print("   ⚠️ Could not verify OANDA (will retry)")
 
+            # 15. Live Dashboard (optional — activated by controller.enable_dashboard())
+            if self.dashboard:
+                self.dashboard.set_mode(self.config.dry_run)
+                bal = account.balance if account and hasattr(account, "balance") else 0
+                self.dashboard.set_balance(bal)
+                print("   ✅ LiveDashboard attached")
+
             print("═" * 62)
             print(f"🟢 VEX AGENT READY — {len(self.config.symbols)} symbols")
             print(f"   Mode: {'DRY RUN' if self.config.dry_run else 'LIVE TRADING'}")
@@ -455,32 +463,49 @@ class VexController:
         if self.config.dry_run:
             print("   ⚠️ DRY RUN MODE — no real trades will be placed")
 
+        # If dashboard is attached, start Live context for auto-refresh
+        live_ctx = None
+        if self.dashboard:
+            live_ctx = self.dashboard.start_live()
+
         try:
+            if live_ctx:
+                live_ctx.__enter__()
+
             while self.running:
                 # Check stop conditions
                 if self.state == VexState.SHUTDOWN:
-                    print("\n🛑 SHUTDOWN state reached")
                     break
                 if end_time and datetime.now(NY_TZ) > end_time:
-                    print("\n⏰ Duration complete")
                     break
                 if max_cycles and self.cycle_count >= max_cycles:
-                    print(f"\n🔄 Max cycles ({max_cycles}) reached")
                     break
 
                 # Run one complete cycle
                 self.step()
+
+                # Refresh dashboard after each step
+                if self.dashboard:
+                    self.dashboard.refresh()
 
                 # Wait before next cycle
                 if self.running and self.state != VexState.SHUTDOWN:
                     time.sleep(self.config.scan_interval_seconds)
 
         except KeyboardInterrupt:
-            print("\n\n⚠️ Agent stopped by user (Ctrl+C)")
+            if not self.dashboard:
+                print("\n\n⚠️ Agent stopped by user (Ctrl+C)")
         except Exception as e:
-            print(f"\n❌ Fatal error: {e}")
+            if not self.dashboard:
+                print(f"\n❌ Fatal error: {e}")
             traceback.print_exc()
         finally:
+            if live_ctx:
+                try:
+                    live_ctx.__exit__(None, None, None)
+                except Exception:
+                    pass
+                self.dashboard.stop_live()
             self.running = False
             self._session_summary()
 
@@ -510,6 +535,21 @@ class VexController:
                 f"🔄 Cycle #{self.cycle_count} | {now.strftime('%H:%M:%S ET')} | {kz_name}"
             )
             print(f"{'─' * 50}")
+        else:
+            kz = (
+                self.killzone_manager.get_current_killzone(now)
+                if self.killzone_manager
+                else None
+            )
+            kz_name = kz.value if kz else "No Session"
+
+        # Update dashboard header
+        if self.dashboard:
+            self.dashboard.update_header(
+                cycle=self.cycle_count,
+                state=self.state.value.upper(),
+                killzone=kz_name,
+            )
 
         # ─── PHASE 1: SCAN ───────────────────────────────────────────────
         self.state = VexState.SCANNING
@@ -533,12 +573,49 @@ class VexController:
         is_killzone = scan_result.data.get("is_primary_killzone", False)
         killzone_name = scan_result.data.get("killzone", "none")
 
+        # Push scanned quotes to dashboard
+        if self.dashboard and scan_result.data.get("prices"):
+            from ict_agent.dashboard.live_dashboard import MarketQuote
+
+            quotes = []
+            for sym, price_info in scan_result.data["prices"].items():
+                mid = (
+                    price_info
+                    if isinstance(price_info, (int, float))
+                    else price_info.get("mid", 0)
+                )
+                quotes.append(MarketQuote(symbol=sym, price=float(mid)))
+            self.dashboard.update_quotes(quotes)
+            self.dashboard.update_header(
+                cycle=self.cycle_count,
+                state=self.state.value.upper(),
+                killzone=killzone_name,
+            )
+
         if not is_killzone:
             if self.config.verbose:
                 print(f"   💤 Outside killzone ({killzone_name}) — waiting")
             self.state = VexState.IDLE
             # Still monitor positions even outside killzone
             self._monitor_positions()
+            if self.dashboard:
+                self._push_positions_to_dashboard()
+                self.dashboard.update_header(
+                    cycle=self.cycle_count,
+                    state="IDLE",
+                    killzone=killzone_name,
+                )
+                from ict_agent.dashboard.live_dashboard import CycleRecord as _CR
+
+                self.dashboard.log_cycle(
+                    _CR(
+                        cycle=self.cycle_count,
+                        time=now.strftime("%H:%M:%S ET"),
+                        killzone=killzone_name,
+                        decision="WAITING",
+                        rejection="outside killzone",
+                    )
+                )
             return
 
         # ─── PHASE 2: ANALYZE ────────────────────────────────────────────
@@ -592,6 +669,30 @@ class VexController:
                     suffix = f" — {reason}" if reason and not has_trade else ""
                     print(f"   └── Decision: {decision}{suffix}")
 
+            # Push gate trace to dashboard
+            if self.dashboard and analyze_result and analyze_result.data:
+                trace = analyze_result.data.get("gate_trace", [])
+                has_trade = analyze_result.data.get("trade", False)
+                reason = analyze_result.data.get("rejection_reason", "")
+                decision = (
+                    f"{analyze_result.data.get('direction', '')} {symbol}"
+                    if has_trade
+                    else "NO TRADE"
+                )
+                # Find which gate stopped it
+                gate_stopped = ""
+                if not has_trade and trace:
+                    for g in reversed(trace):
+                        if not g.get("passed", True):
+                            gate_stopped = g.get("gate", "")
+                            break
+                self.dashboard.update_gate_trace(
+                    symbol=symbol,
+                    trace=trace,
+                    decision=decision,
+                    rejection=reason,
+                )
+
             # Publish analysis events
             if analyze_result and analyze_result.events:
                 for event in analyze_result.events:
@@ -606,6 +707,20 @@ class VexController:
         if not best_setup:
             if self.config.verbose:
                 print("   📊 No setups found across all symbols")
+            # Log "no trade" cycle to dashboard
+            if self.dashboard:
+                from ict_agent.dashboard.live_dashboard import CycleRecord
+
+                self.dashboard.log_cycle(
+                    CycleRecord(
+                        cycle=self.cycle_count,
+                        time=now.strftime("%H:%M:%S ET"),
+                        killzone=killzone_name,
+                        decision="NO TRADE",
+                        rejection="no valid setups",
+                        gate_stopped=self.dashboard.state.latest_rejection or "",
+                    )
+                )
             self.state = VexState.IDLE
             self._monitor_positions()
             return
@@ -735,6 +850,26 @@ class VexController:
         self.state = VexState.MONITORING
         self._monitor_positions()
 
+        # Push positions to dashboard
+        if self.dashboard:
+            self._push_positions_to_dashboard()
+
+        # Log executed cycle to dashboard
+        if self.dashboard:
+            from ict_agent.dashboard.live_dashboard import CycleRecord
+
+            direction = best_setup.get("direction", "?")
+            sym = best_setup.get("symbol", "?")
+            decision = f"{direction} {sym}"
+            self.dashboard.log_cycle(
+                CycleRecord(
+                    cycle=self.cycle_count,
+                    time=now.strftime("%H:%M:%S ET"),
+                    killzone=killzone_name,
+                    decision=decision,
+                )
+            )
+
         # ─── PHASE 6: LEARN ──────────────────────────────────────────────
         if self.config.learn_from_trades:
             self.state = VexState.LEARNING
@@ -762,6 +897,30 @@ class VexController:
                     symbol = trade.get("instrument", "")
                     trade_id = trade.get("id", "")
                     print(f"   📊 #{trade_id} {symbol}: ${unrealized:+.2f}")
+        except Exception:
+            pass
+
+    def _push_positions_to_dashboard(self) -> None:
+        """Push open OANDA positions to the live dashboard."""
+        if not self.executor or not self.dashboard:
+            return
+        try:
+            from ict_agent.dashboard.live_dashboard import Position as DashPosition
+
+            open_trades = self.executor.get_open_trades() or []
+            positions = []
+            for t in open_trades:
+                units = float(t.get("currentUnits", t.get("initialUnits", 0)))
+                positions.append(
+                    DashPosition(
+                        trade_id=str(t.get("id", "")),
+                        symbol=t.get("instrument", ""),
+                        direction="BUY" if units > 0 else "SELL",
+                        units=abs(units),
+                        unrealized_pnl=float(t.get("unrealizedPL", 0)),
+                    )
+                )
+            self.dashboard.update_positions(positions)
         except Exception:
             pass
 
@@ -942,6 +1101,12 @@ class VexController:
                     component="controller",
                 )
             )
+
+    def enable_dashboard(self) -> None:
+        """Attach the live terminal dashboard. Call before boot()."""
+        from ict_agent.dashboard.live_dashboard import VexLiveDashboard
+
+        self.dashboard = VexLiveDashboard()
 
     def reset_daily(self) -> None:
         """Reset daily counters (call at start of new trading day)."""
