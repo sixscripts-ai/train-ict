@@ -1,0 +1,65 @@
+# Logic Flows (The "Software" of the Brain)
+# Defines the sequential procedures and conditional logic for ICT Setups.
+# This bridges the gap between "knowing definitions" and "executing trades".
+
+patterns:
+  # The specific analysis we just performed on EURUSD
+  htf_reversal_model:
+    name: "HTF ERL Sweep to Internal FVG"
+    context:
+      trend: "Bullish (Overextended)"
+      premium_discount: "Deep Premium"
+    
+    sequence:
+      1_erl_capture:
+        concept: liquidity_sweep
+        target: "External Range Liquidity (Major High/Low)"
+        validation: "Price wicks above and rejects OR closes back inside range (Turtle Soup)"
+      
+      2_confirmation:
+        concept: displacement
+        characteristics: "Aggressive move away from the sweep"
+        required: True
+      
+      3_structural_break:
+        concept: market_structure_shift
+        validation: "Body close below the Swing Low that created the High"
+        timeframe: "Execution Timeframe (1H/4H)"
+      
+      4_entry_setup:
+        concept: optimal_trade_entry
+        zone: "Premium (above 50% of displacement leg)"
+        array: "Bearish FVG or Breaker Block"
+        trigger: "Limit order at proximal line of FVG"
+      
+      5_targeting:
+        concept: draw_on_liquidity
+        target: "Internal Range Liquidity (Unmitigated FVGs in Discount)"
+        
+    invalidation:
+      condition: "Price closes above the ERL Sweep High"
+      action: "Abort / Stop Out"
+
+  # The Silver Bullet Setup Logic
+  silver_bullet_am:
+    name: "AM Silver Bullet Execution"
+    time_window: "10:00 - 11:00 NY"
+    
+    sequence:
+      1_liquidity_raid:
+        concept: liquidity_sweep
+        target: "Previous Session High/Low or Intraday Swing"
+      
+      2_displacement:
+        concept: displacement
+        required: "Must create an FVG"
+      
+      3_entry:
+        concept: fair_value_gap
+        action: "Enter at Market or Limit upon FVG tap"
+        direction: "Opposite to the Liquidity Raid"
+      
+      4_target:
+        concept: next_liquidity_pool
+        target: "Opposing 50% Range or Next Swing High/Low"
+
