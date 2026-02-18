@@ -3,9 +3,16 @@ import glob
 import json
 import csv
 from langchain_community.document_loaders import TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_ollama import OllamaEmbeddings
-from langchain_community.vectorstores import Chroma
+try:
+    from langchain_community.vectorstores import FAISS
+except ImportError:
+    try:
+        from langchain.vectorstores import FAISS # Fallback
+    except ImportError:
+        print("Error: Could not import FAISS from langchain. Ensure `pip install faiss-cpu` is successful.")
+        raise
 from langchain_core.documents import Document
 
 # --- CONFIGURATION ---
@@ -25,13 +32,31 @@ MODEL_NAME = "llama3.2"
 EMBEDDING_MODEL = "nomic-embed-text"
 
 def load_json_file(file_path):
-    """Parses a JSON file and converts it into a text document."""
+    """Parses a JSON file and converts it into text documents."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        # Convert JSON to a pretty string representation
-        text_content = json.dumps(data, indent=2)
-        return [Document(page_content=text_content, metadata={"source": file_path})]
+            
+        docs = []
+        
+        # Helper to format item
+        def format_item(item):
+            return json.dumps(item, indent=2)
+
+        if isinstance(data, list):
+            for i, item in enumerate(data):
+                content = format_item(item)
+                metadata = {
+                    "source": file_path,
+                    "record_index": i,
+                    "type": "json_record"
+                }
+                docs.append(Document(page_content=content, metadata=metadata))
+        else:
+            content = format_item(data)
+            docs.append(Document(page_content=content, metadata={"source": file_path, "type": "json_single"}))
+            
+        return docs
     except Exception as e:
         print(f"Error loading JSON {file_path}: {e}")
         return []
@@ -114,24 +139,51 @@ def ingest():
         return
 
     # 2. Split Text
-    # We use a larger chunk size to keep full trade contexts together
-    text_splitter = RecursiveCharacterTextSplitter(
+    # Use different splitting strategy based on content type
+    chunks = []
+    
+    # General text splitter for markdown/docs
+    general_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1500, 
         chunk_overlap=300
     )
-    chunks = text_splitter.split_documents(docs)
+    
+    # JSON record splitter - keep larger context together
+    # Trade setups are critical to keep whole. 4000 chars ~ 1000 tokens
+    json_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=4000,
+        chunk_overlap=200
+    )
+    
+    for doc in docs:
+        if doc.metadata.get("type", "").startswith("json"):
+            # If it's a JSON record, try to keep it whole unless huge
+            chunks.extend(json_splitter.split_documents([doc]))
+        else:
+            chunks.extend(general_splitter.split_documents([doc]))
+            
     print(f"Created {len(chunks)} chunks from {len(docs)} source documents.")
 
     # 3. Embed and Store
-    print("Creating embeddings and storing in ChromaDB...")
+    print("Creating embeddings and storing in FAISS (batched)...")
     embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
     
-    # Initialize Chroma
-    vector_store = Chroma.from_documents(
-        documents=chunks,
-        embedding=embeddings,
-        persist_directory=DB_PATH
-    )
+    vector_store = None
+    batch_size = 5
+    total_chunks = len(chunks)
+    
+    for i in range(0, total_chunks, batch_size):
+        batch = chunks[i:i + batch_size]
+        print(f"Processing batch {i//batch_size + 1}/{(total_chunks+batch_size-1)//batch_size}...", end="\r")
+        
+        if vector_store is None:
+            vector_store = FAISS.from_documents(batch, embeddings)
+        else:
+            vector_store.add_documents(batch)
+            
+    print("\nSaving index...")
+    if vector_store:
+        vector_store.save_local(DB_PATH)
     print(f"--- Ingestion Complete! Database saved to {DB_PATH} ---")
 
 if __name__ == "__main__":

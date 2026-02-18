@@ -457,3 +457,512 @@ environment:
     - news_today: ["high_impact", "medium_impact", "none"]
     - day_type: ["trend", "range", "reversal", "unknown"]
     - correlation: ["aligned", "divergent", "neutral"]
+
+# =============================================================================
+# ADVANCED PD ARRAYS
+# =============================================================================
+advanced_pd_arrays:
+  bisi:
+    full_name: "Buy Side Imbalance, Sell Side Inefficiency"
+    definition: "Bullish FVG - gap created by strong upward displacement"
+    use: "Discount array - price returns to this area as support"
+    entry: "At or below CE (50%) of the gap"
+    status: ["unmitigated", "mitigated"]
+
+  sibi:
+    full_name: "Sell Side Imbalance, Buy Side Inefficiency"
+    definition: "Bearish FVG - gap created by strong downward displacement"
+    use: "Premium array - price returns to this area as resistance"
+    entry: "At or above CE (50%) of the gap"
+    status: ["unmitigated", "mitigated"]
+
+  inverse_fvg:
+    definition: "A mitigated FVG that flips its role"
+    bullish_becomes: "Resistance after traded through by bears"
+    bearish_becomes: "Support after traded through by bulls"
+    significance: "Confirms state of delivery change"
+
+  breaker_block:
+    definition: "Failed order block that trapped traders"
+    formation: "OB that price traded through, creating new S/R"
+    bullish_breaker: "Failed bearish OB becomes new support"
+    bearish_breaker: "Failed bullish OB becomes new resistance"
+    entry: "On return to the breaker zone"
+
+  propulsion_block:
+    definition: "Order block containing a FVG within it"
+    formation: "FVG nested inside OB zone"
+    significance: "Extra momentum - double confluence"
+    entry: "Inside the FVG portion of the OB"
+
+  rejection_block:
+    definition: "Candle with long wick showing rejection at key level"
+    formation: "Wick range on rejection candle"
+    significance: "Wick zone becomes reaction zone on revisit"
+    entry: "Within the wick range on return"
+
+  reclaimed_order_block:
+    definition: "An OB broken then reclaimed by price reversal"
+    formation: "OB → breaker → reclaimed back"
+    significance: "Can act as S/R again after reclaim"
+    rarity: "Uncommon but powerful when found"
+
+  volume_imbalance:
+    definition: "Gap between consecutive candle BODIES (not wicks)"
+    difference_from_fvg: "FVG uses wicks, volume imbalance uses bodies only"
+    significance: "Smaller than FVG but still attracts price"
+    status: ["unfilled", "filled"]
+
+  liquidity_void:
+    definition: "Large gap where no trading occurred"
+    formation: "Price moved so fast no opposing orders filled"
+    rule: "Must be filled eventually - price will return"
+    significance: "Larger than FVG, represents major inefficiency"
+
+  balanced_price_range:
+    full_name: "Balanced Price Range (BPR)"
+    definition: "Overlapping zone of a BISI and SIBI"
+    formation: "Bullish FVG overlaps with bearish FVG at same price"
+    significance: "Ultra-high probability reaction zone"
+    entry: "Within the overlapping zone"
+
+# =============================================================================
+# ADVANCED STRUCTURE
+# =============================================================================
+advanced_structure:
+  sms:
+    full_name: "Shift in Market Structure (SMS/MSS)"
+    definition: "Confirmed break against prevailing trend with displacement"
+    difference_from_choch: "SMS is confirmed with displacement; CHoCH is first warning"
+    confirmation: "Displacement candle + body close beyond swing point"
+
+  swing_failure_pattern:
+    full_name: "Swing Failure Pattern (SFP)"
+    definition: "Price sweeps beyond swing point but fails to close beyond"
+    bullish_sfp: "Sweep below swing low, close back above"
+    bearish_sfp: "Sweep above swing high, close back below"
+    significance: "Strong reversal signal"
+
+  dealing_range:
+    definition: "Current range price is delivering within"
+    boundaries: "Defined by recent swing high and swing low"
+    use: "Identify premium/discount, IRL/ERL within it"
+    rule: "Trade setup within dealing range, target outside it"
+
+  cisd:
+    full_name: "Change in State of Delivery"
+    definition: "Candle that changes delivery from seeking BSL to SSL or vice versa"
+    significance: "Marks the exact shift point in price delivery"
+    identification: "The candle that breaks the prior swing and closes with commitment"
+
+# =============================================================================
+# OPENING GAPS
+# =============================================================================
+opening_gaps:
+  nwog:
+    full_name: "New Week Opening Gap"
+    definition: "Gap between Friday 5 PM close and Sunday 6 PM open"
+    significance: "Acts as magnet/equilibrium for the week"
+    rule: "Price often returns to fill NWOG during the week"
+
+  ndog:
+    full_name: "New Day Opening Gap"
+    definition: "Gap between yesterday's 5 PM close and today's 6 PM open"
+    significance: "Intraday equilibrium reference"
+    rule: "Acts as fair value reference for the day"
+
+  nmog:
+    full_name: "New Month Opening Gap"
+    definition: "Gap between prior month's close and new month's open"
+    significance: "HTF reference point for monthly bias"
+
+  sunday_open_gap:
+    definition: "Gap visible at Sunday market open"
+    significance: "Often filled during early-week price action"
+    relation: "Related to NWOG concept"
+
+# =============================================================================
+# KEY LEVELS
+# =============================================================================
+key_levels:
+  pdh_pdl:
+    full_name: "Previous Day High / Previous Day Low"
+    significance: "Key liquidity targets for current day"
+    bsl: "PDH is buy-side liquidity target"
+    ssl: "PDL is sell-side liquidity target"
+    rule: "Sweep of PDH or PDL often signals daily direction"
+
+  pwh_pwl:
+    full_name: "Previous Week High / Previous Week Low"
+    significance: "HTF liquidity targets for current week"
+    use: "Draw on liquidity for the week"
+    rule: "Which side is swept first reveals weekly bias"
+
+  pmh_pml:
+    full_name: "Previous Month High / Previous Month Low"
+    significance: "Major HTF liquidity pools"
+    use: "Monthly bias determined by which side is targeted"
+
+  old_high:
+    definition: "Previous swing high on HTF"
+    significance: "Buy-side liquidity target"
+    rule: "Price is drawn to old highs"
+
+  old_low:
+    definition: "Previous swing low on HTF"
+    significance: "Sell-side liquidity target"
+    rule: "Price is drawn to old lows"
+
+  midnight_open:
+    definition: "Price at midnight New York time"
+    significance: "Reference level for the true day"
+    use: "Often acts as equilibrium / fair value for the session"
+
+# =============================================================================
+# ADVANCED TIMING
+# =============================================================================
+advanced_timing:
+  true_day:
+    definition: "ICT's trading day runs midnight to midnight ET"
+    significance: "Different from broker server day"
+    rule: "Use true day for daily candle analysis"
+
+  macro_times:
+    definition: "20-minute algorithmic windows at :50 to :10"
+    key_times: ["9:50-10:10", "10:50-11:10", "1:50-2:10", "2:50-3:10"]
+    significance: "Displacement and FVG formation occurs in these windows"
+    rule: "Expect algorithmic activity during macro windows"
+
+  silver_bullet_windows:
+    am:
+      time: "10:00 AM - 11:00 AM ET"
+      significance: "Most reliable Silver Bullet window"
+      target: "15-20 pips typically"
+    pm:
+      time: "2:00 PM - 3:00 PM ET"
+      significance: "Second window, often reverses or continues AM"
+    london:
+      time: "3:00 AM - 4:00 AM ET"
+      significance: "London session Silver Bullet"
+
+  cbdr_details:
+    tight_threshold: "< 40 pips (preferably 20-30)"
+    very_tight: "< 20 pips = strong expansion signal"
+    wide: "> 50 pips = expansion may already be done"
+
+  daily_standard_deviation:
+    source_ranges: ["CBDR", "Asia Range"]
+    levels: ["+/-1 SD", "+/-2 SD", "+/-2.5 SD"]
+    use: "Target levels for expansion moves"
+    rule: "Tight source range = larger SD expansion"
+
+  adr:
+    full_name: "Average Daily Range"
+    calculation: "Average of daily high-low over 5/10/20 periods"
+    use: "Estimate daily expansion potential"
+    rule: "If 80%+ of ADR already traveled, expansion may be done"
+
+# =============================================================================
+# ADVANCED TRADING MODELS
+# =============================================================================
+advanced_models:
+  mmbm:
+    full_name: "Market Maker Buy Model"
+    sequence: ["accumulation_at_lows", "sweep_ssl", "displacement_up", "target_bsl"]
+    description: "Full bullish reversal roadmap on any timeframe"
+    entry: "After SSL sweep + displacement, enter at discount PDA"
+
+  mmsm:
+    full_name: "Market Maker Sell Model"
+    sequence: ["distribution_at_highs", "sweep_bsl", "displacement_down", "target_ssl"]
+    description: "Full bearish reversal roadmap on any timeframe"
+    entry: "After BSL sweep + displacement, enter at premium PDA"
+
+  london_close_model:
+    description: "Fade the London/NY AM move during 10 AM-12 PM ET"
+    trigger: "Overextended London/NY AM move"
+    target: "Retrace to London open price or 50% of AM range"
+    use_case: "Partial profit-taking, counter-trend model"
+
+  ict_stinger:
+    description: "Oscillator divergence at OTE retracement level"
+    components: ["RSI or Stochastic divergence", "61.8-79% fib retracement"]
+    confluence: "Divergence + OTE = high probability reversal"
+    best_with: "SMT divergence confirmation"
+
+  iofed:
+    full_name: "Institutional Order Flow Entry Drill"
+    description: "Drill down from HTF to 1M for precision entry"
+    sequence: ["HTF identifies zone", "MTF shows displacement", "LTF (1M) FVG for entry"]
+    entry: "1M FVG in direction of HTF bias"
+    significance: "Maximizes R:R with micro-precision"
+
+  unicorn_model:
+    description: "Breaker block aligning with FVG"
+    components: ["breaker_block", "fvg_overlap"]
+    rarity: "2-3 per week across all pairs"
+    significance: "Highest probability single setup in ICT"
+    entry: "Inside the FVG portion where breaker overlaps"
+
+  turtle_soup_model:
+    description: "Sweep of clean highs/lows with immediate reversal"
+    components: ["equal_highs_or_lows", "sweep", "immediate_reversal"]
+    quality_signal: "Speed of reversal after sweep"
+    entry: "After sweep reversal confirmed by FVG"
+
+  ict_2022_model_detail:
+    description: "Full AMD cycle trade"
+    phases: ["1. Identify accumulation range", "2. Wait for manipulation sweep", "3. Enter on displacement FVG", "4. Target distribution level"]
+    best_timing: "Session opens (London/NY AM)"
+
+# =============================================================================
+# ALGORITHMIC THEORY
+# =============================================================================
+algorithmic_theory:
+  ipda:
+    full_name: "Interbank Price Delivery Algorithm"
+    description: "Central thesis - algorithm delivers price between liquidity pools"
+    behavior: "Seeks PD arrays from IPDA data ranges for draw on liquidity"
+
+  ipda_data_ranges:
+    definition: "20-day, 40-day, and 60-day lookback ranges"
+    use: "Algorithm references these ranges for PD arrays and liquidity"
+    20_day: "Most recent/reactive range"
+    40_day: "Intermediate reference"
+    60_day: "Quarterly reference - major PD arrays"
+
+  algorithmic_pairing:
+    definition: "Every buyer needs a seller"
+    rule: "IPDA pairs orders at liquidity pools"
+    significance: "Explains why price goes to liquidity - to pair orders"
+
+  market_efficiency_paradigm:
+    definition: "Price must deliver efficiently between PD arrays"
+    rules:
+      - "FVGs must be filled"
+      - "Liquidity must be taken"
+      - "Inefficiencies must be balanced"
+    significance: "Nothing is wasted in price delivery"
+
+  delivery:
+    definition: "How IPDA delivers price from one PD array to another"
+    pattern: "IRL → ERL → IRL → ERL (entry to target cycle)"
+    rule: "Price uses internal range liquidity for entries, targets external"
+
+  buy_program:
+    definition: "Institutional buying phase"
+    behavior: "Seeks discount PD arrays, sweeps SSL, displaces upward"
+    target: "BSL and premium arrays"
+
+  sell_program:
+    definition: "Institutional selling phase"
+    behavior: "Seeks premium PD arrays, sweeps BSL, displaces downward"
+    target: "SSL and discount arrays"
+
+  market_maker_profile:
+    definition: "How market makers operate through the daily session"
+    asia: "Accumulate positions (build the range)"
+    london: "Manipulate at session open (Judas swing)"
+    ny: "Distribute to target (real move)"
+    significance: "Daily PO3 mapped to sessions"
+
+# =============================================================================
+# MARKET PHASES
+# =============================================================================
+market_phases:
+  re_accumulation:
+    definition: "Continuation pattern within an uptrend"
+    appearance: "Pause/consolidation before another expansion leg"
+    significance: "Not a reversal - building more liquidity for continuation"
+
+  re_distribution:
+    definition: "Continuation pattern within a downtrend"
+    appearance: "Pause/consolidation before another leg down"
+    significance: "Not a reversal - building more liquidity for continuation"
+
+  wyckoff_accumulation:
+    phases: ["PS", "SC", "AR", "ST", "Spring", "SOS", "LPS", "BU"]
+    ict_mapping:
+      spring: "= ICT SSL sweep / liquidity sweep"
+      sos: "= ICT displacement up"
+      lps: "= ICT retracement to FVG/OB"
+    significance: "Systematic framework for accumulation"
+
+  wyckoff_distribution:
+    phases: ["PSY", "BC", "AR", "ST", "UTAD", "SOW", "LPSY"]
+    ict_mapping:
+      utad: "= ICT BSL sweep / liquidity sweep"
+      sow: "= ICT displacement down"
+      lpsy: "= ICT retracement to premium PDA"
+    significance: "Systematic framework for distribution"
+
+# =============================================================================
+# INTERMARKET ANALYSIS
+# =============================================================================
+intermarket:
+  dxy_correlation:
+    definition: "US Dollar Index correlation with forex pairs"
+    inverse: ["EUR/USD", "GBP/USD", "AUD/USD", "NZD/USD"]
+    positive: ["USD/JPY", "USD/CHF", "USD/CAD"]
+    rule: "DXY up = USD pairs (EUR, GBP) down"
+    use: "Confirm forex bias with DXY structure"
+
+  bond_yield_correlation:
+    definition: "US Treasury yields and USD relationship"
+    rule: "Rising yields = stronger dollar generally"
+    pairs_affected: ["USD/JPY strongly", "Gold inversely"]
+    use: "Confirm USD direction with bond market"
+
+  smt_divergence:
+    full_name: "Smart Money Technique Divergence"
+    definition: "Correlated pair makes new high/low, other doesn't"
+    example: "EUR/USD makes new low, GBP/USD doesn't = bullish signal"
+    rule: "Non-confirming pair shows true direction"
+    pairs: [["EUR/USD", "GBP/USD"], ["ES", "NQ"], ["Gold", "Silver"]]
+
+  risk_sentiment:
+    risk_on: "Equities up, yields up, CHF/JPY weak, AUD/NZD strong"
+    risk_off: "Equities down, yields down, CHF/JPY strong, Gold up"
+    use: "Affects pair selection and bias"
+
+# =============================================================================
+# TIME PROFILES
+# =============================================================================
+time_profiles:
+  weekly_profile:
+    monday: "Range-setting, accumulation, often half-day move"
+    tuesday: "Highest probability expansion day"
+    wednesday: "Continuation or reversal of Tuesday, high probability"
+    thursday: "Late continuation or reversal setup"
+    friday: "Profit-taking, avoid afternoon, often deceptive"
+    rule: "Tuesday-Wednesday are primary trade days"
+
+  monthly_profile:
+    week_1: "Establishes month range, often manipulative"
+    week_2_3: "Real move - majority of monthly range"
+    week_4: "Distribution, profit-taking, or reversal setup"
+    rule: "Mid-month is where the real move happens"
+
+  quarterly_theory:
+    q1_jan_mar: "New year flows, January effect"
+    q2_apr_jun: "Trend continuation or major reversal"
+    q3_jul_sep: "Summer doldrums, often range-bound"
+    q4_oct_dec: "Year-end flows, holiday thin markets"
+    rule: "Markets shift direction at quarter boundaries"
+
+  seasonal_tendencies:
+    dollar:
+      typical_weak: ["January", "December"]
+      typical_strong: ["Q3", "September"]
+    gold:
+      typical_strong: ["Q1", "August-September"]
+    equities:
+      typical_weak: ["September-October"]
+      typical_strong: ["November-April"]
+    rule: "Tendencies not guarantees - use for bias confirmation only"
+
+# =============================================================================
+# CANDLE THEORY
+# =============================================================================
+candle_theory:
+  po3_candle:
+    definition: "Each candle follows AMD pattern"
+    bullish_candle: "Open (accumulation) → Low (manipulation) → High → Close (distribution)"
+    bearish_candle: "Open (accumulation) → High (manipulation) → Low → Close (distribution)"
+    significance: "Predicts next candle behavior from current candle structure"
+
+  htf_prediction:
+    monthly: "Monthly candle PO3 predicts weekly candle pattern"
+    weekly: "Weekly candle PO3 predicts daily candle pattern"
+    daily: "Daily candle PO3 predicts session behavior"
+    rule: "Always read HTF candle structure before trading LTF"
+
+  amd_candle:
+    definition: "Candle embodying Accumulation-Manipulation-Distribution"
+    identification: "Open near one extreme, wick (manipulation), body (distribution)"
+    trading: "Use HTF AMD candle to predict next session direction"
+
+# =============================================================================
+# ENTRY & MEASUREMENT
+# =============================================================================
+measurement:
+  consequent_encroachment:
+    full_name: "Consequent Encroachment (CE)"
+    definition: "50% midpoint of a FVG"
+    applies_to: ["FVGs", "wicks", "ranges", "candle bodies"]
+    rule: "Price often reacts precisely at CE level"
+
+  mean_threshold:
+    definition: "50% level of an order block body"
+    significance: "Key reaction level within the OB"
+    difference_from_ce: "CE for FVGs, mean threshold for OBs"
+
+  standard_deviation_projection:
+    formula: "Range height × SD multiplier"
+    levels: {"1_sd": 1.0, "2_sd": 2.0, "2_5_sd": 2.5, "3_sd": 3.0}
+    from_ranges: ["CBDR", "Asia Range", "London Range"]
+    use: "Project expansion targets from consolidation ranges"
+
+# =============================================================================
+# DRAW ON LIQUIDITY (DOL)
+# =============================================================================
+draw_on_liquidity:
+  definition: "The liquidity pool price is currently being delivered towards"
+  determination:
+    - "Identify which side has unswept liquidity"
+    - "Check HTF bias direction"
+    - "IPDA data range PD arrays"
+    - "Nearest significant equal highs/lows"
+  rule: "Always trade TOWARDS the draw on liquidity, never away"
+  types:
+    buy_side_draw: "Price being delivered up to BSL target"
+    sell_side_draw: "Price being delivered down to SSL target"
+
+# =============================================================================
+# ABBREVIATIONS
+# =============================================================================
+abbreviations:
+  BSL: "Buy-Side Liquidity"
+  SSL: "Sell-Side Liquidity"
+  IRL: "Internal Range Liquidity"
+  ERL: "External Range Liquidity"
+  FVG: "Fair Value Gap"
+  OB: "Order Block"
+  BB: "Breaker Block"
+  MB: "Mitigation Block"
+  BPR: "Balanced Price Range"
+  BISI: "Buy Side Imbalance, Sell Side Inefficiency"
+  SIBI: "Sell Side Imbalance, Buy Side Inefficiency"
+  OTE: "Optimal Trade Entry"
+  CE: "Consequent Encroachment"
+  DOL: "Draw on Liquidity"
+  BOS: "Break of Structure"
+  CHoCH: "Change of Character"
+  SMS: "Shift in Market Structure"
+  MSS: "Market Structure Shift"
+  SFP: "Swing Failure Pattern"
+  CISD: "Change in State of Delivery"
+  NWOG: "New Week Opening Gap"
+  NDOG: "New Day Opening Gap"
+  NMOG: "New Month Opening Gap"
+  PDH: "Previous Day High"
+  PDL: "Previous Day Low"
+  PWH: "Previous Week High"
+  PWL: "Previous Week Low"
+  PMH: "Previous Month High"
+  PML: "Previous Month Low"
+  CBDR: "Central Bank Dealers Range"
+  SD: "Standard Deviation"
+  ADR: "Average Daily Range"
+  AMD: "Accumulation Manipulation Distribution"
+  PO3: "Power of Three"
+  MMBM: "Market Maker Buy Model"
+  MMSM: "Market Maker Sell Model"
+  SMT: "Smart Money Technique"
+  IPDA: "Interbank Price Delivery Algorithm"
+  IOFED: "Institutional Order Flow Entry Drill"
+  HTF: "Higher Timeframe"
+  MTF: "Medium Timeframe"
+  LTF: "Lower Timeframe"
+  EQ: "Equilibrium"
+  DXY: "US Dollar Index"

@@ -444,92 +444,9 @@ class ICTGraphInternal(BaseModel):
 
         return graph
 
-        with open(yaml_path, "r") as f:
-            data = yaml.safe_load(f) or {}
-
-        # 1. Models
-        for model_id, info in data.get("models", {}).items():
-            graph.add_node(
-                ICTNode(
-                    id=model_id,
-                    label=model_id.replace("_", " ").title(),
-                    type=ConceptType.MODEL,
-                    description=info.get("description", ""),
-                    source="yaml",
-                )
-            )
-            # Requirements
-            for req in info.get("required", []):
-                graph.add_edge(model_id, req, "requires", weight=2.0)
-            # Time Windows
-            for tw in info.get("time_windows", []):
-                tw_id = f"tw_{tw['name'].lower().replace(' ', '_')}"
-                graph.add_node(
-                    ICTNode(
-                        id=tw_id,
-                        label=tw["name"],
-                        type=ConceptType.TIME_WINDOW,
-                        description=tw["time"],
-                        metadata={"time": tw["time"]},
-                    )
-                )
-                graph.add_edge(model_id, tw_id, "active_during", weight=1.5)
-            # Anti-Patterns
-            for ap in info.get("anti_patterns", []):
-                graph.add_edge(model_id, ap, "avoids", weight=1.0)
-
-        # 2. Concept Requirements
-        for concept_id, info in data.get("concept_requirements", {}).items():
-            graph.add_node(
-                ICTNode(
-                    id=concept_id,
-                    label=concept_id.replace("_", " ").title(),
-                    type=ConceptType.CONCEPT,
-                    source="yaml",
-                )
-            )
-            requires_list = info.get("requires", [])
-            # Handle list of dicts or strings
-            for req in requires_list:
-                if isinstance(req, dict):
-                    target = req.get("concept")
-                    meta = {"reason": req.get("why")}
-                else:
-                    target = req
-                    meta = {}
-                graph.add_edge(
-                    concept_id, target, "requires", weight=1.0, metadata=meta
-                )
-
-        # 3. Macro Times
-        for macro in data.get("time_rules", {}).get("macros", []):
-            m_id = f"macro_{macro['name'].split()[0].replace(':', '')}"
-            graph.add_node(
-                ICTNode(
-                    id=m_id,
-                    label=macro["name"],
-                    type=ConceptType.TIME_WINDOW,
-                    description=macro.get("action", ""),
-                    source="yaml",
-                )
-            )
-
-        # 4. Anti-Patterns
-        for ap_id, info in data.get("anti_patterns", {}).items():
-            graph.add_node(
-                ICTNode(
-                    id=ap_id,
-                    label=ap_id.replace("_", " ").title(),
-                    type=ConceptType.ANTI_PATTERN,
-                    description=info.get("description", ""),
-                    metadata={
-                        "fix": info.get("fix", ""),
-                        "why_fails": info.get("why_fails", ""),
-                    },
-                )
-            )
-
-        return graph
+    def enrich_from_markdown(self, concepts_dir: Path):
+        """Alias for enrich_from_directory."""
+        return self.enrich_from_directory(concepts_dir)
 
     def enrich_from_ontology(self, yaml_path: Path):
         """

@@ -1,15 +1,31 @@
 {
-  "version": "1.0.0",
-  "last_updated": "2026-02-15",
-  "description": "ICT Concept Relationship Graph - Shows dependencies and relationships between ICT trading concepts",
+  "version": "2.0.0",
+  "last_updated": "2026-02-18",
+  "description": "ICT Concept Relationship Graph v2 - Comprehensive coverage of all ICT trading concepts with full relationship mapping",
 
   "nodes": {
+    "ipda": {
+      "id": "ipda",
+      "name": "Interbank Price Delivery Algorithm (IPDA)",
+      "category": "algorithmic_theory",
+      "level": 1,
+      "description": "The algorithm that delivers price between liquidity pools. Central thesis of ICT methodology.",
+      "importance": "critical"
+    },
     "liquidity": {
       "id": "liquidity",
       "name": "Liquidity",
       "category": "foundation",
       "level": 1,
-      "description": "The foundation of ICT - all price movement seeks liquidity",
+      "description": "The foundation of ICT - all price movement seeks liquidity. Resting orders at key levels.",
+      "importance": "critical"
+    },
+    "smart_money": {
+      "id": "smart_money",
+      "name": "Smart Money",
+      "category": "foundation",
+      "level": 1,
+      "description": "Institutional traders, banks, and market makers who move price with large orders.",
       "importance": "critical"
     },
     "bsl": {
@@ -17,7 +33,7 @@
       "name": "Buy-Side Liquidity (BSL)",
       "category": "liquidity_type",
       "level": 2,
-      "description": "Stop orders above swing highs",
+      "description": "Stop orders resting above swing highs, equal highs, and range highs. Targeted by sell programs.",
       "importance": "high"
     },
     "ssl": {
@@ -25,7 +41,7 @@
       "name": "Sell-Side Liquidity (SSL)",
       "category": "liquidity_type",
       "level": 2,
-      "description": "Stop orders below swing lows",
+      "description": "Stop orders resting below swing lows, equal lows, and range lows. Targeted by buy programs.",
       "importance": "high"
     },
     "equal_highs": {
@@ -33,7 +49,7 @@
       "name": "Equal Highs",
       "category": "liquidity_pool",
       "level": 3,
-      "description": "Double/triple tops where liquidity clusters",
+      "description": "Double/triple tops at approximately same level - NOT resistance, but liquidity pool that will be swept.",
       "importance": "medium"
     },
     "equal_lows": {
@@ -41,7 +57,15 @@
       "name": "Equal Lows",
       "category": "liquidity_pool",
       "level": 3,
-      "description": "Double/triple bottoms where liquidity clusters",
+      "description": "Double/triple bottoms at approximately same level - NOT support, but liquidity pool that will be swept.",
+      "importance": "medium"
+    },
+    "trendline_liquidity": {
+      "id": "trendline_liquidity",
+      "name": "Trendline Liquidity",
+      "category": "liquidity_pool",
+      "level": 3,
+      "description": "Stop orders clustered along trendlines where retail traders place stops. Often swept before reversal.",
       "importance": "medium"
     },
     "liquidity_sweep": {
@@ -49,23 +73,63 @@
       "name": "Liquidity Sweep",
       "category": "price_action",
       "level": 2,
-      "description": "Price taking out liquidity pools",
+      "description": "Price taking out a liquidity pool then reversing. Fluid process that is destined, not violent.",
       "importance": "critical"
+    },
+    "stop_hunt": {
+      "id": "stop_hunt",
+      "name": "Stop Hunt",
+      "category": "price_action",
+      "level": 3,
+      "description": "Deliberate triggering of retail stop orders by institutional players to fill large orders at better prices.",
+      "importance": "high"
     },
     "displacement": {
       "id": "displacement",
       "name": "Displacement",
       "category": "price_action",
       "level": 2,
-      "description": "Strong impulsive move - institutional footprint",
+      "description": "Strong impulsive candle (2x+ average range) showing institutional commitment. Creates FVGs and validates OBs.",
       "importance": "critical"
+    },
+    "expansion": {
+      "id": "expansion",
+      "name": "Expansion",
+      "category": "price_action",
+      "level": 3,
+      "description": "Directional move out of consolidation/range. The distribution phase of AMD.",
+      "importance": "high"
+    },
+    "retracement": {
+      "id": "retracement",
+      "name": "Retracement",
+      "category": "price_action",
+      "level": 3,
+      "description": "Pullback within a trend to a PD array before continuation. Where entries occur.",
+      "importance": "high"
+    },
+    "reversal": {
+      "id": "reversal",
+      "name": "Reversal",
+      "category": "price_action",
+      "level": 3,
+      "description": "Change of trend direction confirmed by MSS/CHoCH after liquidity sweep.",
+      "importance": "high"
+    },
+    "consolidation": {
+      "id": "consolidation",
+      "name": "Consolidation",
+      "category": "price_action",
+      "level": 3,
+      "description": "Sideways price action building liquidity on both sides. The accumulation phase of AMD.",
+      "importance": "medium"
     },
     "market_structure": {
       "id": "market_structure",
       "name": "Market Structure",
       "category": "structure",
       "level": 2,
-      "description": "HH/HL or LL/LH patterns",
+      "description": "Higher highs/higher lows (bullish) or lower highs/lower lows (bearish) pattern.",
       "importance": "critical"
     },
     "bos": {
@@ -73,39 +137,111 @@
       "name": "Break of Structure (BOS)",
       "category": "structure",
       "level": 3,
-      "description": "Continuation signal - break with trend",
+      "description": "Price closes beyond previous swing point in direction of trend. Continuation signal.",
       "importance": "high"
-    },
-    "sms": {
-      "id": "sms",
-      "name": "Shift in Market Structure (SMS)",
-      "category": "structure",
-      "level": 3,
-      "description": "Reversal signal - break against trend",
-      "importance": "critical"
     },
     "choch": {
       "id": "choch",
       "name": "Change of Character (CHoCH)",
       "category": "structure",
       "level": 3,
-      "description": "Early reversal warning",
+      "description": "First break of structure against prevailing trend. Early reversal warning, not entry signal alone.",
+      "importance": "high"
+    },
+    "sms": {
+      "id": "sms",
+      "name": "Shift in Market Structure (SMS/MSS)",
+      "category": "structure",
+      "level": 3,
+      "description": "Confirmed reversal - break against trend with displacement. Stronger than CHoCH.",
+      "importance": "critical"
+    },
+    "swing_high": {
+      "id": "swing_high",
+      "name": "Swing High",
+      "category": "structure",
+      "level": 3,
+      "description": "Local price peak with lower highs on both sides. Potential resistance / BSL target.",
       "importance": "medium"
+    },
+    "swing_low": {
+      "id": "swing_low",
+      "name": "Swing Low",
+      "category": "structure",
+      "level": 3,
+      "description": "Local price trough with higher lows on both sides. Potential support / SSL target.",
+      "importance": "medium"
+    },
+    "swing_failure_pattern": {
+      "id": "swing_failure_pattern",
+      "name": "Swing Failure Pattern (SFP)",
+      "category": "structure",
+      "level": 4,
+      "description": "Price sweeps beyond a swing point but fails to close beyond it. Strong reversal signal.",
+      "importance": "high"
+    },
+    "dealing_range": {
+      "id": "dealing_range",
+      "name": "Dealing Range",
+      "category": "structure",
+      "level": 3,
+      "description": "The current range price is delivering within, defined by recent swing high and swing low.",
+      "importance": "high"
+    },
+    "cisd": {
+      "id": "cisd",
+      "name": "Change in State of Delivery (CISD)",
+      "category": "structure",
+      "level": 4,
+      "description": "The candle that changes price delivery from seeking BSL to SSL or vice versa. Marks the shift point.",
+      "importance": "high"
+    },
+    "terminus": {
+      "id": "terminus",
+      "name": "Terminus",
+      "category": "structure",
+      "level": 4,
+      "description": "Final objective of market maker model - PREDETERMINED before price reaches it. Located at discount (buys) or premium (sells) PD arrays.",
+      "importance": "high"
     },
     "fvg": {
       "id": "fvg",
       "name": "Fair Value Gap (FVG)",
       "category": "pd_array",
       "level": 3,
-      "description": "Price imbalance - 3 candle pattern",
+      "description": "3-candle pattern with gap between candle 1 and candle 3 wicks. Algorithm returns to fill THE VOID. Higher priority than OB.",
       "importance": "critical"
+    },
+    "bisi": {
+      "id": "bisi",
+      "name": "Buy Side Imbalance, Sell Side Inefficiency (BISI)",
+      "category": "pd_array",
+      "level": 4,
+      "description": "Bullish FVG - gap created by strong upward displacement. Price returns to this area as support.",
+      "importance": "high"
+    },
+    "sibi": {
+      "id": "sibi",
+      "name": "Sell Side Imbalance, Buy Side Inefficiency (SIBI)",
+      "category": "pd_array",
+      "level": 4,
+      "description": "Bearish FVG - gap created by strong downward displacement. Price returns to this area as resistance.",
+      "importance": "high"
+    },
+    "inverse_fvg": {
+      "id": "inverse_fvg",
+      "name": "Inverse Fair Value Gap",
+      "category": "pd_array",
+      "level": 5,
+      "description": "A mitigated FVG that flips role - bullish FVG becomes resistance after being traded through, and vice versa.",
+      "importance": "medium"
     },
     "order_block": {
       "id": "order_block",
       "name": "Order Block (OB)",
       "category": "pd_array",
       "level": 3,
-      "description": "Last opposing candle before displacement",
+      "description": "Last opposing candle before displacement. Bullish OB = last down candle before up displacement. Entry at 50% of OB.",
       "importance": "high"
     },
     "breaker_block": {
@@ -113,7 +249,7 @@
       "name": "Breaker Block",
       "category": "pd_array",
       "level": 4,
-      "description": "Failed OB that trapped traders",
+      "description": "Failed order block that trapped traders. OB that was traded through, creating a new level of support/resistance.",
       "importance": "high"
     },
     "mitigation_block": {
@@ -121,15 +257,95 @@
       "name": "Mitigation Block",
       "category": "pd_array",
       "level": 4,
-      "description": "Failed swing without liquidity grab",
+      "description": "Zone where prior losing orders need to be closed out. Forms after balanced price range interaction.",
       "importance": "medium"
+    },
+    "propulsion_block": {
+      "id": "propulsion_block",
+      "name": "Propulsion Block",
+      "category": "pd_array",
+      "level": 5,
+      "description": "Order block that contains a FVG within it, launching price with extra momentum. Price re-enters the FVG inside the OB.",
+      "importance": "medium"
+    },
+    "rejection_block": {
+      "id": "rejection_block",
+      "name": "Rejection Block",
+      "category": "pd_array",
+      "level": 5,
+      "description": "Candle with long wick showing rejection at a key level. The wick range becomes a potential reaction zone on revisit.",
+      "importance": "medium"
+    },
+    "reclaimed_order_block": {
+      "id": "reclaimed_order_block",
+      "name": "Reclaimed Order Block",
+      "category": "pd_array",
+      "level": 5,
+      "description": "An OB that was broken (became breaker) but then reclaimed when price reversed back. Can act as support/resistance again.",
+      "importance": "medium"
+    },
+    "volume_imbalance": {
+      "id": "volume_imbalance",
+      "name": "Volume Imbalance",
+      "category": "pd_array",
+      "level": 4,
+      "description": "Gap between consecutive candle BODIES (not wicks). Smaller than FVG. Price often returns to fill this gap.",
+      "importance": "medium"
+    },
+    "liquidity_void": {
+      "id": "liquidity_void",
+      "name": "Liquidity Void",
+      "category": "pd_array",
+      "level": 4,
+      "description": "Large gap in price where no trading occurred. Price moved so fast there is no opposing liquidity. Must be filled eventually.",
+      "importance": "high"
+    },
+    "balanced_price_range": {
+      "id": "balanced_price_range",
+      "name": "Balanced Price Range (BPR)",
+      "category": "pd_array",
+      "level": 5,
+      "description": "When a BISI and SIBI overlap in price. The overlapping zone is extremely significant - ultra-high probability reaction zone.",
+      "importance": "high"
     },
     "premium_discount": {
       "id": "premium_discount",
       "name": "Premium/Discount Zones",
       "category": "valuation",
       "level": 2,
-      "description": "Price relative to 50% equilibrium",
+      "description": "Price above equilibrium (50%) = premium (sell zone). Price below = discount (buy zone).",
+      "importance": "high"
+    },
+    "premium_array": {
+      "id": "premium_array",
+      "name": "Premium PD Array",
+      "category": "valuation",
+      "level": 3,
+      "description": "PD arrays in premium zone: bearish OB, bearish FVG (SIBI), bearish breaker. Sell from these in bearish bias.",
+      "importance": "high"
+    },
+    "discount_array": {
+      "id": "discount_array",
+      "name": "Discount PD Array",
+      "category": "valuation",
+      "level": 3,
+      "description": "PD arrays in discount zone: bullish OB, bullish FVG (BISI), bullish breaker. Buy from these in bullish bias.",
+      "importance": "high"
+    },
+    "equilibrium": {
+      "id": "equilibrium",
+      "name": "Equilibrium (EQ)",
+      "category": "valuation",
+      "level": 3,
+      "description": "50% level of any range. Divides premium from discount. Price often reacts to EQ.",
+      "importance": "high"
+    },
+    "fair_value": {
+      "id": "fair_value",
+      "name": "Fair Value",
+      "category": "valuation",
+      "level": 2,
+      "description": "The price where the algorithm considers value is balanced. FVGs exist because price left fair value too quickly.",
       "importance": "high"
     },
     "ote": {
@@ -137,7 +353,7 @@
       "name": "Optimal Trade Entry (OTE)",
       "category": "entry",
       "level": 4,
-      "description": "61.8%-79% retracement zone",
+      "description": "61.8% to 79% Fibonacci retracement zone. Sweet spot at 70.5%. Best entry when aligned with FVG/OB.",
       "importance": "high"
     },
     "ce": {
@@ -145,95 +361,39 @@
       "name": "Consequent Encroachment (CE)",
       "category": "entry",
       "level": 5,
-      "description": "50% of FVG",
+      "description": "50% midpoint of a FVG. Price often reacts precisely at CE. Also applies to 50% of wicks, ranges, and candle bodies.",
       "importance": "medium"
     },
-    "killzone": {
-      "id": "killzone",
-      "name": "Killzones",
-      "category": "time",
-      "level": 2,
-      "description": "High-probability trading windows",
-      "importance": "high"
+    "mean_threshold": {
+      "id": "mean_threshold",
+      "name": "Mean Threshold",
+      "category": "entry",
+      "level": 5,
+      "description": "50% level of an order block body. Key reaction level within the OB. Similar concept to CE but for order blocks.",
+      "importance": "medium"
     },
-    "macro_time": {
-      "id": "macro_time",
-      "name": "Macro Times",
-      "category": "time",
+    "irl": {
+      "id": "irl",
+      "name": "Internal Range Liquidity (IRL)",
+      "category": "liquidity_type",
       "level": 3,
-      "description": "20-minute algorithm windows",
-      "importance": "medium"
-    },
-    "silver_bullet": {
-      "id": "silver_bullet",
-      "name": "Silver Bullet",
-      "category": "trading_model",
-      "level": 5,
-      "description": "10-11 AM precision setup",
+      "description": "Liquidity INSIDE the current dealing range: FVGs, order blocks, liquidity voids. Where entries happen.",
       "importance": "high"
     },
-    "judas_swing": {
-      "id": "judas_swing",
-      "name": "Judas Swing",
-      "category": "trading_model",
-      "level": 4,
-      "description": "False move before real direction",
+    "erl": {
+      "id": "erl",
+      "name": "External Range Liquidity (ERL)",
+      "category": "liquidity_type",
+      "level": 3,
+      "description": "Liquidity OUTSIDE the current dealing range: old swing highs/lows, equal highs/lows. Where targets reside.",
       "importance": "high"
-    },
-    "power_of_three": {
-      "id": "power_of_three",
-      "name": "Power of Three (AMD)",
-      "category": "trading_model",
-      "level": 4,
-      "description": "Accumulation-Manipulation-Distribution",
-      "importance": "critical"
-    },
-    "turtle_soup": {
-      "id": "turtle_soup",
-      "name": "Turtle Soup",
-      "category": "trading_model",
-      "level": 5,
-      "description": "Liquidity sweep reversal",
-      "importance": "medium"
-    },
-    "mmbm": {
-      "id": "mmbm",
-      "name": "Market Maker Buy Model",
-      "category": "trading_model",
-      "level": 5,
-      "description": "Full bullish reversal roadmap",
-      "importance": "high"
-    },
-    "mmsm": {
-      "id": "mmsm",
-      "name": "Market Maker Sell Model",
-      "category": "trading_model",
-      "level": 5,
-      "description": "Full bearish reversal roadmap",
-      "importance": "high"
-    },
-    "smt_divergence": {
-      "id": "smt_divergence",
-      "name": "SMT Divergence",
-      "category": "confirmation",
-      "level": 4,
-      "description": "Correlated pair divergence",
-      "importance": "high"
-    },
-    "ipda": {
-      "id": "ipda",
-      "name": "IPDA",
-      "category": "algorithmic_theory",
-      "level": 1,
-      "description": "Interbank Price Delivery Algorithm",
-      "importance": "critical"
     },
     "draw_on_liquidity": {
       "id": "draw_on_liquidity",
-      "name": "Draw on Liquidity",
+      "name": "Draw on Liquidity (DOL)",
       "category": "target",
       "level": 3,
-      "description": "Where price is being delivered",
+      "description": "The liquidity pool price is currently being delivered towards. Determines bias and target. Always trade towards DOL.",
       "importance": "critical"
     },
     "daily_bias": {
@@ -241,323 +401,859 @@
       "name": "Daily Bias",
       "category": "analysis",
       "level": 4,
-      "description": "Pre-session buy/sell determination",
+      "description": "Pre-session determination of buy/sell direction based on HTF structure, DOL, and previous day's delivery.",
       "importance": "critical"
+    },
+    "killzone": {
+      "id": "killzone",
+      "name": "Killzones",
+      "category": "time",
+      "level": 2,
+      "description": "High-probability trading windows when institutional activity is highest. London (2-5 AM), NY AM (7-10 AM), NY PM (1:30-4 PM ET).",
+      "importance": "high"
+    },
+    "london_killzone": {
+      "id": "london_killzone",
+      "name": "London Killzone",
+      "category": "time",
+      "level": 3,
+      "description": "2:00 AM - 5:00 AM ET. First real move of the day. Breaks Asia range. Look for Judas swing setups.",
+      "importance": "high"
+    },
+    "ny_am_killzone": {
+      "id": "ny_am_killzone",
+      "name": "NY AM Killzone",
+      "category": "time",
+      "level": 3,
+      "description": "7:00 AM - 10:00 AM ET. Highest volume session. Primary trading window. Silver Bullet at 10-11 AM.",
+      "importance": "high"
+    },
+    "ny_pm_killzone": {
+      "id": "ny_pm_killzone",
+      "name": "NY PM Killzone",
+      "category": "time",
+      "level": 3,
+      "description": "1:30 PM - 4:00 PM ET. Second push or reversal of AM move. PM Silver Bullet at 2-3 PM.",
+      "importance": "medium"
+    },
+    "london_close_killzone": {
+      "id": "london_close_killzone",
+      "name": "London Close Killzone",
+      "category": "time",
+      "level": 3,
+      "description": "10:00 AM - 12:00 PM ET. Often reverses the London/NY AM move. Profit-taking window.",
+      "importance": "medium"
+    },
+    "asia_session": {
+      "id": "asia_session",
+      "name": "Asian Session",
+      "category": "time",
+      "level": 3,
+      "description": "8:00 PM - 12:00 AM ET. Sets the range for the day. Generally accumulation. Mark levels, don't trade breakouts.",
+      "importance": "medium"
+    },
+    "macro_time": {
+      "id": "macro_time",
+      "name": "Macro Times",
+      "category": "time",
+      "level": 3,
+      "description": "20-minute algorithmic windows: :50 to :10 of each hour. 9:50, 10:10, 10:50, 11:10 etc. Displacement/FVG occur here.",
+      "importance": "medium"
+    },
+    "cbdr": {
+      "id": "cbdr",
+      "name": "Central Bank Dealers Range (CBDR)",
+      "category": "time",
+      "level": 3,
+      "description": "2:00 PM - 8:00 PM ET. Track range BEFORE session. Tight CBDR (<40 pips) signals coming expansion.",
+      "importance": "medium"
+    },
+    "asia_range": {
+      "id": "asia_range",
+      "name": "Asian Range",
+      "category": "time",
+      "level": 3,
+      "description": "8:00 PM - 12:00 AM ET range. More important than CBDR. SD levels set from Asia range predict London/NY expansion.",
+      "importance": "medium"
+    },
+    "standard_deviation": {
+      "id": "standard_deviation",
+      "name": "Standard Deviation (SD)",
+      "category": "measurement",
+      "level": 4,
+      "description": "Projected expansion from CBDR/Asia range. +/-1 SD, +/-2 SD, +/-2.5 SD levels. Targets for expansion moves.",
+      "importance": "medium"
+    },
+    "adr": {
+      "id": "adr",
+      "name": "Average Daily Range (ADR)",
+      "category": "measurement",
+      "level": 4,
+      "description": "Average pip range of the daily candle over 5/10/20 days. Used to project daily expansion targets.",
+      "importance": "medium"
+    },
+    "midnight_open": {
+      "id": "midnight_open",
+      "name": "Midnight Open",
+      "category": "time",
+      "level": 4,
+      "description": "Price at midnight New York time. Key reference level. Often acts as equilibrium for the day.",
+      "importance": "medium"
+    },
+    "true_day": {
+      "id": "true_day",
+      "name": "True Day",
+      "category": "time",
+      "level": 4,
+      "description": "ICT's true trading day runs midnight to midnight ET, not the broker's server day.",
+      "importance": "medium"
+    },
+    "optimal_trade_days": {
+      "id": "optimal_trade_days",
+      "name": "Optimal Trade Days",
+      "category": "time",
+      "level": 4,
+      "description": "Tuesday and Wednesday are highest probability. Monday/Thursday good. Avoid Friday afternoon.",
+      "importance": "medium"
+    },
+    "silver_bullet": {
+      "id": "silver_bullet",
+      "name": "Silver Bullet",
+      "category": "trading_model",
+      "level": 5,
+      "description": "Precision time-based setup. AM: 10-11 AM ET. PM: 2-3 PM ET. London: 3-4 AM ET. FVG in direction of bias during window.",
+      "importance": "high"
+    },
+    "am_silver_bullet": {
+      "id": "am_silver_bullet",
+      "name": "AM Silver Bullet",
+      "category": "trading_model",
+      "level": 5,
+      "description": "10:00-11:00 AM ET. Most reliable Silver Bullet window. FVG in bias direction during this hour. Target 15-20 pips.",
+      "importance": "high"
+    },
+    "pm_silver_bullet": {
+      "id": "pm_silver_bullet",
+      "name": "PM Silver Bullet",
+      "category": "trading_model",
+      "level": 5,
+      "description": "2:00-3:00 PM ET. Second Silver Bullet window. Often reverses AM direction or continues for final push.",
+      "importance": "medium"
+    },
+    "london_silver_bullet": {
+      "id": "london_silver_bullet",
+      "name": "London Silver Bullet",
+      "category": "trading_model",
+      "level": 5,
+      "description": "3:00-4:00 AM ET. London session Silver Bullet. FVG during this window with HTF bias alignment.",
+      "importance": "medium"
+    },
+    "judas_swing": {
+      "id": "judas_swing",
+      "name": "Judas Swing",
+      "category": "trading_model",
+      "level": 4,
+      "description": "False move opposite to true direction at session open. 100% time-based. Traps counter-trend traders, grabs liquidity.",
+      "importance": "high"
+    },
+    "power_of_three": {
+      "id": "power_of_three",
+      "name": "Power of Three (AMD)",
+      "category": "trading_model",
+      "level": 4,
+      "description": "Accumulation-Manipulation-Distribution. Core ICT framework. Applies to sessions, days, weeks, and individual candles.",
+      "importance": "critical"
+    },
+    "po3_candle": {
+      "id": "po3_candle",
+      "name": "Power of Three on Candle",
+      "category": "trading_model",
+      "level": 5,
+      "description": "Each candle is AMD: Open = accumulation, wick = manipulation, body = distribution. Bullish: open, low, high, close.",
+      "importance": "medium"
+    },
+    "turtle_soup": {
+      "id": "turtle_soup",
+      "name": "Turtle Soup",
+      "category": "trading_model",
+      "level": 5,
+      "description": "Liquidity sweep of clean highs/lows with immediate reversal. Speed of reversal = quality of signal.",
+      "importance": "medium"
+    },
+    "ict_2022_model": {
+      "id": "ict_2022_model",
+      "name": "ICT 2022 Model",
+      "category": "trading_model",
+      "level": 5,
+      "description": "Full AMD cycle trade. Accumulation range + manipulation sweep + displacement FVG entry. Best at session opens.",
+      "importance": "high"
+    },
+    "mmbm": {
+      "id": "mmbm",
+      "name": "Market Maker Buy Model (MMBM)",
+      "category": "trading_model",
+      "level": 5,
+      "description": "Full bullish reversal roadmap. Smart money accumulates at lows, sweeps SSL, displacement up, targets BSL. Scaled AMD.",
+      "importance": "high"
+    },
+    "mmsm": {
+      "id": "mmsm",
+      "name": "Market Maker Sell Model (MMSM)",
+      "category": "trading_model",
+      "level": 5,
+      "description": "Full bearish reversal roadmap. Smart money distributes at highs, sweeps BSL, displacement down, targets SSL. Scaled AMD.",
+      "importance": "high"
     },
     "unicorn": {
       "id": "unicorn",
       "name": "Unicorn Setup",
-      "category": "setup",
+      "category": "trading_model",
       "level": 6,
-      "description": "Breaker + FVG confluence",
+      "description": "Breaker block + FVG confluence. Highest probability setup. Rare (2-3 per week). Enter inside FVG portion.",
+      "importance": "high"
+    },
+    "london_close_model": {
+      "id": "london_close_model",
+      "name": "London Close Model",
+      "category": "trading_model",
+      "level": 5,
+      "description": "Fade the London/NY AM move during 10 AM-12 PM ET. Price often retraces to London open price. Partial profit-taking model.",
+      "importance": "medium"
+    },
+    "ict_stinger": {
+      "id": "ict_stinger",
+      "name": "ICT Stinger",
+      "category": "trading_model",
+      "level": 5,
+      "description": "RSI/Stochastic divergence at OTE retracement level. Oscillator divergence + 62-79% fib = high probability reversal.",
+      "importance": "medium"
+    },
+    "iofed": {
+      "id": "iofed",
+      "name": "Institutional Order Flow Entry Drill (IOFED)",
+      "category": "trading_model",
+      "level": 6,
+      "description": "LTF pattern: displacement candle creates FVG, price retraces to FVG, then continues. Drill down from HTF to 1M for precision entry.",
+      "importance": "medium"
+    },
+    "smt_divergence": {
+      "id": "smt_divergence",
+      "name": "SMT Divergence",
+      "category": "confirmation",
+      "level": 4,
+      "description": "Smart Money Technique. Correlated pair makes new high/low, other doesn't. The non-confirming pair shows true direction.",
+      "importance": "high"
+    },
+    "ipda_data_ranges": {
+      "id": "ipda_data_ranges",
+      "name": "IPDA Data Ranges",
+      "category": "algorithmic_theory",
+      "level": 3,
+      "description": "20-day, 40-day, and 60-day lookback ranges the IPDA uses. Price seeks PD arrays from these ranges for draw on liquidity.",
+      "importance": "high"
+    },
+    "buy_program": {
+      "id": "buy_program",
+      "name": "Buy Program",
+      "category": "algorithmic_theory",
+      "level": 3,
+      "description": "Institutional buying phase. Price seeks discount PD arrays, sweeps SSL, displaces upward targeting BSL.",
+      "importance": "high"
+    },
+    "sell_program": {
+      "id": "sell_program",
+      "name": "Sell Program",
+      "category": "algorithmic_theory",
+      "level": 3,
+      "description": "Institutional selling phase. Price seeks premium PD arrays, sweeps BSL, displaces downward targeting SSL.",
+      "importance": "high"
+    },
+    "algorithmic_pairing": {
+      "id": "algorithmic_pairing",
+      "name": "Algorithmic Order Pairing",
+      "category": "algorithmic_theory",
+      "level": 4,
+      "description": "The IPDA pairs buy orders with sell orders. Every buyer needs a seller. Liquidity pools are where pairing occurs.",
+      "importance": "medium"
+    },
+    "market_efficiency_paradigm": {
+      "id": "market_efficiency_paradigm",
+      "name": "Market Efficiency Paradigm",
+      "category": "algorithmic_theory",
+      "level": 4,
+      "description": "Price must deliver efficiently between PD arrays. FVGs must be filled, liquidity must be taken. Nothing is wasted.",
+      "importance": "medium"
+    },
+    "delivery": {
+      "id": "delivery",
+      "name": "Price Delivery",
+      "category": "algorithmic_theory",
+      "level": 2,
+      "description": "How the IPDA delivers price from one PD array to another. IRL to ERL, discount to premium, and back.",
+      "importance": "high"
+    },
+    "narrative": {
+      "id": "narrative",
+      "name": "Narrative",
+      "category": "analysis",
+      "level": 3,
+      "description": "The story price action tells about smart money intent. Why here, why now, what would kill it. Required for every trade.",
+      "importance": "high"
+    },
+    "time_price_theory": {
+      "id": "time_price_theory",
+      "name": "Time and Price Theory",
+      "category": "analysis",
+      "level": 2,
+      "description": "Time is more important than price. The right setup at the wrong time is wrong. Killzones, macro times, and session timing are primary.",
+      "importance": "high"
+    },
+    "nwog": {
+      "id": "nwog",
+      "name": "New Week Opening Gap (NWOG)",
+      "category": "opening_gap",
+      "level": 4,
+      "description": "Gap between Friday's close and Sunday's open. Often acts as magnet/equilibrium for the week. Price returns to fill it.",
+      "importance": "medium"
+    },
+    "ndog": {
+      "id": "ndog",
+      "name": "New Day Opening Gap (NDOG)",
+      "category": "opening_gap",
+      "level": 4,
+      "description": "Gap between yesterday's close and today's open. Acts as equilibrium reference for the day.",
+      "importance": "medium"
+    },
+    "nmog": {
+      "id": "nmog",
+      "name": "New Month Opening Gap (NMOG)",
+      "category": "opening_gap",
+      "level": 4,
+      "description": "Gap between prior month's close and new month's open. HTF reference point for monthly bias.",
+      "importance": "low"
+    },
+    "sunday_open_gap": {
+      "id": "sunday_open_gap",
+      "name": "Sunday Open Gap",
+      "category": "opening_gap",
+      "level": 4,
+      "description": "Gap at Sunday market open. Often filled during early week price action. Related to NWOG.",
+      "importance": "low"
+    },
+    "pdh_pdl": {
+      "id": "pdh_pdl",
+      "name": "Previous Day High/Low (PDH/PDL)",
+      "category": "key_level",
+      "level": 3,
+      "description": "Prior day's high and low. Key liquidity levels. Sweep of PDH targets BSL, sweep of PDL targets SSL.",
+      "importance": "high"
+    },
+    "pwh_pwl": {
+      "id": "pwh_pwl",
+      "name": "Previous Week High/Low (PWH/PWL)",
+      "category": "key_level",
+      "level": 3,
+      "description": "Prior week's high and low. HTF liquidity targets. Often the draw on liquidity for the current week.",
+      "importance": "high"
+    },
+    "pmh_pml": {
+      "id": "pmh_pml",
+      "name": "Previous Month High/Low (PMH/PML)",
+      "category": "key_level",
+      "level": 3,
+      "description": "Prior month's high and low. Major HTF liquidity pools. Monthly bias determined by which side is targeted.",
+      "importance": "high"
+    },
+    "old_high": {
+      "id": "old_high",
+      "name": "Old High",
+      "category": "key_level",
+      "level": 3,
+      "description": "Previous swing high on HTF. Buy-side liquidity target. Price is drawn to old highs.",
+      "importance": "medium"
+    },
+    "old_low": {
+      "id": "old_low",
+      "name": "Old Low",
+      "category": "key_level",
+      "level": 3,
+      "description": "Previous swing low on HTF. Sell-side liquidity target. Price is drawn to old lows.",
+      "importance": "medium"
+    },
+    "weekly_profile": {
+      "id": "weekly_profile",
+      "name": "Weekly Profile",
+      "category": "time_profile",
+      "level": 4,
+      "description": "How the trading week typically unfolds. Monday: range/accumulation. Tue/Wed: real moves. Thu: continuation/reversal. Fri: profit-taking.",
+      "importance": "medium"
+    },
+    "monthly_profile": {
+      "id": "monthly_profile",
+      "name": "Monthly Profile",
+      "category": "time_profile",
+      "level": 4,
+      "description": "How the trading month typically unfolds. First week establishes range, mid-month real move, last week distribution.",
+      "importance": "medium"
+    },
+    "quarterly_theory": {
+      "id": "quarterly_theory",
+      "name": "Quarterly Theory",
+      "category": "time_profile",
+      "level": 4,
+      "description": "ICT quarterly shifts. Markets shift direction at quarter boundaries. Q1 (Jan-Mar), Q2 (Apr-Jun), Q3 (Jul-Sep), Q4 (Oct-Dec).",
+      "importance": "medium"
+    },
+    "seasonal_tendencies": {
+      "id": "seasonal_tendencies",
+      "name": "Seasonal Tendencies",
+      "category": "time_profile",
+      "level": 4,
+      "description": "Seasonal patterns in markets. Dollar typically weakens in Jan, strengthens in Q3. Gold rallies in Q1. Know the tendencies.",
+      "importance": "low"
+    },
+    "candle_theory": {
+      "id": "candle_theory",
+      "name": "ICT Candle Theory",
+      "category": "analysis",
+      "level": 3,
+      "description": "Monthly candle predicts weekly, weekly predicts daily. Each candle follows PO3: open, extreme (manipulation), body (distribution).",
+      "importance": "medium"
+    },
+    "dxy_correlation": {
+      "id": "dxy_correlation",
+      "name": "DXY Correlation",
+      "category": "intermarket",
+      "level": 4,
+      "description": "US Dollar Index inversely correlates with EUR/USD, GBP/USD. DXY up = USD pairs down. Critical for forex bias.",
+      "importance": "high"
+    },
+    "bond_yield_correlation": {
+      "id": "bond_yield_correlation",
+      "name": "Bond Yield Correlation",
+      "category": "intermarket",
+      "level": 4,
+      "description": "US Treasury yields correlate with USD/JPY and USD strength. Rising yields = stronger dollar generally.",
+      "importance": "medium"
+    },
+    "intermarket_analysis": {
+      "id": "intermarket_analysis",
+      "name": "Intermarket Analysis",
+      "category": "intermarket",
+      "level": 3,
+      "description": "Cross-market relationships: DXY, bonds, equities, commodities. Divergences between correlated assets signal reversals.",
+      "importance": "medium"
+    },
+    "risk_on_risk_off": {
+      "id": "risk_on_risk_off",
+      "name": "Risk-On / Risk-Off",
+      "category": "intermarket",
+      "level": 4,
+      "description": "Risk-on: equities up, yields up, CHF/JPY weak. Risk-off: equities down, yields down, CHF/JPY strong. Affects pair selection.",
+      "importance": "medium"
+    },
+    "institutional_sponsorship": {
+      "id": "institutional_sponsorship",
+      "name": "Institutional Sponsorship",
+      "category": "order_flow",
+      "level": 3,
+      "description": "Presence of institutional orders behind a move. Confirmed by displacement, volume, and follow-through. No sponsorship = no trade.",
+      "importance": "high"
+    },
+    "order_flow": {
+      "id": "order_flow",
+      "name": "Order Flow",
+      "category": "order_flow",
+      "level": 2,
+      "description": "The footprint of institutional buying/selling. Visible through displacement, FVGs, and candle structure on LTF.",
+      "importance": "high"
+    },
+    "accumulation": {
+      "id": "accumulation",
+      "name": "Accumulation",
+      "category": "market_phase",
+      "level": 3,
+      "description": "Smart money building positions in a range. Equal highs/lows form. Wait, don't enter yet. Part of AMD cycle.",
+      "importance": "high"
+    },
+    "manipulation": {
+      "id": "manipulation",
+      "name": "Manipulation",
+      "category": "market_phase",
+      "level": 3,
+      "description": "False move to grab liquidity (Judas swing). Sweeps stop orders. The entry signal - manipulation IS the setup.",
+      "importance": "high"
+    },
+    "distribution": {
+      "id": "distribution",
+      "name": "Distribution",
+      "category": "market_phase",
+      "level": 3,
+      "description": "Real move delivering to target. Displacement + FVG + continuation. Enter on retracement during distribution.",
+      "importance": "high"
+    },
+    "re_accumulation": {
+      "id": "re_accumulation",
+      "name": "Re-Accumulation",
+      "category": "market_phase",
+      "level": 4,
+      "description": "Continuation pattern within an uptrend. Pause/consolidation before another expansion leg. Builds more liquidity.",
+      "importance": "medium"
+    },
+    "re_distribution": {
+      "id": "re_distribution",
+      "name": "Re-Distribution",
+      "category": "market_phase",
+      "level": 4,
+      "description": "Continuation pattern within a downtrend. Pause/consolidation before another leg down. Builds more liquidity.",
+      "importance": "medium"
+    },
+    "wyckoff_accumulation": {
+      "id": "wyckoff_accumulation",
+      "name": "Wyckoff Accumulation",
+      "category": "market_phase",
+      "level": 4,
+      "description": "ICT-adapted Wyckoff: PS-SC-AR-ST-Spring-SOS-LPS-BU. Spring = liquidity sweep (SSL). SOS = displacement.",
+      "importance": "medium"
+    },
+    "wyckoff_distribution": {
+      "id": "wyckoff_distribution",
+      "name": "Wyckoff Distribution",
+      "category": "market_phase",
+      "level": 4,
+      "description": "ICT-adapted Wyckoff: PSY-BC-AR-ST-UTAD-SOW-LPSY. UTAD = liquidity sweep (BSL). SOW = displacement down.",
+      "importance": "medium"
+    },
+    "market_maker_profile": {
+      "id": "market_maker_profile",
+      "name": "Market Maker Profile",
+      "category": "algorithmic_theory",
+      "level": 4,
+      "description": "How market makers operate intraday: accumulate in Asia, manipulate at London open, distribute in NY. The daily PO3.",
+      "importance": "medium"
+    },
+    "htf_bias": {
+      "id": "htf_bias",
+      "name": "Higher Timeframe Bias",
+      "category": "analysis",
+      "level": 2,
+      "description": "Direction determined by Daily/4H structure. NEVER trade against HTF bias. LTF must promote HTF.",
+      "importance": "critical"
+    },
+    "mtf_bridge": {
+      "id": "mtf_bridge",
+      "name": "MTF Bridge (1H/15M)",
+      "category": "analysis",
+      "level": 3,
+      "description": "1H/15M timeframes bridge HTF bias to LTF execution. Refine HTF zones into tradeable areas.",
+      "importance": "high"
+    },
+    "ltf_execution": {
+      "id": "ltf_execution",
+      "name": "LTF Execution (5M/1M)",
+      "category": "analysis",
+      "level": 3,
+      "description": "5M/1M timeframes for precise entry timing. Only execute when MTF/HTF aligned. Micro structure confirmation.",
+      "importance": "high"
+    },
+    "cbdr_asia_sd_model": {
+      "id": "cbdr_asia_sd_model",
+      "name": "CBDR/Asia SD Model",
+      "category": "trading_model",
+      "level": 5,
+      "description": "Ashton's signature model. Tight CBDR + Asia SD confluence + terminus identified = entry at Asia SD zone.",
       "importance": "high"
     }
   },
 
   "edges": [
-    {
-      "from": "ipda",
-      "to": "liquidity",
-      "relationship": "seeks",
-      "description": "IPDA's primary directive is to seek liquidity"
-    },
-    {
-      "from": "liquidity",
-      "to": "bsl",
-      "relationship": "has_type",
-      "description": "BSL is a type of liquidity"
-    },
-    {
-      "from": "liquidity",
-      "to": "ssl",
-      "relationship": "has_type",
-      "description": "SSL is a type of liquidity"
-    },
-    {
-      "from": "bsl",
-      "to": "equal_highs",
-      "relationship": "located_at",
-      "description": "BSL found at equal highs"
-    },
-    {
-      "from": "ssl",
-      "to": "equal_lows",
-      "relationship": "located_at",
-      "description": "SSL found at equal lows"
-    },
-    {
-      "from": "liquidity",
-      "to": "liquidity_sweep",
-      "relationship": "triggers",
-      "description": "Liquidity pools trigger sweeps"
-    },
-    {
-      "from": "liquidity_sweep",
-      "to": "displacement",
-      "relationship": "followed_by",
-      "description": "Valid sweeps are followed by displacement"
-    },
-    {
-      "from": "displacement",
-      "to": "market_structure",
-      "relationship": "validates",
-      "description": "Displacement validates structure changes"
-    },
-    {
-      "from": "displacement",
-      "to": "fvg",
-      "relationship": "creates",
-      "description": "Displacement creates FVGs"
-    },
-    {
-      "from": "displacement",
-      "to": "order_block",
-      "relationship": "validates",
-      "description": "Displacement validates Order Blocks"
-    },
-    {
-      "from": "market_structure",
-      "to": "bos",
-      "relationship": "has_type",
-      "description": "BOS is a type of structure event"
-    },
-    {
-      "from": "market_structure",
-      "to": "sms",
-      "relationship": "has_type",
-      "description": "SMS is a type of structure event"
-    },
-    {
-      "from": "market_structure",
-      "to": "choch",
-      "relationship": "has_type",
-      "description": "CHoCH is a type of structure event"
-    },
-    {
-      "from": "sms",
-      "to": "fvg",
-      "relationship": "requires",
-      "description": "SMS validation requires FVG"
-    },
-    {
-      "from": "bos",
-      "to": "fvg",
-      "relationship": "requires",
-      "description": "BOS validation requires FVG"
-    },
-    {
-      "from": "order_block",
-      "to": "breaker_block",
-      "relationship": "becomes",
-      "description": "Failed OB becomes Breaker"
-    },
-    {
-      "from": "liquidity_sweep",
-      "to": "breaker_block",
-      "relationship": "precedes",
-      "description": "Breaker requires prior liquidity sweep"
-    },
-    {
-      "from": "fvg",
-      "to": "ce",
-      "relationship": "has_level",
-      "description": "CE is the 50% of FVG"
-    },
-    {
-      "from": "fvg",
-      "to": "ote",
-      "relationship": "aligns_with",
-      "description": "FVG often aligns with OTE"
-    },
-    {
-      "from": "order_block",
-      "to": "ote",
-      "relationship": "aligns_with",
-      "description": "OB often aligns with OTE"
-    },
-    {
-      "from": "premium_discount",
-      "to": "ote",
-      "relationship": "contextualizes",
-      "description": "Premium/Discount zones contextualize OTE"
-    },
-    {
-      "from": "killzone",
-      "to": "macro_time",
-      "relationship": "contains",
-      "description": "Killzones contain macro times"
-    },
-    {
-      "from": "killzone",
-      "to": "silver_bullet",
-      "relationship": "enables",
-      "description": "Killzone timing enables Silver Bullet"
-    },
-    {
-      "from": "liquidity_sweep",
-      "to": "judas_swing",
-      "relationship": "component_of",
-      "description": "Judas Swing involves liquidity sweep"
-    },
-    {
-      "from": "power_of_three",
-      "to": "judas_swing",
-      "relationship": "contains",
-      "description": "AMD manipulation phase = Judas Swing"
-    },
-    {
-      "from": "liquidity_sweep",
-      "to": "turtle_soup",
-      "relationship": "triggers",
-      "description": "Turtle Soup triggered by sweep"
-    },
-    {
-      "from": "sms",
-      "to": "turtle_soup",
-      "relationship": "confirms",
-      "description": "SMS confirms Turtle Soup reversal"
-    },
-    {
-      "from": "sms",
-      "to": "silver_bullet",
-      "relationship": "component_of",
-      "description": "Silver Bullet requires SMS"
-    },
-    {
-      "from": "fvg",
-      "to": "silver_bullet",
-      "relationship": "component_of",
-      "description": "Silver Bullet entry at FVG"
-    },
-    {
-      "from": "breaker_block",
-      "to": "unicorn",
-      "relationship": "component_of",
-      "description": "Unicorn = Breaker + FVG"
-    },
-    {
-      "from": "fvg",
-      "to": "unicorn",
-      "relationship": "component_of",
-      "description": "Unicorn = Breaker + FVG"
-    },
-    {
-      "from": "market_structure",
-      "to": "daily_bias",
-      "relationship": "determines",
-      "description": "HTF structure determines daily bias"
-    },
-    {
-      "from": "liquidity",
-      "to": "draw_on_liquidity",
-      "relationship": "identifies",
-      "description": "Identifying liquidity reveals DOL"
-    },
-    {
-      "from": "draw_on_liquidity",
-      "to": "daily_bias",
-      "relationship": "confirms",
-      "description": "DOL confirms daily bias direction"
-    },
-    {
-      "from": "smt_divergence",
-      "to": "sms",
-      "relationship": "confirms",
-      "description": "SMT confirms SMS validity"
-    },
-    {
-      "from": "smt_divergence",
-      "to": "turtle_soup",
-      "relationship": "confirms",
-      "description": "SMT confirms Turtle Soup"
-    },
-    {
-      "from": "power_of_three",
-      "to": "mmbm",
-      "relationship": "scales_to",
-      "description": "AMD scales to Market Maker Models"
-    },
-    {
-      "from": "power_of_three",
-      "to": "mmsm",
-      "relationship": "scales_to",
-      "description": "AMD scales to Market Maker Models"
-    }
+    {"from": "ipda", "to": "liquidity", "relationship": "seeks", "description": "IPDA's primary directive is to seek and pair liquidity"},
+    {"from": "ipda", "to": "delivery", "relationship": "controls", "description": "IPDA controls how price is delivered"},
+    {"from": "ipda", "to": "ipda_data_ranges", "relationship": "uses", "description": "IPDA references 20/40/60 day data ranges"},
+    {"from": "ipda", "to": "algorithmic_pairing", "relationship": "executes", "description": "IPDA executes order pairing at liquidity pools"},
+    {"from": "ipda", "to": "market_efficiency_paradigm", "relationship": "enforces", "description": "IPDA enforces market efficiency - FVGs must fill"},
+    {"from": "ipda_data_ranges", "to": "draw_on_liquidity", "relationship": "identifies", "description": "IPDA data ranges identify the draw on liquidity"},
+
+    {"from": "liquidity", "to": "bsl", "relationship": "has_type", "description": "BSL is a type of liquidity"},
+    {"from": "liquidity", "to": "ssl", "relationship": "has_type", "description": "SSL is a type of liquidity"},
+    {"from": "liquidity", "to": "irl", "relationship": "has_type", "description": "IRL is internal liquidity (PD arrays)"},
+    {"from": "liquidity", "to": "erl", "relationship": "has_type", "description": "ERL is external liquidity (swing extremes)"},
+    {"from": "liquidity", "to": "trendline_liquidity", "relationship": "has_type", "description": "Trendline liquidity is stops along trendlines"},
+    {"from": "bsl", "to": "equal_highs", "relationship": "located_at", "description": "BSL found at equal highs"},
+    {"from": "bsl", "to": "swing_high", "relationship": "located_at", "description": "BSL found above swing highs"},
+    {"from": "bsl", "to": "old_high", "relationship": "located_at", "description": "BSL found at old highs"},
+    {"from": "bsl", "to": "pdh_pdl", "relationship": "located_at", "description": "BSL found above previous day high"},
+    {"from": "bsl", "to": "pwh_pwl", "relationship": "located_at", "description": "BSL found above previous week high"},
+    {"from": "bsl", "to": "pmh_pml", "relationship": "located_at", "description": "BSL found above previous month high"},
+    {"from": "ssl", "to": "equal_lows", "relationship": "located_at", "description": "SSL found at equal lows"},
+    {"from": "ssl", "to": "swing_low", "relationship": "located_at", "description": "SSL found below swing lows"},
+    {"from": "ssl", "to": "old_low", "relationship": "located_at", "description": "SSL found at old lows"},
+    {"from": "ssl", "to": "pdh_pdl", "relationship": "located_at", "description": "SSL found below previous day low"},
+    {"from": "ssl", "to": "pwh_pwl", "relationship": "located_at", "description": "SSL found below previous week low"},
+    {"from": "ssl", "to": "pmh_pml", "relationship": "located_at", "description": "SSL found below previous month low"},
+
+    {"from": "liquidity", "to": "liquidity_sweep", "relationship": "triggers", "description": "Liquidity pools trigger sweeps"},
+    {"from": "liquidity_sweep", "to": "stop_hunt", "relationship": "involves", "description": "Sweeps involve hunting stop orders"},
+    {"from": "liquidity_sweep", "to": "displacement", "relationship": "followed_by", "description": "Valid sweeps are followed by displacement"},
+    {"from": "liquidity", "to": "draw_on_liquidity", "relationship": "identifies", "description": "Identifying liquidity reveals DOL"},
+    {"from": "draw_on_liquidity", "to": "daily_bias", "relationship": "confirms", "description": "DOL confirms daily bias direction"},
+    {"from": "irl", "to": "fvg", "relationship": "contains", "description": "IRL includes FVGs within the range"},
+    {"from": "irl", "to": "order_block", "relationship": "contains", "description": "IRL includes order blocks within the range"},
+    {"from": "irl", "to": "liquidity_void", "relationship": "contains", "description": "IRL includes liquidity voids"},
+    {"from": "erl", "to": "equal_highs", "relationship": "contains", "description": "ERL includes equal highs outside range"},
+    {"from": "erl", "to": "equal_lows", "relationship": "contains", "description": "ERL includes equal lows outside range"},
+    {"from": "erl", "to": "old_high", "relationship": "contains", "description": "ERL includes old swing highs"},
+    {"from": "erl", "to": "old_low", "relationship": "contains", "description": "ERL includes old swing lows"},
+
+    {"from": "displacement", "to": "market_structure", "relationship": "validates", "description": "Displacement validates structure changes"},
+    {"from": "displacement", "to": "fvg", "relationship": "creates", "description": "Displacement creates FVGs"},
+    {"from": "displacement", "to": "order_block", "relationship": "validates", "description": "Displacement validates Order Blocks"},
+    {"from": "displacement", "to": "expansion", "relationship": "is_type_of", "description": "Displacement is a strong form of expansion"},
+    {"from": "displacement", "to": "institutional_sponsorship", "relationship": "confirms", "description": "Displacement confirms institutional presence"},
+    {"from": "displacement", "to": "order_flow", "relationship": "reveals", "description": "Displacement reveals institutional order flow"},
+
+    {"from": "market_structure", "to": "bos", "relationship": "has_type", "description": "BOS is a type of structure event"},
+    {"from": "market_structure", "to": "sms", "relationship": "has_type", "description": "SMS is a type of structure event"},
+    {"from": "market_structure", "to": "choch", "relationship": "has_type", "description": "CHoCH is a type of structure event"},
+    {"from": "market_structure", "to": "swing_high", "relationship": "defined_by", "description": "Structure defined by swing highs"},
+    {"from": "market_structure", "to": "swing_low", "relationship": "defined_by", "description": "Structure defined by swing lows"},
+    {"from": "market_structure", "to": "daily_bias", "relationship": "determines", "description": "HTF structure determines daily bias"},
+    {"from": "market_structure", "to": "dealing_range", "relationship": "contains", "description": "Structure contains dealing ranges"},
+    {"from": "choch", "to": "sms", "relationship": "precedes", "description": "CHoCH is early warning before confirmed SMS"},
+    {"from": "sms", "to": "cisd", "relationship": "confirmed_by", "description": "SMS confirmed by CISD candle"},
+    {"from": "swing_failure_pattern", "to": "reversal", "relationship": "signals", "description": "SFP signals potential reversal"},
+    {"from": "swing_failure_pattern", "to": "liquidity_sweep", "relationship": "is_type_of", "description": "SFP is a form of failed liquidity sweep"},
+
+    {"from": "fvg", "to": "bisi", "relationship": "has_type", "description": "Bullish FVG = BISI"},
+    {"from": "fvg", "to": "sibi", "relationship": "has_type", "description": "Bearish FVG = SIBI"},
+    {"from": "fvg", "to": "ce", "relationship": "has_level", "description": "CE is the 50% of FVG"},
+    {"from": "fvg", "to": "ote", "relationship": "aligns_with", "description": "FVG often aligns with OTE"},
+    {"from": "fvg", "to": "inverse_fvg", "relationship": "becomes", "description": "Mitigated FVG becomes inverse FVG"},
+    {"from": "fvg", "to": "liquidity_void", "relationship": "related_to", "description": "Large FVGs overlap with liquidity voids"},
+    {"from": "bisi", "to": "balanced_price_range", "relationship": "component_of", "description": "BISI + SIBI overlap = BPR"},
+    {"from": "sibi", "to": "balanced_price_range", "relationship": "component_of", "description": "SIBI + BISI overlap = BPR"},
+
+    {"from": "order_block", "to": "breaker_block", "relationship": "becomes", "description": "Failed OB becomes Breaker"},
+    {"from": "order_block", "to": "ote", "relationship": "aligns_with", "description": "OB often aligns with OTE"},
+    {"from": "order_block", "to": "mean_threshold", "relationship": "has_level", "description": "Mean threshold is 50% of OB body"},
+    {"from": "order_block", "to": "propulsion_block", "relationship": "becomes", "description": "OB with FVG inside = Propulsion Block"},
+    {"from": "order_block", "to": "reclaimed_order_block", "relationship": "becomes", "description": "Broken then reclaimed OB"},
+    {"from": "order_block", "to": "volume_imbalance", "relationship": "related_to", "description": "Volume imbalance often appears near OBs"},
+    {"from": "breaker_block", "to": "unicorn", "relationship": "component_of", "description": "Unicorn = Breaker + FVG"},
+    {"from": "fvg", "to": "unicorn", "relationship": "component_of", "description": "Unicorn = Breaker + FVG"},
+    {"from": "rejection_block", "to": "order_block", "relationship": "related_to", "description": "Rejection block is a variation of OB concept"},
+    {"from": "mitigation_block", "to": "order_flow", "relationship": "related_to", "description": "Mitigation blocks close out prior losing positions"},
+    {"from": "liquidity_sweep", "to": "breaker_block", "relationship": "precedes", "description": "Breaker requires prior liquidity sweep"},
+
+    {"from": "premium_discount", "to": "equilibrium", "relationship": "divided_by", "description": "EQ divides premium from discount"},
+    {"from": "premium_discount", "to": "ote", "relationship": "contextualizes", "description": "Premium/Discount zones contextualize OTE"},
+    {"from": "premium_discount", "to": "premium_array", "relationship": "contains", "description": "Premium zone contains premium PD arrays"},
+    {"from": "premium_discount", "to": "discount_array", "relationship": "contains", "description": "Discount zone contains discount PD arrays"},
+    {"from": "premium_array", "to": "sibi", "relationship": "contains", "description": "Premium arrays include bearish FVGs (SIBI)"},
+    {"from": "discount_array", "to": "bisi", "relationship": "contains", "description": "Discount arrays include bullish FVGs (BISI)"},
+    {"from": "fair_value", "to": "fvg", "relationship": "explains", "description": "Fair value concept explains why FVGs get filled"},
+    {"from": "fair_value", "to": "equilibrium", "relationship": "related_to", "description": "Fair value and equilibrium are related concepts"},
+
+    {"from": "delivery", "to": "irl", "relationship": "uses", "description": "Price delivery uses IRL for entries"},
+    {"from": "delivery", "to": "erl", "relationship": "targets", "description": "Price delivery targets ERL"},
+    {"from": "delivery", "to": "cisd", "relationship": "changes_via", "description": "Delivery direction changes via CISD"},
+    {"from": "delivery", "to": "market_efficiency_paradigm", "relationship": "governed_by", "description": "Delivery governed by market efficiency"},
+
+    {"from": "killzone", "to": "london_killzone", "relationship": "has_type", "description": "London KZ is a killzone"},
+    {"from": "killzone", "to": "ny_am_killzone", "relationship": "has_type", "description": "NY AM KZ is a killzone"},
+    {"from": "killzone", "to": "ny_pm_killzone", "relationship": "has_type", "description": "NY PM KZ is a killzone"},
+    {"from": "killzone", "to": "london_close_killzone", "relationship": "has_type", "description": "London Close is a killzone"},
+    {"from": "killzone", "to": "macro_time", "relationship": "contains", "description": "Killzones contain macro times"},
+    {"from": "killzone", "to": "silver_bullet", "relationship": "enables", "description": "Killzone timing enables Silver Bullet"},
+    {"from": "ny_am_killzone", "to": "am_silver_bullet", "relationship": "contains", "description": "NY AM contains AM Silver Bullet window"},
+    {"from": "ny_pm_killzone", "to": "pm_silver_bullet", "relationship": "contains", "description": "NY PM contains PM Silver Bullet window"},
+    {"from": "london_killzone", "to": "london_silver_bullet", "relationship": "contains", "description": "London KZ contains London Silver Bullet"},
+    {"from": "london_close_killzone", "to": "london_close_model", "relationship": "enables", "description": "London close KZ enables the London close model"},
+    {"from": "asia_session", "to": "asia_range", "relationship": "defines", "description": "Asian session defines the Asia range"},
+    {"from": "asia_session", "to": "cbdr", "relationship": "follows", "description": "Asia session follows CBDR"},
+    {"from": "cbdr", "to": "standard_deviation", "relationship": "projects", "description": "CBDR projects standard deviation levels"},
+    {"from": "asia_range", "to": "standard_deviation", "relationship": "projects", "description": "Asia range projects SD levels for London/NY"},
+    {"from": "true_day", "to": "midnight_open", "relationship": "starts_at", "description": "True day starts at midnight open"},
+    {"from": "midnight_open", "to": "daily_bias", "relationship": "reference_for", "description": "Midnight open is reference for daily bias"},
+    {"from": "time_price_theory", "to": "killzone", "relationship": "prioritizes", "description": "Time theory prioritizes killzone timing"},
+    {"from": "time_price_theory", "to": "macro_time", "relationship": "prioritizes", "description": "Time theory prioritizes macro times"},
+    {"from": "time_price_theory", "to": "optimal_trade_days", "relationship": "determines", "description": "Time theory determines best trade days"},
+
+    {"from": "nwog", "to": "weekly_profile", "relationship": "reference_for", "description": "NWOG is reference for weekly profile"},
+    {"from": "ndog", "to": "daily_bias", "relationship": "reference_for", "description": "NDOG is reference for daily bias"},
+    {"from": "sunday_open_gap", "to": "nwog", "relationship": "related_to", "description": "Sunday gap is related to NWOG"},
+
+    {"from": "silver_bullet", "to": "am_silver_bullet", "relationship": "has_type", "description": "AM Silver Bullet is a type"},
+    {"from": "silver_bullet", "to": "pm_silver_bullet", "relationship": "has_type", "description": "PM Silver Bullet is a type"},
+    {"from": "silver_bullet", "to": "london_silver_bullet", "relationship": "has_type", "description": "London Silver Bullet is a type"},
+    {"from": "sms", "to": "silver_bullet", "relationship": "component_of", "description": "Silver Bullet requires SMS"},
+    {"from": "fvg", "to": "silver_bullet", "relationship": "component_of", "description": "Silver Bullet entry at FVG"},
+
+    {"from": "liquidity_sweep", "to": "judas_swing", "relationship": "component_of", "description": "Judas Swing involves liquidity sweep"},
+    {"from": "power_of_three", "to": "judas_swing", "relationship": "contains", "description": "AMD manipulation phase = Judas Swing"},
+    {"from": "power_of_three", "to": "accumulation", "relationship": "has_phase", "description": "AMD phase 1: Accumulation"},
+    {"from": "power_of_three", "to": "manipulation", "relationship": "has_phase", "description": "AMD phase 2: Manipulation"},
+    {"from": "power_of_three", "to": "distribution", "relationship": "has_phase", "description": "AMD phase 3: Distribution"},
+    {"from": "power_of_three", "to": "po3_candle", "relationship": "applies_to", "description": "AMD applies to individual candle structure"},
+    {"from": "power_of_three", "to": "mmbm", "relationship": "scales_to", "description": "AMD scales to Market Maker Buy Model"},
+    {"from": "power_of_three", "to": "mmsm", "relationship": "scales_to", "description": "AMD scales to Market Maker Sell Model"},
+    {"from": "power_of_three", "to": "candle_theory", "relationship": "expressed_in", "description": "AMD expressed in candle theory"},
+
+    {"from": "liquidity_sweep", "to": "turtle_soup", "relationship": "triggers", "description": "Turtle Soup triggered by sweep"},
+    {"from": "sms", "to": "turtle_soup", "relationship": "confirms", "description": "SMS confirms Turtle Soup reversal"},
+
+    {"from": "mmbm", "to": "ssl", "relationship": "sweeps", "description": "MMBM sweeps sell-side liquidity first"},
+    {"from": "mmbm", "to": "bsl", "relationship": "targets", "description": "MMBM targets buy-side liquidity"},
+    {"from": "mmbm", "to": "buy_program", "relationship": "executes", "description": "MMBM executes through buy programs"},
+    {"from": "mmsm", "to": "bsl", "relationship": "sweeps", "description": "MMSM sweeps buy-side liquidity first"},
+    {"from": "mmsm", "to": "ssl", "relationship": "targets", "description": "MMSM targets sell-side liquidity"},
+    {"from": "mmsm", "to": "sell_program", "relationship": "executes", "description": "MMSM executes through sell programs"},
+
+    {"from": "ict_2022_model", "to": "power_of_three", "relationship": "based_on", "description": "ICT 2022 model based on AMD framework"},
+    {"from": "ict_2022_model", "to": "fvg", "relationship": "requires", "description": "ICT 2022 requires FVG entry"},
+    {"from": "ict_2022_model", "to": "liquidity_sweep", "relationship": "requires", "description": "ICT 2022 requires manipulation sweep"},
+
+    {"from": "ict_stinger", "to": "ote", "relationship": "aligns_with", "description": "Stinger pattern aligns with OTE zone"},
+    {"from": "ict_stinger", "to": "smt_divergence", "relationship": "related_to", "description": "Stinger uses oscillator divergence like SMT uses pair divergence"},
+
+    {"from": "iofed", "to": "fvg", "relationship": "requires", "description": "IOFED drills into LTF FVG for entry"},
+    {"from": "iofed", "to": "displacement", "relationship": "requires", "description": "IOFED requires displacement on LTF"},
+    {"from": "iofed", "to": "ltf_execution", "relationship": "operates_on", "description": "IOFED operates on 1M-5M timeframes"},
+
+    {"from": "london_close_model", "to": "reversal", "relationship": "trades", "description": "London close model trades the reversal"},
+    {"from": "london_close_model", "to": "london_close_killzone", "relationship": "timed_by", "description": "Timed to London close window"},
+
+    {"from": "cbdr_asia_sd_model", "to": "cbdr", "relationship": "requires", "description": "Requires tight CBDR"},
+    {"from": "cbdr_asia_sd_model", "to": "asia_range", "relationship": "requires", "description": "Requires Asia SD confluence"},
+    {"from": "cbdr_asia_sd_model", "to": "standard_deviation", "relationship": "uses", "description": "Uses SD projections for targets"},
+    {"from": "cbdr_asia_sd_model", "to": "terminus", "relationship": "requires", "description": "Requires terminus identification"},
+
+    {"from": "smt_divergence", "to": "sms", "relationship": "confirms", "description": "SMT confirms SMS validity"},
+    {"from": "smt_divergence", "to": "turtle_soup", "relationship": "confirms", "description": "SMT confirms Turtle Soup"},
+    {"from": "smt_divergence", "to": "intermarket_analysis", "relationship": "is_type_of", "description": "SMT is a form of intermarket analysis"},
+    {"from": "dxy_correlation", "to": "intermarket_analysis", "relationship": "is_type_of", "description": "DXY correlation is intermarket analysis"},
+    {"from": "bond_yield_correlation", "to": "intermarket_analysis", "relationship": "is_type_of", "description": "Bond correlation is intermarket analysis"},
+    {"from": "risk_on_risk_off", "to": "intermarket_analysis", "relationship": "is_type_of", "description": "Risk sentiment is intermarket analysis"},
+
+    {"from": "smart_money", "to": "institutional_sponsorship", "relationship": "provides", "description": "Smart money provides institutional sponsorship"},
+    {"from": "smart_money", "to": "order_flow", "relationship": "creates", "description": "Smart money creates visible order flow"},
+    {"from": "smart_money", "to": "stop_hunt", "relationship": "executes", "description": "Smart money executes stop hunts"},
+    {"from": "order_flow", "to": "displacement", "relationship": "visible_as", "description": "Order flow visible as displacement"},
+    {"from": "order_flow", "to": "fvg", "relationship": "visible_as", "description": "Order flow visible as FVGs"},
+
+    {"from": "accumulation", "to": "consolidation", "relationship": "appears_as", "description": "Accumulation appears as consolidation"},
+    {"from": "accumulation", "to": "re_accumulation", "relationship": "repeats_as", "description": "Accumulation repeats as re-accumulation in uptrend"},
+    {"from": "distribution", "to": "expansion", "relationship": "appears_as", "description": "Distribution appears as expansion"},
+    {"from": "distribution", "to": "re_distribution", "relationship": "repeats_as", "description": "Distribution repeats as re-distribution in downtrend"},
+    {"from": "manipulation", "to": "judas_swing", "relationship": "appears_as", "description": "Manipulation appears as Judas swing"},
+    {"from": "manipulation", "to": "stop_hunt", "relationship": "appears_as", "description": "Manipulation appears as stop hunt"},
+
+    {"from": "wyckoff_accumulation", "to": "accumulation", "relationship": "systematic_form_of", "description": "Wyckoff accumulation is systematic form"},
+    {"from": "wyckoff_accumulation", "to": "liquidity_sweep", "relationship": "spring_equals", "description": "Wyckoff spring = ICT liquidity sweep"},
+    {"from": "wyckoff_distribution", "to": "distribution", "relationship": "systematic_form_of", "description": "Wyckoff distribution is systematic form"},
+    {"from": "wyckoff_distribution", "to": "liquidity_sweep", "relationship": "utad_equals", "description": "Wyckoff UTAD = ICT liquidity sweep of BSL"},
+
+    {"from": "market_maker_profile", "to": "accumulation", "relationship": "asia_phase", "description": "MMs accumulate in Asia"},
+    {"from": "market_maker_profile", "to": "manipulation", "relationship": "london_phase", "description": "MMs manipulate at London open"},
+    {"from": "market_maker_profile", "to": "distribution", "relationship": "ny_phase", "description": "MMs distribute in NY session"},
+
+    {"from": "htf_bias", "to": "daily_bias", "relationship": "determines", "description": "HTF bias determines daily direction"},
+    {"from": "htf_bias", "to": "draw_on_liquidity", "relationship": "uses", "description": "HTF bias uses DOL for direction"},
+    {"from": "htf_bias", "to": "mtf_bridge", "relationship": "refines_to", "description": "HTF refines to MTF bridge"},
+    {"from": "mtf_bridge", "to": "ltf_execution", "relationship": "refines_to", "description": "MTF refines to LTF execution"},
+
+    {"from": "candle_theory", "to": "po3_candle", "relationship": "based_on", "description": "Candle theory based on PO3 candle concept"},
+    {"from": "candle_theory", "to": "monthly_profile", "relationship": "predicts", "description": "Monthly candle predicts weekly"},
+    {"from": "candle_theory", "to": "weekly_profile", "relationship": "predicts", "description": "Weekly candle predicts daily"},
+
+    {"from": "quarterly_theory", "to": "seasonal_tendencies", "relationship": "related_to", "description": "Quarterly shifts relate to seasonal tendencies"},
+    {"from": "weekly_profile", "to": "optimal_trade_days", "relationship": "contains", "description": "Weekly profile determines optimal trade days"},
+    {"from": "monthly_profile", "to": "quarterly_theory", "relationship": "nests_within", "description": "Monthly profile nests within quarterly theory"},
+
+    {"from": "adr", "to": "standard_deviation", "relationship": "related_to", "description": "ADR related to SD projections"},
+    {"from": "adr", "to": "dealing_range", "relationship": "estimates", "description": "ADR estimates daily dealing range"},
+
+    {"from": "retracement", "to": "ote", "relationship": "measured_by", "description": "Retracement measured by OTE fib levels"},
+    {"from": "retracement", "to": "fvg", "relationship": "targets", "description": "Retracement often revisits FVGs"},
+    {"from": "expansion", "to": "displacement", "relationship": "powered_by", "description": "Expansion powered by displacement"},
+    {"from": "consolidation", "to": "accumulation", "relationship": "seen_as", "description": "Consolidation seen as accumulation in ICT"},
+    {"from": "reversal", "to": "sms", "relationship": "confirmed_by", "description": "Reversal confirmed by SMS"},
+    {"from": "reversal", "to": "liquidity_sweep", "relationship": "preceded_by", "description": "Reversal preceded by liquidity sweep"},
+
+    {"from": "narrative", "to": "daily_bias", "relationship": "supports", "description": "Narrative supports daily bias determination"},
+    {"from": "narrative", "to": "draw_on_liquidity", "relationship": "identifies", "description": "Narrative identifies DOL"},
+    {"from": "narrative", "to": "time_price_theory", "relationship": "integrates", "description": "Narrative integrates time and price"}
   ],
 
   "learning_paths": {
     "beginner": {
       "description": "Foundation concepts - learn in this order",
       "sequence": [
-        "liquidity",
-        "bsl",
-        "ssl",
-        "market_structure",
-        "displacement",
-        "fvg",
-        "premium_discount",
-        "killzone"
+        "liquidity", "bsl", "ssl", "market_structure", "swing_high", "swing_low",
+        "displacement", "fvg", "premium_discount", "equilibrium", "killzone"
       ]
     },
     "intermediate": {
-      "description": "Build on foundations",
+      "description": "Build on foundations with structure and entries",
       "prerequisites": ["beginner"],
       "sequence": [
-        "bos",
-        "sms",
-        "order_block",
-        "ote",
-        "liquidity_sweep",
-        "judas_swing",
-        "power_of_three",
-        "daily_bias"
+        "bos", "choch", "sms", "order_block", "ote", "ce",
+        "liquidity_sweep", "judas_swing", "power_of_three",
+        "daily_bias", "draw_on_liquidity", "dealing_range",
+        "irl", "erl", "pdh_pdl", "htf_bias"
       ]
     },
     "advanced": {
-      "description": "Master setups and models",
+      "description": "Master setups, PD arrays, and timing",
       "prerequisites": ["intermediate"],
       "sequence": [
-        "breaker_block",
-        "mitigation_block",
-        "silver_bullet",
-        "turtle_soup",
-        "smt_divergence",
-        "macro_time",
-        "unicorn"
+        "breaker_block", "mitigation_block", "rejection_block", "propulsion_block",
+        "bisi", "sibi", "volume_imbalance", "liquidity_void", "balanced_price_range",
+        "inverse_fvg", "cisd", "swing_failure_pattern",
+        "silver_bullet", "turtle_soup", "smt_divergence",
+        "macro_time", "cbdr", "asia_range", "standard_deviation",
+        "nwog", "ndog", "midnight_open", "true_day",
+        "pwh_pwl", "pmh_pml", "mean_threshold"
       ]
     },
     "mastery": {
-      "description": "Algorithmic understanding",
+      "description": "Algorithmic understanding and complex models",
       "prerequisites": ["advanced"],
       "sequence": [
-        "ipda",
-        "mmbm",
-        "mmsm",
-        "draw_on_liquidity"
+        "ipda", "ipda_data_ranges", "delivery", "market_efficiency_paradigm",
+        "algorithmic_pairing", "buy_program", "sell_program",
+        "mmbm", "mmsm", "unicorn", "ict_2022_model",
+        "london_close_model", "ict_stinger", "iofed",
+        "po3_candle", "candle_theory", "narrative",
+        "time_price_theory", "quarterly_theory",
+        "wyckoff_accumulation", "wyckoff_distribution",
+        "market_maker_profile", "cbdr_asia_sd_model",
+        "intermarket_analysis", "dxy_correlation"
       ]
     }
   },
 
-  "query_helpers": {
-    "what_must_happen_before": {
-      "description": "Query: What must happen before X?",
-      "example_query": "What must happen before a valid SMS?",
-      "logic": "Walk edges backward from node to find prerequisites"
-    },
-    "what_validates": {
-      "description": "Query: What validates X?",
-      "example_query": "What validates an Order Block?",
-      "logic": "Find nodes with 'validates' relationship to target"
-    },
-    "what_can_become": {
-      "description": "Query: What can X become?",
-      "example_query": "What can an Order Block become?",
-      "logic": "Find nodes with 'becomes' relationship from source"
-    },
-    "what_contains": {
-      "description": "Query: What components make up X?",
-      "example_query": "What components make up Silver Bullet?",
-      "logic": "Find nodes with 'component_of' relationship to target"
-    }
+  "concept_categories": {
+    "foundation": ["ipda", "liquidity", "smart_money"],
+    "liquidity_type": ["bsl", "ssl", "irl", "erl", "trendline_liquidity"],
+    "liquidity_pool": ["equal_highs", "equal_lows"],
+    "price_action": ["liquidity_sweep", "stop_hunt", "displacement", "expansion", "retracement", "reversal", "consolidation"],
+    "structure": ["market_structure", "bos", "choch", "sms", "swing_high", "swing_low", "swing_failure_pattern", "dealing_range", "cisd", "terminus"],
+    "pd_array": ["fvg", "bisi", "sibi", "inverse_fvg", "order_block", "breaker_block", "mitigation_block", "propulsion_block", "rejection_block", "reclaimed_order_block", "volume_imbalance", "liquidity_void", "balanced_price_range"],
+    "valuation": ["premium_discount", "premium_array", "discount_array", "equilibrium", "fair_value"],
+    "entry": ["ote", "ce", "mean_threshold"],
+    "target": ["draw_on_liquidity"],
+    "key_level": ["pdh_pdl", "pwh_pwl", "pmh_pml", "old_high", "old_low"],
+    "opening_gap": ["nwog", "ndog", "nmog", "sunday_open_gap"],
+    "time": ["killzone", "london_killzone", "ny_am_killzone", "ny_pm_killzone", "london_close_killzone", "asia_session", "macro_time", "cbdr", "asia_range", "midnight_open", "true_day", "optimal_trade_days"],
+    "measurement": ["standard_deviation", "adr"],
+    "time_profile": ["weekly_profile", "monthly_profile", "quarterly_theory", "seasonal_tendencies"],
+    "trading_model": ["silver_bullet", "am_silver_bullet", "pm_silver_bullet", "london_silver_bullet", "judas_swing", "power_of_three", "po3_candle", "turtle_soup", "ict_2022_model", "mmbm", "mmsm", "unicorn", "london_close_model", "ict_stinger", "iofed", "cbdr_asia_sd_model"],
+    "market_phase": ["accumulation", "manipulation", "distribution", "re_accumulation", "re_distribution", "wyckoff_accumulation", "wyckoff_distribution"],
+    "analysis": ["daily_bias", "narrative", "htf_bias", "mtf_bridge", "ltf_execution", "candle_theory", "time_price_theory"],
+    "algorithmic_theory": ["ipda_data_ranges", "buy_program", "sell_program", "algorithmic_pairing", "market_efficiency_paradigm", "delivery", "market_maker_profile"],
+    "confirmation": ["smt_divergence"],
+    "intermarket": ["dxy_correlation", "bond_yield_correlation", "intermarket_analysis", "risk_on_risk_off"],
+    "order_flow": ["institutional_sponsorship", "order_flow"]
   }
 }

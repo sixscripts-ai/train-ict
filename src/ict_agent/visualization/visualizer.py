@@ -22,13 +22,15 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.patches import Rectangle, FancyBboxPatch
 import numpy as np
+import pandas as pd
 
 # Import project modules
 try:
-    from ict_agent.data.oanda_fetcher import OandaFetcher
-    from ict_agent.detectors.fvg import FVGDetector
-    from ict_agent.detectors.order_blocks import OrderBlockDetector
-    from ict_agent.core.structure import StructureAnalyzer
+    from ict_agent.data.oanda_fetcher import OANDAFetcher
+    from ict_agent.detectors.fvg import FVGDetector, FVGDirection
+    from ict_agent.detectors.order_block import OrderBlockDetector, OBDirection
+    from ict_agent.detectors.market_structure import MarketStructureAnalyzer as StructureAnalyzer
+    from ict_agent.data.fetcher import DataConfig
 except ImportError as e:
     print(f"Import warning: {e}")
 
@@ -39,18 +41,20 @@ MEMORY_DIR = PROJECT_ROOT / "data" / "memory"
 
 # Style configuration
 STYLE_CONFIG = {
-    "background": "#1a1a2e",
-    "candle_up": "#00ff88",
-    "candle_down": "#ff3366",
-    "fvg_bullish": "#00ff8855",
-    "fvg_bearish": "#ff336655",
-    "ob_bullish": "#00aaff44",
-    "ob_bearish": "#ff880044",
-    "premium_zone": "#ff336622",
-    "discount_zone": "#00ff8822",
+    "background": "#1e1e1e",  # Dark charcoal/grey (neutral)
+    "candle_up": "#d4d4d4",   # Light grey/white
+    "candle_down": "#5a5a5a", # Dark grey
+    "fvg_bullish": "#ffffff22", # Whiter/light grey for bullish imbalance
+    "fvg_bearish": "#00000044", # Darker for bearish imbalance
+    "ob_bullish": "#d4d4d433",  # Light grey zone
+    "ob_bearish": "#5a5a5a33",  # Dark grey zone
+    "premium_zone": "#5a5a5a11",
+    "discount_zone": "#d4d4d411",
     "equilibrium": "#ffffff44",
-    "text_color": "#ffffff",
-    "grid_color": "#333355"
+    "text_color": "#e0e0e0",
+    "grid_color": "#2d2d2d",
+    "liquidity_high": "#ffffff88",
+    "liquidity_low": "#ffffff88"
 }
 
 
@@ -60,11 +64,28 @@ class EnhancedVisualizer:
     """
     
     def __init__(self):
-        self.fetcher = OandaFetcher()
+        self.fetcher = OANDAFetcher()
         self.fvg_detector = FVGDetector()
         self.ob_detector = OrderBlockDetector()
         self.structure_analyzer = StructureAnalyzer()
         SCREENSHOTS_DIR.mkdir(parents=True, exist_ok=True)
+        
+    def fetch_candles(self, pair: str, timeframe: str, bars: int) -> List[Dict]:
+        """Fetch candles and convert to list of dicts."""
+        try:
+            config = DataConfig(symbol=pair, timeframe=timeframe, limit=bars)
+            df = self.fetcher.fetch(config)
+            
+            candles = []
+            for idx, row in df.iterrows():
+                c = row.to_dict()
+                c['time'] = idx # Add timestamp
+                candles.append(c)
+                
+            return candles
+        except Exception as e:
+            print(f"Error fetching candles: {e}")
+            return []
     
     def create_markup(
         self,
@@ -117,7 +138,7 @@ class EnhancedVisualizer:
             ax.set_facecolor(STYLE_CONFIG["background"])
             
             # Fetch data
-            candles = self.fetcher.get_candles(pair, tf, bars)
+            candles = self.fetch_candles(pair, tf, bars)
             if not candles:
                 ax.text(0.5, 0.5, f"No data for {tf}", transform=ax.transAxes,
                        ha='center', va='center', color=STYLE_CONFIG["text_color"])
@@ -212,7 +233,7 @@ class EnhancedVisualizer:
         ax.set_facecolor(STYLE_CONFIG["background"])
         
         # Fetch data
-        candles = self.fetcher.get_candles(pair, timeframe, bars)
+        candles = self.fetch_candles(pair, timeframe, bars)
         if not candles:
             ax.text(0.5, 0.5, "No data", transform=ax.transAxes,
                    ha='center', va='center', color=STYLE_CONFIG["text_color"])
@@ -326,7 +347,7 @@ class EnhancedVisualizer:
             ax.set_facecolor(STYLE_CONFIG["background"])
         
         # Fetch data (we'll simulate before/after with the same data for now)
-        candles = self.fetcher.get_candles(pair, "M15", before_bars + after_bars)
+        candles = self.fetch_candles(pair, "M15", before_bars + after_bars)
         if not candles:
             return None, ""
         
@@ -399,76 +420,97 @@ class EnhancedVisualizer:
         mid = (swing_high + swing_low) / 2
         
         # Premium zone (above equilibrium)
-        ax.axhspan(mid, swing_high, alpha=0.1, color='#ff3366')
+        ax.axhspan(mid, swing_high, color=STYLE_CONFIG["premium_zone"])
         
         # Discount zone (below equilibrium)
-        ax.axhspan(swing_low, mid, alpha=0.1, color='#00ff88')
+        ax.axhspan(swing_low, mid, color=STYLE_CONFIG["discount_zone"])
         
         # Equilibrium line
         ax.axhline(y=mid, color=STYLE_CONFIG["equilibrium"], linestyle='--', 
                   linewidth=1, alpha=0.5)
     
     def _detect_fvgs(self, candles: List[Dict]) -> List[Dict]:
-        """Detect Fair Value Gaps."""
+        """Detect Fair Value Gaps using FVGDetector."""
+        if not candles:
+            return []
+            
+        df = pd.DataFrame(candles)
+        if 'time' in df.columns:
+            df['time'] = pd.to_datetime(df['time'])
+            df.set_index('time', inplace=True)
+            
+        result = self.fvg_detector.detect(df)
         fvgs = []
-        for i in range(2, len(candles)):
-            c1, c2, c3 = candles[i-2], candles[i-1], candles[i]
-            
-            # Bullish FVG
-            if c3["low"] > c1["high"]:
-                fvgs.append({
-                    "type": "bullish",
-                    "top": c3["low"],
-                    "bottom": c1["high"],
-                    "index": i
-                })
-            
-            # Bearish FVG
-            if c3["high"] < c1["low"]:
-                fvgs.append({
-                    "type": "bearish",
-                    "top": c1["low"],
-                    "bottom": c3["high"],
-                    "index": i
-                })
         
-        return fvgs[-10:]  # Return last 10
-    
+        # Iterate through detected FVGs and format for plotting
+        # FVGDetector stores detected FVGs in self.fvg_detector._fvgs
+        # But for visualization of a specific batch, we should rely on the returned DataFrame or rebuild logic
+        # The DataFrame contains fvg_top, fvg_bottom, fvg_direction columns
+        
+        for idx_val, row in result.iterrows():
+            if not pd.isna(row['fvg_top']):
+                # Find integer index in the current candles list
+                # This assumes candles list aligns with df index
+                try:
+                    # Get integer location
+                    idx = df.index.get_loc(idx_val)
+                    
+                    direction = "bullish" if row['fvg_direction'] == FVGDirection.BULLISH.value else "bearish"
+                    
+                    fvgs.append({
+                        "type": direction,
+                        "top": row['fvg_top'],
+                        "bottom": row['fvg_bottom'],
+                        "index": idx
+                    })
+                except KeyError:
+                    continue
+                    
+        return fvgs
+
     def _plot_fvgs(self, ax, fvgs: List[Dict], n: int):
         """Plot FVGs on chart."""
         for fvg in fvgs:
             color = STYLE_CONFIG["fvg_bullish"] if fvg["type"] == "bullish" else STYLE_CONFIG["fvg_bearish"]
+            # Extend FVG to the right
             ax.axhspan(fvg["bottom"], fvg["top"], 
                       xmin=fvg["index"]/n, xmax=1,
                       alpha=0.3, color=color)
-    
+
     def _detect_order_blocks(self, candles: List[Dict]) -> List[Dict]:
-        """Detect Order Blocks."""
+        """Detect Order Blocks using OrderBlockDetector."""
+        if not candles:
+            return []
+            
+        df = pd.DataFrame(candles)
+        if 'time' in df.columns:
+            df['time'] = pd.to_datetime(df['time'])
+            df.set_index('time', inplace=True)
+            
+        result = self.ob_detector.detect(df)
         obs = []
-        for i in range(1, len(candles) - 1):
-            c1, c2 = candles[i], candles[i+1]
-            
-            # Bullish OB: Down candle followed by strong up move
-            if c1["close"] < c1["open"] and c2["close"] > c2["open"]:
-                if c2["close"] > c1["high"]:
-                    obs.append({
-                        "type": "bullish",
-                        "top": c1["high"],
-                        "bottom": c1["low"],
-                        "index": i
-                    })
-            
-            # Bearish OB: Up candle followed by strong down move
-            if c1["close"] > c1["open"] and c2["close"] < c2["open"]:
-                if c2["close"] < c1["low"]:
-                    obs.append({
-                        "type": "bearish",
-                        "top": c1["high"],
-                        "bottom": c1["low"],
-                        "index": i
-                    })
         
-        return obs[-5:]  # Return last 5
+        for idx_val, row in result.iterrows():
+            if not pd.isna(row['ob_top']):
+                try:
+                    idx = df.index.get_loc(idx_val)
+                    
+                    direction = "bullish" if row['ob_direction'] == OBDirection.BULLISH.value else "bearish"
+                    
+                    # Use body for OB definition if available (more precise ICT method)
+                    top = row['ob_body_top'] if 'ob_body_top' in row and not pd.isna(row['ob_body_top']) else row['ob_top']
+                    bottom = row['ob_body_bottom'] if 'ob_body_bottom' in row and not pd.isna(row['ob_body_bottom']) else row['ob_bottom']
+                    
+                    obs.append({
+                        "type": direction,
+                        "top": top,
+                        "bottom": bottom,
+                        "index": idx
+                    })
+                except KeyError:
+                    continue
+        
+        return obs
     
     def _plot_order_blocks(self, ax, obs: List[Dict], n: int):
         """Plot Order Blocks on chart."""
@@ -490,18 +532,18 @@ class EnhancedVisualizer:
         for i in range(2, len(highs) - 2):
             if highs[i] > highs[i-1] and highs[i] > highs[i-2] and \
                highs[i] > highs[i+1] and highs[i] > highs[i+2]:
-                ax.axhline(y=highs[i], color='#ff336655', linestyle=':', 
+                ax.axhline(y=highs[i], color=STYLE_CONFIG["liquidity_high"], linestyle=':', 
                           linewidth=1, alpha=0.5)
-                ax.annotate('BSL', (n-5, highs[i]), color='#ff3366', 
+                ax.annotate('BSL', (n-5, highs[i]), color=STYLE_CONFIG["liquidity_high"], 
                            fontsize=8, alpha=0.7)
         
         # Find swing lows
         for i in range(2, len(lows) - 2):
             if lows[i] < lows[i-1] and lows[i] < lows[i-2] and \
                lows[i] < lows[i+1] and lows[i] < lows[i+2]:
-                ax.axhline(y=lows[i], color='#00ff8855', linestyle=':', 
+                ax.axhline(y=lows[i], color=STYLE_CONFIG["liquidity_low"], linestyle=':', 
                           linewidth=1, alpha=0.5)
-                ax.annotate('SSL', (n-5, lows[i]), color='#00ff88', 
+                ax.annotate('SSL', (n-5, lows[i]), color=STYLE_CONFIG["liquidity_low"], 
                            fontsize=8, alpha=0.7)
     
     def _add_legend(self, fig):

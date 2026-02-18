@@ -70,18 +70,44 @@ def test_connection():
     print(f"  ✅ Account: {account_id}")
 
     # ── Step 2: Set up session ──
-    base_url = "https://api-fxpractice.oanda.com"
+    env_type = os.getenv("OANDA_ENV", "practice").lower()
+    
+    def get_base_url(env_name):
+        return "https://api-fxtrade.oanda.com" if env_name == "live" else "https://api-fxpractice.oanda.com"
+        
+    base_url = get_base_url(env_type)
+    print(f"  🌍 Environment: {env_type.upper()} ({base_url})")
+
     session = requests.Session()
     session.headers.update({
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
         "Accept-Datetime-Format": "RFC3339",
     })
+    
+    # helper to switch env if needed
+    def switch_env():
+        nonlocal env_type, base_url
+        env_type = "live" if env_type == "practice" else "practice"
+        base_url = get_base_url(env_type)
+        print(f"\n3️⃣  Retrying with {env_type.upper()} environment ({base_url})...")
+
 
     # ── Step 3: Test account access ──
-    print("\n2️⃣  Testing account access...")
+    print(f"\n2️⃣  Testing account access ({env_type})...")
+    
+    def try_request(url):
+        return session.get(url)
+
     try:
-        resp = session.get(f"{base_url}/v3/accounts/{account_id}/summary")
+        resp = try_request(f"{base_url}/v3/accounts/{account_id}/summary")
+        
+        # Auto-retry with other environment on 401
+        if resp.status_code == 401:
+            print(f"  ⚠️  401 Unauthorized on {env_type.upper()}. Toggling environment...")
+            switch_env() 
+            resp = try_request(f"{base_url}/v3/accounts/{account_id}/summary")
+
         if resp.status_code == 200:
             acct = resp.json().get("account", {})
             balance = float(acct.get("balance", 0))
@@ -89,26 +115,30 @@ def test_connection():
             currency = acct.get("currency", "???")
             open_trades = int(acct.get("openTradeCount", 0))
             margin_avail = float(acct.get("marginAvailable", 0))
-            print(f"  ✅ Connected to OANDA Practice")
+            
+            print(f"  ✅ Connected to OANDA {env_type.upper()}")
             print(f"     Balance:    {currency} {balance:,.2f}")
             print(f"     NAV:        {currency} {nav:,.2f}")
             print(f"     Margin:     {currency} {margin_avail:,.2f}")
             print(f"     Open Trades: {open_trades}")
+            
+            # Warn if environment mismatch with .env
+            env_var = os.getenv("OANDA_ENV", "practice").lower()
+            if env_type != env_var:
+                 print(f"  ⚠️  NOTE: Your .env has OANDA_ENV={env_var}, but this key works for {env_type.upper()}. Please update .env.")
+                 
         elif resp.status_code == 401:
-            print(f"  ❌ AUTH FAILED (401) — API key is invalid or expired")
-            print(f"     Response: {resp.text[:200]}")
+            print(f"  ❌ AUTH FAILED (401) — API key is invalid or expired for BOTH environments.")
             return False
         elif resp.status_code == 403:
             print(f"  ❌ FORBIDDEN (403) — Account ID doesn't match API key")
-            print(f"     Response: {resp.text[:200]}")
             return False
         else:
             print(f"  ❌ Unexpected status: {resp.status_code}")
-            print(f"     Response: {resp.text[:200]}")
             return False
+            
     except requests.exceptions.ConnectionError:
         print(f"  ❌ CONNECTION FAILED — cannot reach {base_url}")
-        print(f"     Check your internet connection")
         return False
     except Exception as e:
         print(f"  ❌ Error: {e}")

@@ -60,11 +60,33 @@ def validate_file(filepath: Path, schema: dict, verbose: bool = True) -> tuple[b
             data = json.load(f)
     except json.JSONDecodeError as e:
         return False, [f"Invalid JSON: {e}"]
+        
+    # Handle list of records
+    if isinstance(data, list):
+        all_valid = True
+        for i, item in enumerate(data):
+            # Skip template files in list? unlikely but possible
+            if item.get("_comment") or item.get("id", "").startswith("YYYY"):
+                continue
+                
+            item_valid, item_errors = validate_single_item(item, schema, f"Item {i}")
+            if not item_valid:
+                all_valid = False
+                errors.extend([f"Record {i}: {e}" for e in item_errors])
+        
+        return all_valid, errors
+
+    # Single item validation
+    return validate_single_item(data, schema)
+
+
+def validate_single_item(data: dict, schema: dict, context: str = "") -> tuple[bool, list[str]]:
+    """Validate a single item dictionary"""
+    errors = []
     
     # Skip template files
     if data.get("_comment") or data.get("id", "").startswith("YYYY"):
-        if verbose:
-            print(f"⏭️  Skipped template: {filepath.name}")
+        # if verbose: print(f"⏭️  Skipped template: {context}")
         return True, []
     
     # Validate against schema

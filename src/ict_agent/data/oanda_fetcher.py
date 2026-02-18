@@ -35,13 +35,14 @@ class OANDAConfig:
 
     @property
     def base_url(self) -> str:
-        if self.environment == "live":
+        # Check OANDA_ENV (case-insensitive)
+        if self.environment.lower() == "live":
             return "https://api-fxtrade.oanda.com"
         return "https://api-fxpractice.oanda.com"
 
     @property
     def stream_url(self) -> str:
-        if self.environment == "live":
+        if self.environment.lower() == "live":
             return "https://stream-fxtrade.oanda.com"
         return "https://stream-fxpractice.oanda.com"
 

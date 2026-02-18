@@ -242,6 +242,9 @@ class PerformanceDashboard:
         day_rows = self._generate_category_rows(stats.get("by_day", {}))
         setup_rows = self._generate_category_rows(stats.get("by_setup", {}))
         
+        # Generate recent insights
+        recent_insights_rows = self._generate_insights_rows(self.trades)
+        
         html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -522,6 +525,15 @@ class PerformanceDashboard:
             <h2>📆 Trading Calendar</h2>
             {calendar_html}
         </div>
+
+        <!-- Recent Trade Insights -->
+        <div class="section">
+            <h2>🧠 Recent AI Insights</h2>
+            <table>
+                <tr><th>Date</th><th>Pair</th><th>Result</th><th>AI Confluences & Reasoning</th></tr>
+                {recent_insights_rows}
+            </table>
+        </div>
         
         <!-- Streaks & Milestones -->
         <div class="grid-2">
@@ -631,6 +643,62 @@ class PerformanceDashboard:
             </tr>''')
         
         return "\n".join(rows) if rows else "<tr><td colspan='4'>No data yet</td></tr>"
+    
+    def _generate_insights_rows(self, trades: List[Dict]) -> str:
+        """Generate rows for recent AI insights."""
+        if not trades:
+            return "<tr><td colspan='4'>No trades recorded yet.</td></tr>"
+            
+        # Sort by date descending
+        sorted_trades = sorted(trades, key=lambda x: x.get("created_at", ""), reverse=True)
+        recent = sorted_trades[:5]
+        
+        rows = []
+        for trade in recent:
+            # Extract basic info
+            created = trade.get("created_at", "")
+            try:
+                dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
+                date_str = dt.strftime("%Y-%m-%d %H:%M")
+            except:
+                date_str = "Unknown"
+                
+            pair = trade.get("pre_trade", {}).get("pair", "UNKNOWN")
+            result = trade.get("result", "OPEN")
+            
+            # Extract AI reasoning
+            # Check various locations for reasoning data
+            confluences = trade.get("confluences", [])
+            if not confluences and "pre_trade" in trade:
+                confluences = trade["pre_trade"].get("confluences", [])
+                
+            # Formatting result
+            res_class = "neutral"
+            if result == "WIN":
+                res_class = "positive"
+            elif result == "LOSS":
+                res_class = "negative"
+                
+            # Format confluences
+            if confluences:
+                reasoning_html = "<ul style='padding-left: 20px; font-size: 0.9rem; color: #ccc;'>"
+                for c in confluences[:3]: # Show top 3
+                    reasoning_html += f"<li>{c}</li>"
+                if len(confluences) > 3:
+                     reasoning_html += f"<li>... and {len(confluences)-3} more</li>"
+                reasoning_html += "</ul>"
+            else:
+                reasoning_html = "<i>No reasoning logged</i>"
+
+            rows.append(f'''<tr>
+                <td style="white-space: nowrap;">{date_str}</td>
+                <td>{pair}</td>
+                <td class="pnl {res_class}">{result}</td>
+                <td>{reasoning_html}</td>
+            </tr>''')
+            
+        return "\n".join(rows)
+
     
     def _generate_calendar_html(self, calendar: Dict) -> str:
         """Generate calendar heatmap HTML."""

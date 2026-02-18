@@ -119,7 +119,7 @@ class OANDAExecutor:
             raise ValueError("OANDA API key required. Set OANDA_API_KEY env var.")
         
         # Set base URL based on environment
-        if environment == "live":
+        if self.environment.lower() == "live":
             self.base_url = "https://api-fxtrade.oanda.com"
         else:
             self.base_url = "https://api-fxpractice.oanda.com"

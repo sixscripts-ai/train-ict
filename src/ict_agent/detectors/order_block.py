@@ -85,6 +85,8 @@ class OrderBlockDetector:
         result["ob_direction"] = 0
         result["ob_top"] = np.nan
         result["ob_bottom"] = np.nan
+        result["ob_body_top"] = np.nan
+        result["ob_body_bottom"] = np.nan
         result["ob_midpoint"] = np.nan
         result["ob_volume"] = np.nan
         result["ob_mitigated"] = False
@@ -160,6 +162,8 @@ class OrderBlockDetector:
         result.loc[idx, "ob_direction"] = direction.value
         result.loc[idx, "ob_top"] = candle["high"]
         result.loc[idx, "ob_bottom"] = candle["low"]
+        result.loc[idx, "ob_body_top"] = body_top
+        result.loc[idx, "ob_body_bottom"] = body_bottom
         result.loc[idx, "ob_midpoint"] = midpoint
         result.loc[idx, "ob_volume"] = volume
         
@@ -208,6 +212,8 @@ class OrderBlockDetector:
         result["ob_direction"] = 0
         result["ob_top"] = np.nan
         result["ob_bottom"] = np.nan
+        result["ob_body_top"] = np.nan
+        result["ob_body_bottom"] = np.nan
         result["ob_midpoint"] = np.nan
         result["ob_volume"] = np.nan
         result["ob_mitigated"] = False

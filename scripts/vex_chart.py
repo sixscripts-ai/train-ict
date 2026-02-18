@@ -1,20 +1,15 @@
-#!/usr/bin/env python3
-"""
-VEX CHART - Individual timeframe charts, full size WITH PREDICTIONS.
-
-Usage: python vex_chart.py EUR_USD H4
-       python vex_chart.py EUR_USD ALL
-"""
-
-import os
 import sys
-sys.path.insert(0, '/Users/villain/Documents/transfer/ICT_WORK/ict_trainer/src')
-
+import os
+from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv('/Users/villain/Documents/transfer/ICT_WORK/ict_trainer/.env')
 
-import oandapyV20
-from oandapyV20.endpoints.instruments import InstrumentsCandles
+# Add src to path correctly
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(PROJECT_ROOT / "src"))
+
+# Load env
+load_dotenv(PROJECT_ROOT / ".env")
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -23,29 +18,28 @@ from datetime import datetime
 import subprocess
 import numpy as np
 
+# Use our own fetcher
+from ict_agent.data.oanda_fetcher import OANDAFetcher, DataConfig
+
 plt.style.use('dark_background')
-client = oandapyV20.API(access_token=os.getenv("OANDA_API_KEY"))
 
-
-def fetch_data(pair: str, timeframe: str, count: int = 100) -> pd.DataFrame:
-    params = {"granularity": timeframe, "count": count}
-    r = InstrumentsCandles(instrument=pair, params=params)
-    client.request(r)
+def fetch_data(pair: str, timeframe: str, count: int = 150) -> pd.DataFrame:
+    fetcher = OANDAFetcher()
+    # Handle timeframe mapping if needed (fetcher handles standard strings like H1, D)
+    df = fetcher.fetch_latest(pair, timeframe, count)
     
-    candles = []
-    for c in r.response['candles']:
-        if c['complete']:
-            candles.append({
-                'time': pd.Timestamp(c['time'][:19]),
-                'open': float(c['mid']['o']),
-                'high': float(c['mid']['h']),
-                'low': float(c['mid']['l']),
-                'close': float(c['mid']['c'])
-            })
-    return pd.DataFrame(candles)
+    if df.empty:
+        print(f"⚠️ No data returned for {pair} {timeframe}")
+        return pd.DataFrame()
+        
+    # Reset index to get 'time' column for plotting logic consistency
+    df = df.reset_index()
+    df.rename(columns={'timestamp': 'time'}, inplace=True)
+    return df
 
 
 def find_swing_points(df: pd.DataFrame):
+    if df.empty: return [], []
     swing_highs = []
     swing_lows = []
     
@@ -67,6 +61,7 @@ def find_swing_points(df: pd.DataFrame):
 
 def find_fvgs(df: pd.DataFrame):
     """Find Fair Value Gaps (using WICKS). Only UNMITIGATED, nearest to price."""
+    if df.empty: return [], []
     bullish_fvgs = []
     bearish_fvgs = []
     current_price = df['close'].iloc[-1]
@@ -123,6 +118,7 @@ def find_fvgs(df: pd.DataFrame):
 
 def find_equal_levels(df: pd.DataFrame, tolerance_pips: float = 1.5):
     """Find ACTIVE equal highs/lows - nearest to price, not swept yet."""
+    if df.empty: return [], []
     swing_highs, swing_lows = find_swing_points(df)
     current_price = df['close'].iloc[-1]
     
@@ -181,8 +177,11 @@ def plot_single_chart(pair: str, tf: str):
     """Generate one full-size chart for a single timeframe."""
     
     print(f"\n  Fetching {pair} {tf}...")
-    df = fetch_data(pair, tf, 80)
+    df = fetch_data(pair, tf, 150)
     
+    if df.empty:
+        return None
+
     swing_highs, swing_lows = find_swing_points(df)
     bull_fvgs, bear_fvgs = find_fvgs(df)
     
@@ -478,7 +477,7 @@ def plot_single_chart(pair: str, tf: str):
     
     # Save
     timestamp = datetime.now().strftime('%H%M%S')
-    output_path = f"/Users/villain/Documents/transfer/ICT_WORK/ict_trainer/screenshots/vex_{pair}_{tf}_{timestamp}.png"
+    output_path = PROJECT_ROOT / "screenshots" / f"vex_{pair}_{tf}_{timestamp}.png"
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches='tight', facecolor='#0d0d0d')
     plt.close()
