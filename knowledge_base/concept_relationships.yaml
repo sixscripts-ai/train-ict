@@ -1,9 +1,23 @@
-# Concept Relationships (The "Wiring" of the Brain)
-# Defines dependencies, requirements, and causal links between ICT concepts.
+# =============================================================================
+# ICT CONCEPT RELATIONSHIPS — Canonical Source of Truth
+# =============================================================================
+# This is the "brain wiring" — how ICT concepts connect, depend on each other,
+# and combine to create high-probability setups.
+#
+# Loaded by: schema.py (ICTGraphInternal.from_yaml)
+# Sections parsed by schema.py: models, concept_requirements, time_rules, anti_patterns
+# Additional sections for enrichment: causal_chains, pd_array_taxonomy,
+#   pair_rules, pre_trade_validation, trade_correlations
+#
+# Version: 2.0 (merged from 3 files into single canonical source)
+# Last Updated: 2026-02-17
+# =============================================================================
 
-# ==============================================================================
+# =============================================================================
 # 1. MODEL REQUIREMENTS
-# ==============================================================================
+# =============================================================================
+# Complete setup blueprints — what must be present for each trade model.
+
 models:
   silver_bullet:
     description: "Time-based liquidity run setup (10am-11am NY)"
@@ -15,11 +29,18 @@ models:
     time_windows:
       - name: "AM Silver Bullet"
         time: "10:00-11:00"
+        timezone: "America/New_York"
       - name: "PM Silver Bullet"
         time: "14:00-15:00"
+        timezone: "America/New_York"
     anti_patterns:
       - entry_before_liquidity_sweep
       - counter_trend_without_htf_level
+      - fvg_without_displacement
+    avoid_when:
+      - "No clear HTF bias"
+      - "Major news in window"
+      - "FVG already 50%+ filled"
 
   judas_swing:
     description: "False move to trap traders before real move (London/NY Open)"
@@ -32,9 +53,10 @@ models:
       - fvg
     time_windows:
       - name: "London Open"
-        time: "02:00-05:00" # Broad window, Judas usually 02:00-03:00
+        time: "02:00-05:00"
       - name: "NY Open"
-        time: "07:00-10:00" # Judas usually 08:30-09:30
+        time: "07:00-10:00"
+    insight: "The Judas Swing IS the manipulation phase of AMD"
 
   optimal_trade_entry:
     description: "Retracement entry after displacement leg"
@@ -52,22 +74,74 @@ models:
     entry_rules:
       - "Enter at the breaker body (highest up-close or lowest down-close)"
 
-# ==============================================================================
+  ict_2022_model:
+    description: "Full AMD cycle trade"
+    required:
+      - accumulation_range
+      - manipulation_sweep
+      - displacement
+      - fvg
+    time_context: "Best at session opens (London, NY)"
+    target: "Opposite side of accumulation range"
+
+  unicorn:
+    description: "Order Block with FVG inside — highest probability setup"
+    required:
+      - order_block
+      - fvg_inside_ob
+      - htf_bias_alignment
+    rarity: "Uncommon — maybe 2-3 per week"
+    probability: "Highest of all setups"
+    entry: "Inside the FVG portion of the OB"
+
+  turtle_soup:
+    description: "Liquidity sweep with immediate reversal"
+    required:
+      - clear_liquidity_pool
+      - liquidity_sweep
+      - immediate_reversal
+    entry: "On the reversal candle, SL beyond the sweep"
+    target: "Opposite liquidity"
+    key: "Speed — the faster the reversal, the better"
+
+# =============================================================================
 # 2. CONCEPT DEPENDENCIES (If X exists, Y must exist)
-# ==============================================================================
+# =============================================================================
 concept_requirements:
+
+  # --- Core PD Array Concepts ---
   fair_value_gap:
     requires:
       - concept: displacement
         why: "Without displacement, a gap is just weak price action, not an FVG."
+    enhanced_by:
+      - concept: htf_poi
+        bonus: 1.5
+        why: "FVG at HTF level = institutional interest"
+      - concept: ote_zone
+        bonus: 1.0
+        why: "FVG in OTE = optimal entry"
+      - concept: order_block
+        bonus: 1.5
+        why: "FVG inside OB = Unicorn setup"
+    invalidated_by:
+      - condition: gap_fills_before_entry
+        why: "Imbalance resolved, no trade"
+      - condition: no_displacement
+        why: "Low probability fill"
+    targets:
+      - concept: opposite_liquidity
+        why: "Your TP should be where liquidity sits"
     entry_rules:
       - "Enter at 50% consequent encroachment (CE)."
       - "Stop loss must go beyond the candle that created the gap."
+      - "Don't enter if 50% of FVG already filled."
 
   inversion_fair_value_gap:
     requires:
       - concept: candle_closure
         why: "Price MUST close through the original FVG body to validate inversion."
+      - concept: fair_value_gap
     entry_rules:
       - "Wait for retest of the old FVG high/low from opposite side."
 
@@ -77,6 +151,22 @@ concept_requirements:
         why: "A block is only valid if it caused a strong move away."
       - concept: liquidity_sweep
         why: "High probability OBs sweep liquidity first."
+    enhanced_by:
+      - concept: fvg_inside
+        bonus: 2.0
+        why: "This is the Unicorn — highest probability"
+      - concept: htf_poi
+        bonus: 1.5
+      - concept: ote_zone
+        bonus: 1.0
+    identification:
+      bullish: "Last red candle before bullish displacement"
+      bearish: "Last green candle before bearish displacement"
+    invalidated_by:
+      - condition: body_broken
+        why: "If price closes through OB body, it's dead"
+      - condition: no_reaction_on_first_touch
+        why: "Institutions didn't defend it"
     entry_rules:
       - "Entry at open or 50% mean threshold."
       - "Invalidated if price closes beyond 50% of the block body."
@@ -88,10 +178,239 @@ concept_requirements:
       - concept: liquidity_sweep
         why: "Real shifts happen after liquidity is taken."
 
-# ==============================================================================
-# 3. TIME RULES (Macros)
-# ==============================================================================
+  # --- Liquidity ---
+  liquidity:
+    types:
+      buy_side: ["equal_highs", "swing_highs", "trendline_liquidity", "asian_high"]
+      sell_side: ["equal_lows", "swing_lows", "trendline_liquidity", "asian_low"]
+    forms:
+      - "Equal Highs (EQH)"
+      - "Equal Lows (EQL)"
+      - "Trendline Liquidity"
+      - "Previous Day High/Low"
+      - "Previous Week High/Low"
+    behavior:
+      - "Price is DRAWN to liquidity"
+      - "Liquidity sweep = fuel for the move"
+      - "Double/triple taps = liquidity building (will be swept)"
+    sequence_after_sweep:
+      1: "Sweep happens"
+      2: "Look for displacement in opposite direction"
+      3: "That displacement confirms the reversal"
+    key_insight: "Don't trade UNTIL liquidity is swept"
+
+  # --- Displacement ---
+  displacement:
+    definition: "Large-bodied candle with conviction (usually 2x+ average range)"
+    indicates: "Institutional order flow / smart money commitment"
+    creates:
+      - concept: fvg
+        likelihood: "high"
+      - concept: order_block
+        likelihood: "always"
+    required_for:
+      - "Valid FVG"
+      - "Valid Order Block"
+      - "Confirmation of liquidity sweep"
+    without_displacement: "Setup is weak — smart money not committed"
+
+  # --- Market Structure ---
+  market_structure:
+    elements:
+      - "Swing High"
+      - "Swing Low"
+      - "Intermediate Term High (ITH)"
+      - "Intermediate Term Low (ITL)"
+      - "Long Term High (LTH)"
+      - "Long Term Low (LTL)"
+    types:
+      bos:
+        meaning: "Break of Structure — trend continuation"
+        action: "Look for pullback entry in trend direction"
+      choch:
+        meaning: "Change of Character — potential reversal"
+        action: "First warning sign, not entry signal alone"
+      mss:
+        meaning: "Market Structure Shift — confirmed reversal"
+        action: "After liquidity sweep + MSS = entry setup"
+    sequence: "Liquidity sweep -> CHoCH -> MSS -> Entry"
+    condition: "Displacement is required to confirm a valid shift"
+
+  # --- OTE ---
+  optimal_trade_entry:
+    zone: "62% to 79% retracement"
+    sweet_spot: "70.5% (0.705 fib)"
+    enhanced_by:
+      - concept: fvg_in_zone
+        why: "Price likely to react at both"
+      - concept: order_block_in_zone
+        why: "Confluence of levels"
+    usage: "After displacement, wait for retracement to OTE before entry"
+
+  # --- SMT ---
+  smt_divergence:
+    definition: "Correlated pair makes new high/low, other doesn't"
+    pairs:
+      - ["EUR_USD", "GBP_USD"]
+      - ["ES", "NQ"]
+      - ["DXY", "EUR_USD"]
+    signal: "The pair that DOESN'T make the new extreme shows the true direction"
+    weight: 1.5
+    key_insight: "SMT at liquidity sweep = high probability reversal"
+
+  # --- Advanced PD Arrays ---
+  advanced_pd_arrays:
+    requires:
+      - concept: pd_array
+      - concept: premium_discount
+
+  sibi_bisi_ict:
+    requires:
+      - concept: fair_value_gap
+        why: "SIBI/BISI are specific types of FVGs."
+
+  ict_macros_detailed:
+    requires:
+      - concept: time_algorithm
+      - concept: time_of_day_macro
+
+  # --- Connect Orphan Macros ---
+  macro_0950-1010:
+    requires:
+      - concept: ict_macros_detailed
+      - concept: silver_bullet
+  macro_1050-1110:
+    requires:
+      - concept: ict_macros_detailed
+      - concept: silver_bullet
+  macro_1150-1210:
+    requires:
+      - concept: ict_macros_detailed
+      - concept: lunch_hour_reversal
+  macro_1310-1340:
+    requires:
+      - concept: ict_macros_detailed
+      - concept: pm_session_reversal
+
+  # --- Connect Sessions ---
+  am_session:
+    requires:
+      - concept: killzones
+      - concept: ict_macros_detailed
+  pm_session:
+    requires:
+      - concept: killzones
+      - concept: ict_macros_detailed
+
+  # --- Connect Advanced PD Array Types ---
+  volume_imbalance:
+    requires:
+      - concept: advanced_pd_arrays
+      - concept: displacement
+  rejection_block:
+    requires:
+      - concept: advanced_pd_arrays
+      - concept: liquidity_sweep
+  propulsion_block:
+    requires:
+      - concept: advanced_pd_arrays
+      - concept: order_block
+  suspension_block:
+    requires:
+      - concept: advanced_pd_arrays
+      - concept: order_block
+  vacuum_block:
+    requires:
+      - concept: advanced_pd_arrays
+      - concept: fair_value_gap
+
+  # --- Connect Anti-Patterns ---
+  chasing_expansion:
+    requires:
+      - concept: standard_deviation_projection
+        why: "Must measure expansion before chasing."
+  forcing_trades_in_lunch:
+    requires:
+      - concept: time_algorithm
+        why: "Lunch is a forbidden time zone."
+
+  # --- Connect IPDA ---
+  ipda:
+    requires:
+      - concept: time_algorithm
+      - concept: liquidity
+      - concept: fair_value_gap
+    entry_rules:
+      - "Price seeks liquidity or rebalance."
+
+# =============================================================================
+# 3. CAUSAL CHAINS — The Order Things MUST Happen
+# =============================================================================
+# ICT is sequential. You can't skip steps.
+
+causal_chains:
+
+  reversal_sequence:
+    description: "The required order for reversal entries"
+    steps:
+      1: {concept: "liquidity_sweep", signal: "Liquidity taken (BSL/SSL)"}
+      2: {concept: "displacement", signal: "Strong momentum candle away from sweep"}
+      3: {concept: "fvg_or_ob", signal: "Imbalance or order block forms"}
+      4: {concept: "retracement", signal: "Price returns to FVG/OB"}
+      5: {concept: "entry", signal: "Enter in zone with SL beyond sweep"}
+    failure_at_step:
+      1: "No liquidity = no fuel for move, skip this setup"
+      2: "No displacement = weak hands, likely to fail"
+      3: "No FVG/OB = no clear entry zone"
+      4: "No retracement = chasing, bad R:R"
+
+  power_of_3:
+    description: "Accumulation -> Manipulation -> Distribution within a session"
+    steps:
+      1: {phase: "accumulation", time: "Asian session / early London", action: "Range forms, liquidity builds"}
+      2: {phase: "manipulation", time: "London open / NY open", action: "False breakout, sweeps liquidity"}
+      3: {phase: "distribution", time: "Mid-session", action: "True move in opposite direction"}
+    key_insight: "The manipulation IS the entry signal — it sweeps liquidity"
+
+  htf_to_ltf:
+    description: "Always align with higher timeframe bias"
+    steps:
+      1: {action: "Determine HTF bias", timeframes: ["Daily", "4H"]}
+      2: {action: "Identify HTF POI", concepts: ["fvg", "order_block", "liquidity"]}
+      3: {action: "Wait for price at HTF POI", patience: "critical"}
+      4: {action: "Drop to LTF for entry", timeframes: ["15m", "5m", "1m"]}
+      5: {action: "Find LTF confirmation", concepts: ["displacement", "bos", "fvg"]}
+    failure_mode: "Trading LTF without HTF context = gambling"
+
+# =============================================================================
+# 4. TIME RULES
+# =============================================================================
 time_rules:
+
+  killzones:
+    asian:
+      time: "19:00-00:00 ET"
+      behavior: "Accumulation, range-bound"
+      trade_style: "Generally avoid, or fade extremes"
+      liquidity_builds: ["asian_high", "asian_low"]
+    london:
+      time: "02:00-05:00 ET"
+      behavior: "First real move of the day"
+      trade_style: "Look for sweep of Asian range"
+      best_setups: ["judas_swing", "ict_2022"]
+    ny_am:
+      time: "08:30-11:00 ET"
+      behavior: "Highest volume, biggest moves"
+      trade_style: "Primary trading session"
+      best_setups: ["silver_bullet", "turtle_soup"]
+      contains: ["10am_silver_bullet"]
+    ny_pm:
+      time: "13:30-16:00 ET"
+      behavior: "Second push, often reversal of AM"
+      trade_style: "Continuation or reversal"
+      best_setups: ["silver_bullet", "pm_session_reversal"]
+      contains: ["3pm_silver_bullet"]
+
   macros:
     - name: "09:50-10:10 Macro"
       action: "Look for spooling or reversal"
@@ -101,22 +420,55 @@ time_rules:
       action: "Lunch time injection"
     - name: "13:10-13:40 Macro"
       action: "PM Session injection"
-  
+
+  macro_times:
+    description: "ICT macro times — micro session opens"
+    times:
+      - "09:30 ET - NYSE open"
+      - "09:50 ET"
+      - "10:10 ET"
+      - "10:50 ET"
+      - "11:10 ET"
+      - "13:10 ET"
+      - "13:50 ET"
+      - "14:10 ET"
+      - "14:50 ET"
+      - "15:10 ET"
+      - "15:50 ET"
+    usage: "Look for displacement/FVG at these exact times"
+
+  opening_prices:
+    - "Midnight NY Opening Price"
+    - "8:30am NY Opening Price"
+
+  silver_bullet_windows:
+    - "3am-4am"
+    - "10am-11am"
+    - "2pm-3pm"
+
   avoid_times:
     - time: "12:00-13:00"
-      reason: "Noon Lunch Hour - Low probability / Chop"
+      reason: "Noon Lunch Hour — Low probability / Chop"
+    - time: "12:00-13:30 ET"
+      reason: "NY lunch — choppy, no direction"
     - time: "16:30-18:00"
       reason: "Market Close / Spreads widen"
+    - time: "17:00 ET"
+      reason: "Market close — spreads widen"
+    - time: "major_news"
+      reason: "30 min before/after high impact news"
+    - time: "sunday_open"
+      reason: "Gaps and low liquidity"
+    - time: "friday_afternoon"
+      reason: "Position squaring, unpredictable"
 
-# ==============================================================================
-# 4. CONFLUENCE WEIGHTS (Scoring System)
-# ==============================================================================
+# =============================================================================
+# 5. CONFLUENCE WEIGHTS (Scoring System)
+# =============================================================================
 confluence_weights:
-  a_plus_setup: 9.0
-  minimum_for_trade: 5.0
-  
   thresholds:
     minimum_for_trade: 5.0
+    good_setup: 7.0
     a_plus_setup: 9.0
 
   critical:
@@ -130,38 +482,56 @@ confluence_weights:
     order_block: 1.5
     market_structure_shift: 1.5
     smt_divergence: 1.5
-    macro_active: 1.5   # Added weight for Macro Times
+    macro_active: 1.5
 
   moderate:
     optimal_trade_entry: 1.0
     premium_discount_aligned: 1.0
     breaker_block: 1.0
     volume_imbalance: 1.0
+    rejection_block: 1.0
+    vacuum_block: 1.0
+    dealing_range_defined: 1.0
+    targeting_liquidity: 1.0
+
+  high_precision:
+    propulsion_block: 1.5
+    measured_move_target: 1.5
 
   bonuses:
+    unicorn_setup: 2.0
+    htf_poi_alignment: 1.5
+    multi_timeframe_confluence: 1.5
     inversion_fair_value_gap: 0.5
     standard_deviation_projection: 0.5
     weekly_profile_aligned: 0.5
     consequent_encroachment_respect: 0.5
 
   penalties:
+    against_htf_bias: -2.0
     counter_trend: -2.0
+    no_liquidity_sweep: -2.0
+    no_displacement: -1.5
     news_event_incoming: -3.0
+    outside_killzone: -1.0
+    overextended: -1.0
     asian_session_chop: -1.0
     low_probability_time: -2.0
 
-# ==============================================================================
-# 5. ANTI-PATTERNS (Common Mistakes)
-# ==============================================================================
+# =============================================================================
+# 6. ANTI-PATTERNS (Common Mistakes)
+# =============================================================================
 anti_patterns:
+
   fvg_without_displacement:
     description: "Trading a gap that formed inside a range/chop."
     why_fails: "No institutional sponsorship."
     fix: "Wait for a candle that closes outside the range."
-  
+
   entry_before_liquidity_sweep:
     description: "Entering on the first move before a stop hunt."
     why_fails: "You become the liquidity."
+    symptom: "Stopped out right before the move"
     fix: "Wait for a raid of an old high/low first."
 
   chasing_expansion:
@@ -169,7 +539,174 @@ anti_patterns:
     why_fails: "Buying the top / Selling the bottom."
     fix: "Wait for retracement to OTE."
 
+  chasing_after_displacement:
+    description: "Entering immediately after big move instead of waiting for pullback"
+    why_fails: "Bad R:R, often enter at worst price"
+    fix: "Wait for retracement to FVG/OB/OTE"
+
   forcing_trades_in_lunch:
     description: "Trading between 12:00-13:00 NY."
     why_fails: "Algo is in seek-and-destroy mode."
     fix: "Wait for 13:30 Macro."
+
+  trading_against_htf:
+    description: "Taking LTF signals against higher timeframe bias"
+    why_fails: "Swimming upstream — occasional wins, consistent losses"
+    fix: "Only take LTF signals in direction of HTF bias"
+
+  multiple_stacked_fvgs:
+    description: "3+ FVGs stacked in same direction"
+    why_fails: "Price tends to fill imbalances, will likely retrace through all"
+    fix: "Wait for consolidation or skip the setup"
+
+  equal_highs_lows_untapped:
+    description: "Taking a trade when obvious liquidity hasn't been swept"
+    why_fails: "Price will hunt that liquidity first"
+    fix: "Wait for the sweep or target the liquidity as your TP"
+
+  revenge_trading:
+    description: "Entering immediately after a loss"
+    why_fails: "Emotional state leads to poor decisions"
+    fix: "Mandatory 30-min break after any loss"
+
+  overtrading_sessions:
+    description: "More than 2-3 trades per session"
+    why_fails: "Quality setups are rare, forcing trades = losses"
+    fix: "Max 2 trades per session, then walk away"
+
+# =============================================================================
+# 7. PD ARRAY TAXONOMY
+# =============================================================================
+# Premium/Discount Array hierarchy — the tools used to frame setups.
+
+pd_array_taxonomy:
+  definition: "Premium/Discount Arrays — The tools used to frame setup"
+  hierarchy:
+    - Mitigation Block
+    - Breaker Block
+    - Liquidity Void
+    - Fair Value Gap
+    - Order Block
+    - Rejection Block
+    - Old High/Low
+  premium_arrays:
+    - Bearish OB
+    - Bearish Breaker
+    - Bearish FVG
+    - Old High
+  discount_arrays:
+    - Bullish OB
+    - Bullish Breaker
+    - Bullish FVG
+    - Old Low
+  type_relationships:
+    - {source: "Order Block", target: "PD Array", type: "is_a"}
+    - {source: "Fair Value Gap", target: "PD Array", type: "is_a"}
+    - {source: "Breaker Block", target: "PD Array", type: "is_a"}
+    - {source: "Mitigation Block", target: "PD Array", type: "is_a"}
+
+# =============================================================================
+# 8. IPDA DATA RANGES
+# =============================================================================
+ipda_data_ranges:
+  ranges:
+    - 20
+    - 40
+    - 60
+  lookback: "Price refers to data points within these lookback periods (days)"
+
+# =============================================================================
+# 9. ENTRY MODEL BLUEPRINTS (Quick Reference)
+# =============================================================================
+entry_models:
+  ict_2022:
+    steps: ["Liquidity Sweep", "MSS", "Displacement", "FVG Entry"]
+  silver_bullet:
+    steps: ["Time Window", "FVG", "Liquidity Target"]
+  breaker:
+    steps: ["Stop Hunt", "Displacement", "Return to Breaker"]
+  ote:
+    steps: ["Impulse", "Retracement to 62-79%", "Confluence"]
+
+# =============================================================================
+# 10. RISK MANAGEMENT
+# =============================================================================
+risk_management:
+  rules:
+    - "1-2% per trade"
+    - "Stop Loss at Invalidation Point"
+    - "Partial at Low Hanging Fruit"
+  invalidation: "Close beyond the FVG or Swing Point implies idea is wrong"
+
+# =============================================================================
+# 11. PAIR-SPECIFIC RULES
+# =============================================================================
+pair_rules:
+  EUR_USD:
+    correlations: ["GBP_USD_positive", "DXY_inverse"]
+    best_sessions: ["london", "ny_am"]
+    characteristics: "Most liquid, cleanest price action"
+    smt_partner: "GBP_USD"
+    typical_daily_range: "60-80 pips"
+  GBP_USD:
+    correlations: ["EUR_USD_positive", "DXY_inverse"]
+    best_sessions: ["london", "ny_am"]
+    characteristics: "More volatile than EUR, wider swings"
+    smt_partner: "EUR_USD"
+    typical_daily_range: "80-120 pips"
+    warning: "Can be whippy around UK news"
+  USD_JPY:
+    correlations: ["US_yields_positive"]
+    best_sessions: ["asian", "ny_am"]
+    characteristics: "Respects round numbers, big moves"
+    pip_size: 0.01
+    warning: "BOJ intervention risk at extremes"
+  XAU_USD:
+    characteristics: "Volatile, big swings, respects HTF levels"
+    best_sessions: ["ny_am"]
+    warning: "Wide spreads, needs bigger stops"
+    typical_daily_range: "200-400 pips"
+
+# =============================================================================
+# 12. PRE-TRADE VALIDATION CHECKLIST
+# =============================================================================
+pre_trade_validation:
+  must_have_one:
+    - "liquidity_swept"
+    - "at_htf_poi"
+  must_have_all:
+    - "htf_bias_determined"
+    - "entry_zone_identified"
+    - "stop_loss_defined"
+    - "target_defined"
+  should_have:
+    - "displacement_confirmed"
+    - "in_killzone"
+    - "risk_under_1_percent"
+  red_flags:
+    - "against_htf_bias"
+    - "news_in_30_min"
+    - "already_2_trades_today"
+    - "revenge_trading"
+    - "outside_all_killzones"
+    - "no_clear_invalidation"
+
+# =============================================================================
+# 13. TRADE CORRELATIONS (Learning Feedback Loop)
+# =============================================================================
+# Auto-updated based on trade outcomes.
+
+trade_correlations:
+  winning_combinations:
+    example:
+      confluences: ["liquidity_swept", "displacement", "fvg", "htf_aligned"]
+      stats: {trades: 0, wins: 0, win_rate: 0.0, avg_rr: 0.0}
+  losing_combinations:
+    example:
+      confluences: ["fvg", "no_displacement"]
+      stats: {trades: 0, losses: 0, loss_rate: 0.0, common_reason: ""}
+  model_performance:
+    silver_bullet: {trades: 0, wins: 0, win_rate: 0.0}
+    ict_2022: {trades: 0, wins: 0, win_rate: 0.0}
+    unicorn: {trades: 0, wins: 0, win_rate: 0.0}
+    turtle_soup: {trades: 0, wins: 0, win_rate: 0.0}
