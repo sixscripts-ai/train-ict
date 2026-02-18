@@ -276,6 +276,14 @@ class VexCoreEngine:
         except Exception:
             self.graph_reasoner = None
 
+        # Mem0 persistent-memory advisor (lazy-loaded, graceful fallback)
+        try:
+            from ict_agent.core.mem0_advisor import Mem0Advisor
+
+            self.mem0_advisor = Mem0Advisor()
+        except Exception:
+            self.mem0_advisor = None
+
         # Session state tracking
         self.session_state = SessionState(phase=SessionPhase.UNKNOWN)
 
@@ -598,6 +606,70 @@ class VexCoreEngine:
             )
 
         # ---------------------------------------------------------------------
+        # GATE 7d: MEM0 KNOWLEDGE ADVISOR
+        # ---------------------------------------------------------------------
+        mem0_result = None
+        if self.mem0_advisor is not None:
+            try:
+                # Map VEX types to plain strings for the advisor
+                pattern_list = []
+                for p in valid_entries:
+                    if p.type not in pattern_list:
+                        pattern_list.append(p.type)
+                if displacement_detected:
+                    pattern_list.append("displacement")
+                if sweep_info.get("occurred"):
+                    pattern_list.append("liquidity_sweep")
+
+                mem0_result = self.mem0_advisor.consult(
+                    model="",  # model not yet selected — advisor runs before G8
+                    bias=bias.value,
+                    session=session_phase.value,
+                    killzone=killzone_name,
+                    patterns=pattern_list,
+                    trade_type=trade_type.value,
+                    displacement=bool(displacement_detected),
+                    sweep_occurred=bool(sweep_info.get("occurred")),
+                )
+                trace.append(
+                    GateLog(
+                        gate="G7d_MEM0",
+                        passed=True,
+                        summary=f"{mem0_result.memory_hits} hits "
+                        f"({len(mem0_result.insights)} insights, "
+                        f"{len(mem0_result.warnings)} warnings)"
+                        if mem0_result.available
+                        else "Mem0 unavailable — passthrough",
+                        details={
+                            "available": mem0_result.available,
+                            "query_count": mem0_result.query_count,
+                            "memory_hits": mem0_result.memory_hits,
+                            "insights": mem0_result.insights[:3],
+                            "warnings": mem0_result.warnings[:3],
+                        },
+                    )
+                )
+            except Exception as e:
+                trace.append(
+                    GateLog(
+                        gate="G7d_MEM0",
+                        passed=True,
+                        summary=f"Error: {e}",
+                        details={"error": str(e)},
+                    )
+                )
+                mem0_result = None
+        else:
+            trace.append(
+                GateLog(
+                    gate="G7d_MEM0",
+                    passed=True,
+                    summary="Mem0Advisor not loaded",
+                    details={},
+                )
+            )
+
+        # ---------------------------------------------------------------------
         # GATE 8: MODEL SELECTION
         # (Graph reasoner recommendation takes priority when available and
         #  the graph signals GO; otherwise fall back to original heuristic)
@@ -648,6 +720,7 @@ class VexCoreEngine:
             sweep_info=sweep_info,
             now=now,
             graph_result=graph_result,
+            mem0_result=mem0_result,
         )
 
         # Check minimum R:R
@@ -1157,6 +1230,7 @@ class VexCoreEngine:
         sweep_info: Dict,
         now: datetime,
         graph_result: Optional[Any] = None,
+        mem0_result: Optional[Any] = None,
     ) -> TradeSetup:
         """Build the complete trade setup."""
 
@@ -1273,6 +1347,17 @@ class VexCoreEngine:
             if graph_result.red_flags:
                 for flag in graph_result.red_flags:
                     confluences.append(f"🚫 Graph: {flag}")
+
+        # ── Merge Mem0 knowledge insights ────────────────────────────────
+        if mem0_result is not None and mem0_result.available:
+            has_content = mem0_result.insights or mem0_result.warnings
+            if has_content:
+                confluences.append("")  # visual separator
+                confluences.append("── Mem0 Knowledge ──")
+                for insight in mem0_result.insights[:5]:
+                    confluences.append(f"📖 Mem0: {insight}")
+                for warning in mem0_result.warnings[:3]:
+                    confluences.append(f"⚠️ Mem0: {warning}")
 
         # Entry reason
         entry_reason = f"{model.value.upper()} entry at {entry_zone.type.upper()} "

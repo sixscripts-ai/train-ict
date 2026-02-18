@@ -32,6 +32,7 @@ Usage (inside VexCoreEngine):
 from __future__ import annotations
 
 import logging
+import os
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -45,24 +46,10 @@ from .vex_core_engine import (
     SessionPhase,
     TradeType,
 )
+from ict_agent.logic.reasoner import GraphReasoner, TradeDecision
+from ict_agent.knowledge.schema import ICTGraphInternal
 
 logger = logging.getLogger(__name__)
-
-# ── Lazy import of graph_rag (lives in a different project) ──────────────────
-# We add the ai-knowledge-graph/src to sys.path so `from graph_rag import ...`
-# works without the user installing it as a package.
-
-_GRAPH_RAG_SRC = (
-    Path.home() / "Documents" / "knowledge_graph_ict" / "ai-knowledge-graph" / "src"
-)
-
-
-def _ensure_graph_rag_importable():
-    """Add graph_rag source to sys.path if not already there."""
-    src_str = str(_GRAPH_RAG_SRC)
-    if src_str not in sys.path:
-        sys.path.insert(0, src_str)
-
 
 # ── Model name mapping: TradeReasoner names ↔ VEX ModelType ──────────────────
 
@@ -108,7 +95,7 @@ class EnhancedResult:
 
 
 class VexGraphReasoner:
-    """Adapts the GraphRAG TradeReasoner to work with VEX's dataclasses.
+    """Adapts the GraphRAG Reasoner to work with VEX's dataclasses.
 
     Initialisation is intentionally lazy — the heavy graph store is only
     loaded the first time ``enhance_setup`` is called.  This keeps VEX's
@@ -117,9 +104,8 @@ class VexGraphReasoner:
 
     def __init__(self):
         self._reasoner = None
-        self._store = None
         self._loaded = False
-        self._available = True  # False if graph_rag can't be imported
+        self._available = True
 
     # ── Lazy loading ──────────────────────────────────────────────────────
 
@@ -129,18 +115,30 @@ class VexGraphReasoner:
             return self._available
 
         try:
-            _ensure_graph_rag_importable()
-            from graph_rag import ICTGraphStore, TradeReasoner  # type: ignore
+            # Locate Knowledge Base
+            # Default: ../../knowledge_base relative to src/ict_agent/core
+            current_dir = Path(__file__).parent.resolve()
+            kb_root = current_dir.parent.parent.parent / "knowledge_base"
 
-            self._store = ICTGraphStore().load_all()
-            self._reasoner = TradeReasoner(self._store)
+            if not kb_root.exists():
+                # Try env var
+                env_root = os.environ.get("TRAIN_ICT_ROOT")
+                if env_root:
+                    kb_root = Path(env_root) / "knowledge_base"
+
+            if not kb_root.exists():
+                logger.warning(f"Knowledge Base not found at {kb_root}")
+                self._available = False
+                self._loaded = True
+                return False
+
+            self._reasoner = GraphReasoner.from_knowledge_base(kb_root)
             self._loaded = True
             self._available = True
-            logger.info(
-                "GraphReasoner loaded: %d nodes, %d edges",
-                self._store.G.number_of_nodes(),
-                self._store.G.number_of_edges(),
-            )
+
+            node_count = len(self._reasoner.graph.nodes)
+            logger.info(f"GraphReasoner loaded: {node_count} nodes")
+
         except Exception as exc:
             logger.warning("GraphReasoner unavailable: %s", exc)
             self._loaded = True
@@ -176,7 +174,9 @@ class VexGraphReasoner:
         """
         if not self._ensure_loaded():
             # Graceful fallback — let VEX's own logic decide
-            return EnhancedResult(go_no_go=True, explanation=["graph_rag unavailable — passthrough"])
+            return EnhancedResult(
+                go_no_go=True, explanation=["graph_rag unavailable — passthrough"]
+            )
 
         # ── Build signal dict ────────────────────────────────────────────
         signals = self._translate_signals(
@@ -255,7 +255,11 @@ class VexGraphReasoner:
             "asia": "asia",
             "asian": "asia",
         }
-        session = session_map.get(killzone_name.lower(), killzone_name.lower()) if killzone_name else ""
+        session = (
+            session_map.get(killzone_name.lower(), killzone_name.lower())
+            if killzone_name
+            else ""
+        )
 
         # Determine if killzone
         in_killzone = session in ("london", "ny_am", "ny_pm")
@@ -268,10 +272,7 @@ class VexGraphReasoner:
             trade_direction = "bearish"
 
         # Check if at OTE (any pd_array with valid OTE level)
-        at_ote = any(
-            p.ote_level and p.valid and not p.mitigated
-            for p in pd_arrays
-        )
+        at_ote = any(p.ote_level and p.valid and not p.mitigated for p in pd_arrays)
 
         return {
             "patterns": patterns,
@@ -304,7 +305,9 @@ class VexGraphReasoner:
         # Map the recommended model name to VEX's ModelType enum
         vex_model: Optional[ModelType] = None
         if decision.recommendation:
-            rec_lower = decision.recommendation.lower().replace(" ", "_").replace("-", "_")
+            rec_lower = (
+                decision.recommendation.lower().replace(" ", "_").replace("-", "_")
+            )
             vex_model = _REASONER_TO_VEX_MODEL.get(rec_lower)
             if vex_model is None:
                 # Try partial matching

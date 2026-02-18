@@ -47,6 +47,7 @@ from .vex_core_engine import (
     GateLog,
 )
 from .graph_reasoner import VexGraphReasoner, EnhancedResult
+from .mem0_advisor import Mem0Advisor, Mem0Insight
 
 __all__ = [
     # Stop Hunt
@@ -86,4 +87,7 @@ __all__ = [
     # Graph Reasoner Bridge
     "VexGraphReasoner",
     "EnhancedResult",
+    # Mem0 Advisor
+    "Mem0Advisor",
+    "Mem0Insight",
 ]
