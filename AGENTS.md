@@ -25,7 +25,7 @@ Trader) methodology for algorithmic forex trading.
 - **URL:** `https://github.com/sixscripts-ai/train-ict`
 - **Local Clone:** `/Users/villain/Documents/train-ict`
 - **Purpose:** The powerhouse. Core ICT agent code, knowledge base, training data.
-- **Branch Policy:** Work on feature branches. Only merge to main with Ashton's approval.
+- **Branch Policy:** Direct modifications to main are allowed. Agents may commit and push to main.
 
 ### Local Development (Antigravity workspace)
 - **Path:** `/Users/villain/Documents/trae_projects/vexbrain/Antigravity`
@@ -41,10 +41,10 @@ Trader) methodology for algorithmic forex trading.
 
 ## 🚨 Critical Rules (ALL AGENTS)
 
-### 1. DO NOT modify `train-ict` main branch directly
-- Always create a feature branch for code changes
-- Commit locally first, let Ashton review before pushing
-- Follow the `.agent/rules.md` in train-ict (no auto-push)
+### 1. Direct main branch modifications ARE allowed
+- Agents may commit and push directly to main
+- Feature branches are optional, not required
+- Follow the `.agent/rules.md` in train-ict for general guidelines
 
 ### 2. The Brain is VexBrainV2
 - `src/ict_agent/vex_brain.py` (V2 in local) is THE brain
@@ -103,9 +103,8 @@ GitHub (sixscripts-ai/train-ict)
 ### VS Code Copilot (code + git):
 1. Open `/Users/villain/Documents/train-ict` as workspace
 2. Pull latest: `git pull origin main`
-3. Create feature branch: `git checkout -b feature/description`
-4. Make changes, commit locally
-5. Push only when Ashton says so
+3. Make changes, commit, and push directly to main
+4. Feature branches are optional for larger refactors
 
 ### Syncing between agents:
 1. **Copilot → Antigravity:** Push to GitHub, Antigravity runs `sync_bridge.sh pull`
